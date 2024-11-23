@@ -41,4 +41,4 @@ def match(q):
         ndc += 1
     if q[9] == 'no':
         npp += 1
-    return {"New Partriotic Party": npp, "National Democratic Congress": ndc}
+    return {"npp": npp, "ndc": ndc}

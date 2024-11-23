@@ -9,7 +9,7 @@ from questions import match
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-@app.route(route="hi")
+@app.route(route="hi", auth_level=func.AuthLevel.ANONYMOUS)
 def hi(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP hi function processed a request.')
 
@@ -30,7 +30,7 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
              status_code=200
         )
         
-@app.route(route="chat")
+@app.route(route="chat", auth_level=func.AuthLevel.ANONYMOUS)
 def chat(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP chat function processed a request.')
     
@@ -67,7 +67,7 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
             status_code=400
         )
         
-@app.route(route="match-party")
+@app.route(route="match-party", auth_level=func.AuthLevel.ANONYMOUS)
 def matchparty(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("Puthon HTTP match-party function processed a request.") 
     
