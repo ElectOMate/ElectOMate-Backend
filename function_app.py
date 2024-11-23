@@ -4,8 +4,10 @@ import logging
 from graph import get_graph
 from langchain_core.runnables import RunnableConfig
 from langgraph.errors import GraphRecursionError
+import json
+from questions import match
 
-app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 @app.route(route="hi")
 def hi(req: func.HttpRequest) -> func.HttpResponse:
@@ -29,7 +31,7 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
         )
         
 @app.route(route="chat")
-async def chat(req: func.HttpRequest) -> func.HttpResponse:
+def chat(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP chat function processed a request.')
     
     question = req.params.get('question')
@@ -62,5 +64,29 @@ async def chat(req: func.HttpRequest) -> func.HttpResponse:
     else:
         return func.HttpResponse(
             "Incorrect HTTP request. Please provide either an HTTP header with name 'question' or a json body containing a 'question' entry.",
+            status_code=400
+        )
+        
+@app.route(route="match-party")
+def matchparty(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info("Puthon HTTP match-party function processed a request.") 
+    
+    try:
+        req_body = req.get_json()
+    except ValueError:
+        return func.HttpResponse(
+            "Requires JSON payload",
+            status_code=400
+        )
+    
+    try:
+        answer = match(req_body)
+        return func.HttpResponse(
+            json.dumps(answer),
+            status_code=200
+        )
+    except:
+        return func.HttpResponse(
+            "Error generating response",
             status_code=400
         )
