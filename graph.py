@@ -6,8 +6,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import START, END, StateGraph
 from langchain_community.retrievers import AzureAISearchRetriever
-from langchain_community.tools import TavilySearchResults
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import ChatOpenAI
 
 from typing import List, Literal
 from typing_extensions import TypedDict
@@ -18,9 +17,8 @@ import dotenv
 
 def get_llm():
     if not hasattr(get_llm, "llm"):
-        get_llm.llm = AzureChatOpenAI(
-            azure_deployment="gpt-4o",  
-            api_version="2024-08-01-preview",
+        get_llm.llm = ChatOpenAI(
+            model="gpt-4o",
             temperature=0,
         )
     return get_llm.llm

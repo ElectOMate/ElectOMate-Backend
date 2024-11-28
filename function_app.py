@@ -6,6 +6,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.errors import GraphRecursionError
 import json
 from questions import match
+from dotenv import load_dotenv
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -33,6 +34,8 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
 @app.route(route="chat", auth_level=func.AuthLevel.ANONYMOUS)
 def chat(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP chat function processed a request.')
+    
+    load_dotenv()
     
     question = req.params.get('question')
     if not question:
