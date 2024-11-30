@@ -35,8 +35,6 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
 def chat(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP chat function processed a request.')
     
-    load_dotenv()
-    
     question = req.params.get('question')
     if not question:
         try:
