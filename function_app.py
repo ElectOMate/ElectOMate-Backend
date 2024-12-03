@@ -52,10 +52,16 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
                 for key, value in output.items():
                     logging.info(f'Node: {key}\n---\n')
             logging.info("Response correctly retrieved.")
-            return func.HttpResponse(
-                value['generation'],
-                status_code=200
-            )
+            try:
+                return func.HttpResponse(
+                    value['generation'],
+                    status_code=200
+                )
+            except:
+                return func.HttpResponse(
+                    "Hi! Please provide a question relevant to the 2024 Ghanaian general election. Thank you!",
+                    status_code=200
+                )
         except GraphRecursionError:
             logging.error("Graph recursion limit reached.")
             return func.HttpResponse(
