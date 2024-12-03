@@ -50,7 +50,7 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
         try:
             for output in app.stream({'question': question}, config=config):
                 for key, value in output.items():
-                    logging.info(f'Node: {key}\n---\n')
+                    logging.info(f'Node: {key} --- Value: {value}')
             logging.info("Response correctly retrieved.")
             try:
                 return func.HttpResponse(
