@@ -16,12 +16,10 @@ import logging
 import dotenv
 
 def get_llm():
-    if not hasattr(get_llm, "llm"):
-        get_llm.llm = ChatOpenAI(
-            model="gpt-4o",
-            temperature=0,
-        )
-    return get_llm.llm
+    return ChatOpenAI(
+        model="gpt-4o",
+        temperature=0,
+    )
 
 def scoping(state):
     """
