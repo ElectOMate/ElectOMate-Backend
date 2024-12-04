@@ -7,6 +7,7 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.graph import START, END, StateGraph
 from langchain_community.retrievers import AzureAISearchRetriever
 from langchain_openai import ChatOpenAI
+from langgraph.errors import GraphRecursionError
 
 from typing import List, Literal
 from typing_extensions import TypedDict
@@ -31,7 +32,7 @@ def scoping(state):
     Returns:
         state (dict): New key added to state, scope, that defines the scope of the query
     """
-    logging.info("---SCOPE---")
+    logging.debug("---SCOPE---")
     question = state["question"]
     
     class QueryScope(BaseModel):
@@ -63,7 +64,7 @@ def retrieve(state):
     Returns:
         state (dict): New key added to state, documents, that contains retrieved documents
     """
-    logging.info("---RETRIEVE---")
+    logging.debug("---RETRIEVE---")
     question = state["question"]
     scope = state["scope"].lower()
     
@@ -93,6 +94,16 @@ def retrieve(state):
     return {"documents": documents, "scope": scope, "question": question}
 
 
+
+
+
+
+
+
+
+
+
+
 def generate(state):
     """
     Generate answer
@@ -103,7 +114,7 @@ def generate(state):
     Returns:
         state (dict): New key added to state, generation, that contains LLM generation
     """
-    logging.info("---GENERATE---")
+    logging.debug("---GENERATE---")
     question = state["question"]
     documents = state["documents"]
     scope = state["scope"]
@@ -118,10 +129,25 @@ def generate(state):
     )
     rag_chain = rag_prompt | get_llm() | StrOutputParser()
         
-
     # RAG generation
     generation = rag_chain.invoke({"context": documents, "question": question})
-    return {"documents": [document.page_content for document in documents], "scope": scope, "question": question, "generation": generation}
+    
+    # Handle document content type
+    if documents and isinstance(documents[0], Document):
+        documents = [document.page_content for document in documents]
+        
+    return {"documents": documents, "scope": scope, "question": question, "generation": generation}
+
+
+
+
+
+
+
+
+
+
+
 
 
 def grade_documents(state):
@@ -135,7 +161,7 @@ def grade_documents(state):
         state (dict): Updates documents key with only filtered relevant documents
     """
 
-    logging.info("---CHECK DOCUMENT RELEVANCE TO QUESTION---")
+    logging.debug("---CHECK DOCUMENT RELEVANCE TO QUESTION---")
     question = state["question"]
     documents = state["documents"]
     
@@ -163,12 +189,26 @@ def grade_documents(state):
         )
         grade = score.binary_score
         if grade == "yes":
-            logging.info("---GRADE: DOCUMENT RELEVANT---")
+            logging.debug("---GRADE: DOCUMENT RELEVANT---")
             filtered_docs.append(d)
         else:
-            logging.info("---GRADE: DOCUMENT NOT RELEVANT---")
+            logging.debug("---GRADE: DOCUMENT NOT RELEVANT---")
             continue
     return {"documents": filtered_docs, "question": question}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def transform_query(state):
@@ -182,7 +222,7 @@ def transform_query(state):
         state (dict): Updates question key with a re-phrased question
     """
 
-    logging.info("---TRANSFORM QUERY---")
+    logging.debug("---TRANSFORM QUERY---")
     question = state["question"]
     documents = state["documents"]
     
@@ -205,6 +245,18 @@ def transform_query(state):
 
 ### Edges ###
 
+
+
+
+
+
+
+
+
+
+
+
+
 def route_question(state):
     """
     Decide if the question is relevant.
@@ -213,37 +265,74 @@ def route_question(state):
         state (dict): The current graph state
 
     Returns:
-        str: Next node to call
+        dict: Updated state with decision and a message if irrelevant
     """
 
-    logging.info("---ROUTE QUESTION---")
+    logging.debug("---ROUTE QUESTION---")
     question = state["question"]
-    
-    # Ensure question router is instantiated
+
     class RouteQuery(BaseModel):
         """Route a user query to the most relevant datasource."""
         
         relevant: Literal["yes", "no"] = Field(
             ...,
-            description="Given a user question choose if it is relevant in any way to the 2024 Ghana elections.",
+            description="Determine if the question is relevant to the 2024 Ghana elections.",
         )
-    system = """You are an expert at deciding if a question is relevant to the Ghana or elections. Decide broadly and don't be stringent about the conditions. If the question is in any way related to Ghana, decide yes. Otherwise, decide no.\n\n"""
+
+    system = """
+You are an expert at determining if a question is relevant to the 2024 Ghana elections.
+
+Instructions:
+- If the question is in any way related to Ghana or its elections, decide 'yes'.
+- If the question is not related to Ghana or its elections, decide 'no'.
+
+Examples:
+1. Question: "What are the main policies of the New Patriotic Party?"
+   Decision: yes
+
+2. Question: "Tell me about the weather in Canada."
+   Decision: no
+
+3. Question: "Who won the last election in Ghana?"
+   Decision: yes
+
+4. Question: "How to cook Italian pasta?"
+   Decision: no
+
+Respond with 'yes' or 'no' accordingly.
+"""
+
     route_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system),
-            ("human", "Question: {question}")
+            ("human", "Question: {question}\nDecision:")
         ]
     )
     question_router = route_prompt | get_llm().with_structured_output(RouteQuery)
-        
+
     source = question_router.invoke({"question": question})
-    logging.info(source)
+    logging.debug(f"Relevance decision: {source.relevant}")
+
     if source.relevant == "yes":
-        logging.info("---QUESTION IS RELEVANT---")
+        logging.debug("---QUESTION IS RELEVANT---")
         return "yes"
-    elif source.relevant == "no":
-        logging.info("---QUESTION IS NOT RELEVANT---")
-        return "end"
+    else:
+        logging.debug("---QUESTION IS NOT RELEVANT---")
+        state["message"] = (
+            "I'm here to help with questions about the 2024 Ghana elections. "
+            "It seems your question is not related to that topic."
+        )
+        return "end_with_message"
+
+
+
+
+
+
+
+
+
+
 
 
 def decide_to_generate(state):
@@ -257,21 +346,32 @@ def decide_to_generate(state):
         str: Binary decision for next node to call
     """
 
-    logging.info("---ASSESS GRADED DOCUMENTS---")
+    logging.debug("---ASSESS GRADED DOCUMENTS---")
     state["question"]
     filtered_documents = state["documents"]
 
     if not filtered_documents:
         # All documents have been filtered check_relevance
         # We will re-generate a new query
-        logging.info(
+        logging.debug(
             "---DECISION: ALL DOCUMENTS ARE NOT RELEVANT TO QUESTION, TRANSFORM QUERY---"
         )
         return "transform_query"
     else:
         # We have relevant documents, so generate answer
-        logging.info("---DECISION: GENERATE---")
+        logging.debug("---DECISION: GENERATE---")
         return "generate"
+
+
+
+
+
+
+
+
+
+
+
 
 
 def grade_generation_v_documents_and_question(state):
@@ -285,7 +385,7 @@ def grade_generation_v_documents_and_question(state):
         str: Decision for next node to call
     """
 
-    logging.info("---CHECK HALLUCINATIONS---")
+    logging.debug("---CHECK HALLUCINATIONS---")
     question = state["question"]
     documents = state["documents"]
     generation = state["generation"]
@@ -307,6 +407,16 @@ def grade_generation_v_documents_and_question(state):
     # hallucination_grader = hallucination_prompt | get_llm().with_structured_output(GradeHallucinations)
 
     # Ensure that answer grader is instantiated
+
+
+
+
+
+
+
+
+
+
     class GradeAnswer(BaseModel):
         """Binary score to assess wether the answer addresses the question."""
 
@@ -332,20 +442,36 @@ def grade_generation_v_documents_and_question(state):
     
     # Check hallucination
     if grade == "yes":
-        logging.info("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
+        logging.debug("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
         # Check question-answering
-        logging.info("---GRADE GENERATION vs QUESTION---")
+        logging.debug("---GRADE GENERATION vs QUESTION---")
         score = answer_grader.invoke({"question": question, "generation": generation})
         grade = score.binary_score
         if grade == "yes":
-            logging.info("---DECISION: GENERATION ADDRESSES QUESTION---")
+            logging.debug("---DECISION: GENERATION ADDRESSES QUESTION---")
             return "useful"
         else:
-            logging.info("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
+            logging.debug("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
             return "not useful"
     else:
-        logging.info("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
+        logging.debug("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, RE-TRY---")
         return "not supported"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class GraphState(TypedDict):
     """
@@ -370,8 +496,9 @@ def get_graph():
         workflow.add_node("scoping", scoping)  # decide on scope
         workflow.add_node("retrieve", retrieve)  # retrieve
         workflow.add_node("grade_documents", grade_documents)  # grade documents
-        workflow.add_node("generate", generate)  # generatae
+        workflow.add_node("generate", generate)  # generate
         workflow.add_node("transform_query", transform_query)  # transform_query
+        workflow.add_node("end_with_message", end_with_message)  # new node
 
         # Build graph
         workflow.add_conditional_edges(
@@ -379,7 +506,7 @@ def get_graph():
             route_question,
             {
                 "yes": "scoping",
-                "end": END,
+                "end_with_message": "end_with_message",
             },
         )
         workflow.add_edge("scoping", "retrieve")
@@ -408,6 +535,23 @@ def get_graph():
     
     return get_graph.app
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     dotenv.load_dotenv()
     app = get_graph()
@@ -420,3 +564,16 @@ if __name__ == "__main__":
         print(value['generation'])
     except:
         logging.error("Graph recursion limit reached.")
+
+def end_with_message(state):
+    """
+    Returns the message for irrelevant questions.
+
+    Args:
+        state (dict): The current graph state
+
+    Returns:
+        dict: Contains the message to be returned to the user
+    """
+    logging.info("---END WITH MESSAGE---")
+    return {"generation": state["message"]}
