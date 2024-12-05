@@ -566,9 +566,9 @@ def route_question(state):
 You are an expert at determining how to handle user questions about the 2024 Ghana elections.
 
 Instructions:
-- If the question requires specific information about Ghana elections or politics, choose 'needs_context'
-- If the question is a simple greeting, a question about you or your capabilities or a question that can be answered without specific Ghana knowledge, choose 'generic_response'
-- If the question is completely unrelated to Ghana or nonsensical, choose 'irrelevant'
+- If the question requires specific information about Ghana elections or politics (expect the user to ask within the context of the ghana elections, even if its not clear of which country the user is asking about): choose 'needs_context'
+- If the question is a simple greeting, a question about you or your capabilities or a question that can be answered without specific Ghana knowledge: choose 'generic_response'
+- If the question is completely unrelated to Ghana or nonsensical: choose 'irrelevant'
 
 Examples:
 1. Question: "What are the main policies of the New Patriotic Party?"
@@ -872,7 +872,7 @@ if __name__ == "__main__":
                 logging.info(f'Node: {key}\n---\n')
         print(value['generation'])
     except Exception as e:
-        logging.error("Graph recursion limit reached.")
+        #logging.error("Graph recursion limit reached.")
         # Output the last generation with the preamble
         if 'value' in locals():
             print(preamble + value['generation'])
