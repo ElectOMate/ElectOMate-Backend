@@ -450,7 +450,7 @@ Last Updated: 2023-10-01
 
 He won re-election in December 2020 with **51.3%** of the vote and continued his presidency after the Supreme Court dismissed election challenges.
 
-Source: Ghana_ Freedom in the World 2023 Country Report"""),
+Source: Ghana_ Freedom in the World 2023 Country Report.pdf"""),
 
 
     
@@ -800,10 +800,33 @@ def grade_generation_v_documents_and_question(state):
         binary_score: str = Field(
             description="Answer addresses the question, 'yes' or 'no'"
         )
-    system = """You are a grader assessing whether an answer addresses / resolves a question. Give a binary score 'yes' or 'no'. Yes' means that the answer resolves the question, "No" means that the answer does not resolve the question."""
+    system = """You are a grader assessing whether an answer addresses / resolves a question. Give a binary score 'yes' or 'no'. Yes' means that the answer resolves the question, "No" means that the answer does not resolve the question.
+    You are part of a RAG pipeline for a chatbot to help people infrm themselves for the elections in Ghana. 
+    Ask yourself if the generation handed over to you is a good answer to the question. 
+    It doesnt have to resolve the question entirely, 
+    but it should be a good answer. Say no if the generation halucinates something nonsensical.
+    
+    
+    """
     answer_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system),
+
+
+
+            ("human", """User question: \n\n Who was the president in 2009? \n\n LLM generation: \n\n  John Atta Mills was the President of Ghana in 2009.
+
+He was elected in the 2008 elections and served as President until his death in July 2012, after which John Mahama, then Vice President, took over the presidency.
+
+Source: Wahlen in Ghana.pdf"""),
+
+
+
+    ("assistant", "yes"),
+
+
+
+
             ("human", "User question: \n\n {question} \n\n LLM generation: {generation}"),
         ]
     )
