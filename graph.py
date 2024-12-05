@@ -1294,7 +1294,7 @@ def get_graph():
         transform_query_counter = 0
 
         # Define a function to handle the conditional logic
-        def check_transform_query():
+        def check_transform_query(state):
             global transform_query_counter
             transform_query_counter += 1
             if transform_query_counter >= 3:
