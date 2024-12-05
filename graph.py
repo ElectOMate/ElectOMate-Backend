@@ -1240,13 +1240,14 @@ class GraphState(TypedDict):
     scope: str
     loopfix: bool
 
-# Initialize the state with loopfix set to False
+# Initialize the state with loopfix set to False and loops set to 0
 initial_state = GraphState(
     question="",
     generation="",
     documents=[],
     scope="",
-    loopfix=False
+    loopfix=False,
+    loops=0  # Initialize loops counter
 )
 
 def get_graph():
@@ -1294,15 +1295,18 @@ def get_graph():
 
         # Initialize a counter variable
         transform_query_counter = 0
-
+        loops=0
         # Define a function to handle the conditional logic
         def check_transform_query(state):
             if not 'loops' in state:
-                state['loops'] = 0
-            if state['loops'] >= 3:
+                logging.info("---DECISION: Loop Initiated---")
+                
+            if loops >= 3:
                 return "generate2"
             else:
-                state['loops'] += 1
+                loops += 1
+                logging.info("---DECISION: Loop value: " + str(loops) + "---")
+
                 return "retrieve"
 
         # Add conditional edges using the counter
