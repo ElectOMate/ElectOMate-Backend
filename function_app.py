@@ -34,7 +34,9 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
 @app.route(route="chat", auth_level=func.AuthLevel.ANONYMOUS)
 def chat(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP chat function processed a request.')
-    
+    preamble = """Our algorithm has reach our self-imposed recursion limit of 10. 
+    This means that we are not confident enough that the data in the context is enough to answer your question. 
+    However, we will still provide the best answer we can given the data we have: \n\n"""
     question = req.params.get('question')
     if not question:
         try:
@@ -63,11 +65,20 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
                     status_code=200
                 )
         except GraphRecursionError:
-            logging.error("Graph recursion limit reached.")
-            return func.HttpResponse(
-                "Langchain Graph Recursion limit reached. Sadly, our documents do not allow us to answer your question.",
-                status_code=400
-            )
+            for output in app.stream({'question': question}, config=config):
+                for key, value in output.items():
+                    logging.info(f'Node: {key} --- Value: {value}')
+            logging.info("Response correctly retrieved.")
+            try:
+                return func.HttpResponse(
+                    preamble + value['generation'],
+                    status_code=200
+                )
+            except:
+                return func.HttpResponse(
+                    "Hi! Please provide a question relevant to the 2024 Ghanaian general election. Thank you!",
+                    status_code=200
+                )
     else:
         return func.HttpResponse(
             "Incorrect HTTP request. Please provide either an HTTP header with name 'question' or a json body containing a 'question' entry.",
