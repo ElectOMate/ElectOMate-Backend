@@ -600,7 +600,7 @@ You are an expert at determining how to handle user questions about the 2024 Gha
 Instructions:
 - If the question requires specific information about Ghana elections or politics (expect the user to ask within the context of the ghana elections, even if its not clear of which country the user is asking about): choose 'needs_context'
 - If the question is a simple greeting, a question about you or your capabilities or a question that can be answered without specific Ghana knowledge: choose 'generic_response'
-- If the question is completely unrelated to Ghana or nonsensical: choose 'irrelevant'
+- If the question is completely unrelated to Ghana: choose 'irrelevant'
 
 Examples:
 1. Question: "What are the main policies of the New Patriotic Party?"
