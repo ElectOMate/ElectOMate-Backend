@@ -31,12 +31,73 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
              status_code=200
         )
         
+# @app.route(route="chat", auth_level=func.AuthLevel.ANONYMOUS)
+# def chat(req: func.HttpRequest) -> func.HttpResponse:
+#     logging.info('Python HTTP chat function processed a request.')
+#     preamble = """Our algorithm has reach our self-imposed recursion limit of 10. 
+#     This means that we are not confident enough that the data in the context is enough to answer your question. 
+#     However, we will still provide the best answer we can given the data we have: \n\n"""
+#     question = req.params.get('question')
+#     if not question:
+#         try:
+#             req_body = req.get_json()
+#         except ValueError:
+#             pass
+#         else:
+#             question = req_body.get('question')
+    
+#     if question:
+#         app = get_graph()
+#         config = RunnableConfig(recursion_limit=10)
+#         try:
+#             for output in app.stream({'question': question}, config=config):
+#                 for key, value in output.items():
+#                     logging.info(f'Node: {key} --- Value: {value}')
+#             logging.info("Response correctly retrieved.")
+#             try:
+#                 return func.HttpResponse(
+#                     value['generation'],
+#                     status_code=200
+#                 )
+#             except:
+#                 return func.HttpResponse(
+#                     "Hi! Please provide a question relevant to the 2024 Ghanaian general election. Thank you!",
+#                     status_code=200
+#                 )
+#         except GraphRecursionError:
+#             for output in app.stream({'question': question}, config=config):
+#                 for key, value in output.items():
+#                     logging.info(f'Node: {key} --- Value: {value}')
+#             logging.info("Response correctly retrieved.")
+#             preamble = """Our algorithm has reach our self-imposed recursion limit of 10. 
+#             This means that we are not confident enough that the data in the context is enough to answer your question. 
+#             However, we will still provide the best answer we can given the data we have: \n\n"""
+#             try:
+#                 return func.HttpResponse(
+#                     preamble + value['generation'],
+#                     status_code=200
+#                 )
+#             except:
+#                 return func.HttpResponse(
+#                     "Hi! Please provide a question relevant to the 2024 Ghanaian general election. Thank you!",
+#                     status_code=200
+#                 )
+#     else:
+#         return func.HttpResponse(
+#             "Incorrect HTTP request. Please provide either an HTTP header with name 'question' or a json body containing a 'question' entry.",
+#             status_code=400
+#         )
+
+
+
 @app.route(route="chat", auth_level=func.AuthLevel.ANONYMOUS)
 def chat(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP chat function processed a request.')
-    preamble = """Our algorithm has reach our self-imposed recursion limit of 10. 
-    This means that we are not confident enough that the data in the context is enough to answer your question. 
-    However, we will still provide the best answer we can given the data we have: \n\n"""
+    preamble = """Our algorithm has reached our self-imposed recursion limit of 10. 
+This means that we are not confident enough that the data in the context is enough to answer your question. 
+However, we will still provide the best answer we can given the data we have: \n\n"""
+    
+    # Retrieve the question from query parameters or JSON body
     question = req.params.get('question')
     if not question:
         try:
@@ -47,43 +108,53 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
             question = req_body.get('question')
     
     if question:
-        app = get_graph()
+        app_graph = get_graph()
         config = RunnableConfig(recursion_limit=10)
+        generation = ""  # Initialize generation variable
+
         try:
-            for output in app.stream({'question': question}, config=config):
+            # Stream the outputs from the graph
+            for output in app_graph.stream({'question': question}, config=config):
                 for key, value in output.items():
                     logging.info(f'Node: {key} --- Value: {value}')
+                    if 'generation' in value:
+                        generation = value['generation']  # Update generation
+
             logging.info("Response correctly retrieved.")
-            try:
+            if generation:
                 return func.HttpResponse(
-                    value['generation'],
+                    generation,
                     status_code=200
                 )
-            except:
+            else:
+                # If generation is empty, return a default message
                 return func.HttpResponse(
                     "Hi! Please provide a question relevant to the 2024 Ghanaian general election. Thank you!",
                     status_code=200
                 )
         except GraphRecursionError:
-            for output in app.stream({'question': question}, config=config):
-                for key, value in output.items():
-                    logging.info(f'Node: {key} --- Value: {value}')
-            logging.info("Response correctly retrieved.")
-            try:
+            logging.error("GraphRecursionError occurred.")
+            logging.info("Attempting to retrieve partial generation.")
+
+            if generation:
+                # Return preamble with partial generation
                 return func.HttpResponse(
-                    preamble + value['generation'],
+                    preamble + generation,
                     status_code=200
                 )
-            except:
+            else:
+                # If no generation was captured, return the preamble alone
                 return func.HttpResponse(
-                    "Hi! Please provide a question relevant to the 2024 Ghanaian general election. Thank you!",
+                    preamble + "Unfortunately, I couldn't retrieve enough information to answer your question.",
                     status_code=200
                 )
     else:
         return func.HttpResponse(
-            "Incorrect HTTP request. Please provide either an HTTP header with name 'question' or a json body containing a 'question' entry.",
+            "Incorrect HTTP request. Please provide either an HTTP header with name 'question' or a JSON body containing a 'question' entry.",
             status_code=400
         )
+    
+    
         
 @app.route(route="match-party", auth_level=func.AuthLevel.ANONYMOUS)
 def matchparty(req: func.HttpRequest) -> func.HttpResponse:
