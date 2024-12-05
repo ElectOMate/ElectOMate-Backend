@@ -93,9 +93,9 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
 @app.route(route="chat", auth_level=func.AuthLevel.ANONYMOUS)
 def chat(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP chat function processed a request.')
-    preamble = """Our algorithm has reached our self-imposed recursion limit of 10. 
+    preamble = """Our algorithm has reached our self-imposed recursion limit of 3. 
 This means that we are not confident enough that the data in the context is enough to answer your question. 
-However, we will still provide the best answer we can given the data we have: \n\n"""
+However, we will still provide the answer we can given the data we have: \n\n\n\n"""
     
     # Retrieve the question from query parameters or JSON body
     question = req.params.get('question')
@@ -139,7 +139,7 @@ However, we will still provide the best answer we can given the data we have: \n
             if generation:
                 # Return preamble with partial generation
                 return func.HttpResponse(
-                    preamble + generation,
+                    preamble + "\n " +generation,
                     status_code=200
                 )
             else:
@@ -154,7 +154,7 @@ However, we will still provide the best answer we can given the data we have: \n
             status_code=400
         )
     
-    
+
         
 @app.route(route="match-party", auth_level=func.AuthLevel.ANONYMOUS)
 def matchparty(req: func.HttpRequest) -> func.HttpResponse:

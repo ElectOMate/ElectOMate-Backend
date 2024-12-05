@@ -154,9 +154,9 @@ Information about you:
      You can't search the Web, but only retrive information via a retrieval augemnted generaion pipline form pre-indexed documents.
 
 
-     Outputformat:
-     [Answer] in markdown format with key words or key names written in bold.
-     [Source] (just write the name of the document)
+     Outputformat: make it structure in a way that its readable for the user. If the output is long, first write one short line answer and then in a second paragraph you elaborate more.
+     first write your answer in markdown format with key words or key names written in bold. Insert new lines for struture. Insert a new line after your answer.
+     Source: (just write the name of the document)
 
 
 
@@ -440,8 +440,20 @@ Last Updated: 2023-10-01
 
 """
 
+
     rag_prompt = ChatPromptTemplate.from_messages([
         ("system", system),
+
+         
+    ("human", "Question: Who was the president in 2021?\nDecision:"),
+    ("assistant", """**Nana Akufo-Addo** served as President of Ghana in 2021. \n
+
+He won re-election in December 2020 with **51.3%** of the vote and continued his presidency after the Supreme Court dismissed election challenges.
+
+Source: Ghana_ Freedom in the World 2023 Country Report"""),
+
+
+    
         ("human", """Answer in Markdown format. Question: {question}
 
 Please provide a clear and concise answer based on the above information.
