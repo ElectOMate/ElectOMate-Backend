@@ -1245,6 +1245,8 @@ initial_state = GraphState(
     documents=[],
     scope="",
     loopfix=False
+    loopfix2=0
+
 )
 
 def get_graph():
@@ -1295,8 +1297,8 @@ def get_graph():
 
         # Define a function to handle the conditional logic
         def check_transform_query(state):
-            global transform_query_counter
-            transform_query_counter += 1
+            
+            loopfix2 += 1
             if transform_query_counter >= 3:
                 return "generate2"
             else:
