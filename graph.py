@@ -148,7 +148,7 @@ Key guidelines:
 
 
 
-General Election Context:
+These is a General Election Context, only use as context for your self and do not overload the user with too many numbers, only dump them with the detailed information if the user asks for specificities:
 
 # GHANA ELECTIONS AND POLITICAL LANDSCAPE
 Last Updated: 2023-10-01
@@ -874,7 +874,8 @@ if __name__ == "__main__":
     except Exception as e:
         #logging.error("Graph recursion limit reached.")
         # Output the last generation with the preamble
-        if 'value' in locals():
-            print(preamble + value['generation'])
-        else:
-            print(preamble + value['generation'])
+        print(preamble)
+        # if 'value' in locals():
+        #     print(preamble + value['generation'])
+        # else:
+        #     print(preamble + value['generation'])
