@@ -1196,19 +1196,20 @@ Source: Wahlen in Ghana.pdf"""),
     #     {"documents": "\n\n".join(documents), "generation": generation}
     # )
     # grade = score.binary_score
-    grade = ''
+    grade = 'yes'
 
     
     # Check hallucination
 
     # Check question-answering
-    logging.info("---GRADE GENERATION vs QUESTION---")
-    score = answer_grader.invoke({"question": question, "generation": generation})
-    grade = score.binary_score
-    generation = state["generation"]
-
+    
 
     if grade == "yes":
+        logging.info("---GRADE GENERATION vs QUESTION---")
+        score = answer_grader.invoke({"question": question, "generation": generation})
+        grade = score.binary_score
+        generation = state["generation"]
+
      
         if grade == "yes":
             logging.info("---DECISION: GENERATION ADDRESSES QUESTION---")
@@ -1290,9 +1291,9 @@ def get_graph():
         )
         workflow.add_conditional_edges(
             "transform_query",
-            lambda x: "generate" if x.get(RunnableConfig.recursion_key, 0) >= 2 else "retrieve",
+            lambda x: "generate2" if x.get(RunnableConfig.recursion_key, 0) >= 3 else "retrieve",
             {
-                "generate": "generate2",
+                "generate2": "generate2",
                 "retrieve": "retrieve"
             }
         )
