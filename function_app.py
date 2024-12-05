@@ -93,7 +93,7 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
 @app.route(route="chat", auth_level=func.AuthLevel.ANONYMOUS)
 def chat(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP chat function processed a request.')
-    preamble = """Warning: Answer based on very limited data found in the context. This can happen due to self-imposed safety settings."""
+    preamble = """Warning: Answer based on very limited darta found in the context. This can happen due to self-imposed safety settings."""
     
     # Retrieve the question from query parameters or JSON body
     question = req.params.get('question')
@@ -112,14 +112,22 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
 
         try:
             # Stream the outputs from the graph
+            loopfix = False  # Initialize loopfix
             for output in app_graph.stream({'question': question}, config=config):
                 for key, value in output.items():
                     logging.info(f'Node: {key} --- Value: {value}')
                     if 'generation' in value:
                         generation = value['generation']  # Update generation
+                    if 'loopfix' in value:
+                        loopfix = value['loopfix']  # Update loopfix
 
             logging.info("Response correctly retrieved.")
-            if generation:
+            if generation and loopfix:
+                return func.HttpResponse(
+                    generation + "\n\n\n" + preamble,
+                    status_code=200
+                )
+            elif generation:
                 return func.HttpResponse(
                     generation,
                     status_code=200
