@@ -52,7 +52,9 @@ def scoping(state):
             ...,
             description="Given a user question choose to route it either to specific party in the Ghana 2024 elections, either to the constitution or just to look through all the documents.",
         )
-    system = """You are an expert at deciding if a question refers to a specific party in Ghana or to its constitution. If the question refers to the Constitution of Ghana, use constitution. If the question refers to the New Patriotic Party (NPP) party, use npp. If the question refers to the National Democratic Congress (NDC) party, use ndc. If the question refers to the Movement for Change party, use movementforchange. If the question refers to The New Force party, use thenewforce. If the question refers to multiple parties, doesn't refer to one party in particular, or if cannot answer the question, you don't know or cannot decide, use all.\n"""
+    system = """You are an expert at deciding if a question refers to the constitution of Ghana or requires general information. 
+    If the question refers to the Constitution of Ghana, use "constitution". If the question refers to multiple topics, 
+    doesn't refer to the constitution specifically, or if you cannot decide, use "all". Only answer with one of these two words: all OR constitution\n """
     route_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system),
