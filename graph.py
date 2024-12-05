@@ -1299,7 +1299,8 @@ def get_graph():
 
         # Define a function to handle the conditional logic
         def check_transform_query(state):
-                
+            loops = state.get('loops', 0)  # Retrieve loops from state
+
             if loops >= 3:
                 return "generate2"
             else:

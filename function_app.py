@@ -89,78 +89,7 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
 #         )
 
 
-
-@app.route(route="chat", auth_level=func.AuthLevel.ANONYMOUS)
-def chat(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP chat function processed a request.')
-    preamble = """Warning: Answer based on very limited darta found in the context. This can happen due to self-imposed safety settings."""
-    
-    # Retrieve the question from query parameters or JSON body
-    question = req.params.get('question')
-    if not question:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            question = req_body.get('question')
-    
-    if question:
-        app_graph = get_graph()
-        config = RunnableConfig(recursion_limit=10)
-        generation = ""  # Initialize generation variable
-
-        try:
-            # Stream the outputs from the graph
-            loopfix = False  # Initialize loopfix
-            for output in app_graph.stream({'question': question}, config=config):
-                for key, value in output.items():
-                    logging.info(f'Node: {key} --- Value: {value}')
-                    if 'generation' in value:
-                        generation = value['generation']  # Update generation
-                    if 'loopfix' in value:
-                        loopfix = value['loopfix']  # Update loopfix
-
-            logging.info("Response correctly retrieved.")
-            if generation and loopfix:
-                return func.HttpResponse(
-                    generation + "\n\n\n" + preamble,
-                    status_code=200
-                )
-            elif generation:
-                return func.HttpResponse(
-                    generation + "test",
-                    status_code=200
-                )
-            else:
-                # If generation is empty, return a default message
-                return func.HttpResponse(
-                    "Hi! Please provide a question relevant to the 2024 Ghanaian general election. Thank you!",
-                    status_code=200
-                )
-        except GraphRecursionError:
-            logging.error("GraphRecursionError occurred.")
-            logging.info("Attempting to retrieve partial generation.")
-
-            if generation:
-                # Return preamble with partial generation
-                return func.HttpResponse(
-                     generation + "\n\n\n" + preamble,
-                    status_code=200
-                )
-            else:
-                # If no generation was captured, return the preamble alone
-                return func.HttpResponse(
-                    "Unfortunately, some error has occured, but we are logging this and will debug asap.",
-                    status_code=200
-                )
-    else:
-        return func.HttpResponse(
-            "Incorrect HTTP request. Please provide either an HTTP header with name 'question' or a JSON body containing a 'question' entry.",
-            status_code=400
-        )
-    
-
+#####
         
 @app.route(route="match-party", auth_level=func.AuthLevel.ANONYMOUS)
 def matchparty(req: func.HttpRequest) -> func.HttpResponse:
