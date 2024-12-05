@@ -652,6 +652,9 @@ Examples:
     
     ("human", "Question: Hello!\nDecision:"),
     ("assistant", "generic_response"),
+
+    ("human", "Question: who has been the president in ghana in 2015\nDecision:"),
+    ("assistant", "needs_context"),
     
     ("human", "Question: {question}\nDecision:")
     ])
