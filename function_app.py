@@ -129,7 +129,7 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
                 )
             elif generation:
                 return func.HttpResponse(
-                    generation,
+                    generation + "test",
                     status_code=200
                 )
             else:
