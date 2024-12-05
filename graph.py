@@ -1290,7 +1290,7 @@ def get_graph():
         )
         workflow.add_conditional_edges(
             "transform_query",
-            lambda x: "generate" if x.get(RunnableConfig.recursion_key, 0) >= 3 else "retrieve",
+            lambda x: "generate" if x.get(RunnableConfig.recursion_key, 0) >= 2 else "retrieve",
             {
                 "generate": "generate2",
                 "retrieve": "retrieve"
