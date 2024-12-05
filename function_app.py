@@ -93,9 +93,7 @@ def hi(req: func.HttpRequest) -> func.HttpResponse:
 @app.route(route="chat", auth_level=func.AuthLevel.ANONYMOUS)
 def chat(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP chat function processed a request.')
-    preamble = """Our algorithm has reached our self-imposed recursion limit of 3. 
-This means that we are not confident enough that the data in the context is enough to answer your question. 
-However, we will still provide the answer we can given the data we have: \n\n\n\n"""
+    preamble = """Warning: Answer based on very limited data found in the context. This can happen due to self-imposed safety settings."""
     
     # Retrieve the question from query parameters or JSON body
     question = req.params.get('question')
@@ -139,13 +137,13 @@ However, we will still provide the answer we can given the data we have: \n\n\n\
             if generation:
                 # Return preamble with partial generation
                 return func.HttpResponse(
-                    preamble + "\n " +generation,
+                     generation + "\n\n\n" + preamble,
                     status_code=200
                 )
             else:
                 # If no generation was captured, return the preamble alone
                 return func.HttpResponse(
-                    preamble + "Unfortunately, I couldn't retrieve enough information to answer your question.",
+                    "Unfortunately, some error has occured, but we are logging this and will debug asap.",
                     status_code=200
                 )
     else:
