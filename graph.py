@@ -1245,8 +1245,6 @@ initial_state = GraphState(
     documents=[],
     scope="",
     loopfix=False
-    loopfix2=0
-
 )
 
 def get_graph():
@@ -1336,7 +1334,7 @@ if __name__ == "__main__":
     dotenv.load_dotenv()
     app = get_graph()
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-    config = RunnableConfig(recursion_limit=3)
+    config = RunnableConfig(recursion_limit=10)
     preamble = """Our algorithm has reach our self-imposed recursion limit of 10. 
     This means that we are not confident enough that the data in the context is enough to answer your question. 
     However, we will still provide the best answer we can given the data we have: \n\n"""  # Edit this text as needed
