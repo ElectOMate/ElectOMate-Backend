@@ -134,7 +134,9 @@ def generate(state):
     scope = state["scope"]
     
 #     # Ensure RAG chain is built
-    system = """You are an expert assistant on Ghana's political landscape and elections. Use the provided context to answer questions accurately and concisely. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer focused.
+    system = """You are an expert assistant on Ghana's political landscape and elections. 
+    Use the provided context to answer questions accurately and concisely.
+      If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer focused.
 
 Key guidelines:
 1. Base your answers primarily on the retrieved documents and general context
@@ -144,6 +146,17 @@ Key guidelines:
 5. Alays answe in english
 6. DO NOT GIVE ANY ADVICE ON WHO TO VOTE FOR
 7. YOU ARE POLITICALLY NEUTRAL
+
+
+Information about you: 
+     You are developed by Students at ETH Zurich, Hochschule St. Gallen and the University of Zurich.
+     You are running on the OpenAI API using the GPT-4o model.
+     You can't search the Web, but only retrive information via a retrieval augemnted generaion pipline form pre-indexed documents.
+
+
+     Outputformat:
+     [Answer] in markdown format with key words or key names written in bold.
+     [Source] (just write the name of the document)
 
 
 
@@ -429,7 +442,7 @@ Last Updated: 2023-10-01
 
     rag_prompt = ChatPromptTemplate.from_messages([
         ("system", system),
-        ("human", """Question: {question}
+        ("human", """Answer in Markdown format. Question: {question}
 
 Please provide a clear and concise answer based on the above information.
 Retrieved Context:
@@ -523,10 +536,29 @@ def transform_query(state):
     documents = state["documents"]
     
     # Ensure that question re-writer is built
-    system = """You are a question re-writer that converts an input question to a better version that is optimized for vectorstore retrieval. Look at the input and try to reason about the underlying semantic intent / meaning."""
+    system = """You are a question re-writer that converts an input question to a better version that is optimized for vectorstore retrieval. 
+    Look at the input and try to reason about the underlying semantic intent / meaning. Only output the new question. 
+    It should contain as good keywords as possible for the retrieval augentemnted generation as possible.
+
+
+    
+    """
+
+
+
+
     re_write_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system),
+
+
+            ("human", "Question: Tell me more about the New Patriotic Party?\nDecision:"),
+            ("assistant", "explain the standpoints of new patriotic party in ghana generally"),
+            
+            ("human", "Question: Hello!\nDecision:"),
+            ("assistant", "generic_response"),
+
+
             (
                 "human",
                 "Here is the initial question: \n\n {question} \n\nFormulate an improved question.",
@@ -628,19 +660,16 @@ Examples:
     
     source = question_router.invoke({"question": question})
     logging.info(source)
-
-
-    return "generic"
-
-    # if source.decision == "needs_context":
-    #     logging.info("---QUESTION NEEDS CONTEXT---")
-    #     return "needs_context"
-    # elif source.decision == "generic_response":
-    #     logging.info("---GENERIC RESPONSE---")
-    #     return "generic"
-    # else:
-    #     logging.info("---QUESTION IS IRRELEVANT---")
-    #     return "end"
+    
+    if source.decision == "needs_context":
+        logging.info("---QUESTION NEEDS CONTEXT---")
+        return "needs_context"
+    elif source.decision == "generic_response":
+        logging.info("---GENERIC RESPONSE---")
+        return "generic"
+    else:
+        logging.info("---QUESTION IS IRRELEVANT---")
+        return "end"
 
 def handle_generic_response(state):
     """
@@ -655,31 +684,26 @@ def handle_generic_response(state):
     logging.info("---GENERATING GENERIC RESPONSE---")
     question = state["question"]
     
-    # system = """You are an AI assistant focused on helping users with questions about Ghana's 2024 elections. 
-    # For simple greetings or general questions, provide a friendly response while mentioning your purpose. 
-    # You have acces to the offical perti manifestos and curated sources to help voters to make informed decisions. 
-    # You are a political neutral and do not take sides. Always just answer generically and do not use pretrsined knowledge to answer the question. 
-    # You are only answer questions about yourself. Always Add as a final line that your message was generated without retrived context.
-    # More info abou you: 
-    #  You are developed by Students at ETH Zurich, Hochschule St. Gallen and the University of Zurich.
-    #  You are running on the OpenAI API using the GPT-4o model.
-    #  You can't search the Web, but only retrive information via a retrieval augemnted generaion pipline form pre-indexed documents.
-    #  """
-    system ="You will only output 'It works'"
+    system = """You are an AI assistant focused on helping users with questions about Ghana's 2024 elections. 
+    For simple greetings or general questions, provide a friendly response while mentioning your purpose. 
+    You have acces to the offical perti manifestos and curated sources to help voters to make informed decisions. 
+    You are a political neutral and do not take sides. Always just answer generically and do not use pretrsined knowledge to answer the question. 
+    You are only answer questions about yourself. 
+    More info abou you: 
+     You are developed by Students at ETH Zurich, Hochschule St. Gallen and the University of Zurich.
+     You are running on the OpenAI API using the GPT-4o model.
+     You can't search the Web, but only retrive information via a retrieval augemnted generaion pipline form pre-indexed documents.
+     """
     
     prompt = ChatPromptTemplate.from_messages([
         ("system", system),
 
-        # ("human", "Hello"),
-        # ("assistant", "Hey there, do you have any questions? I can help you browsing through my sources like manifestos and a curated selection of websites and articles!"),
-
-        # ("human", "Hello, who are you? "),
-        # ("assistant", "Hey, I m an AI assistant helping voters to inform themselves for the upcoming elections in Ghana. Do you have any questions?"),
-        
-
         ("human", "Hello"),
-        ("assistant", "It works"),
+        ("assistant", "Hey there, do you have any questions? I can help you browsing through my sources like manifestos and a curated selection of websites and articles!"),
 
+        ("human", "Hello, who are you? "),
+        ("assistant", "Hey, I m an AI assistant helping voters to inform themselves for the upcoming elections in Ghana. Do you have any questions?"),
+        
         ("human", "{question}")
     ])
     
@@ -761,7 +785,7 @@ def grade_generation_v_documents_and_question(state):
         binary_score: str = Field(
             description="Answer addresses the question, 'yes' or 'no'"
         )
-    system = """You are a grader assessing whether an answer addresses / resolves a question. Give a binary score 'yes' or 'no'. Yes' means that the answer resolves the question."""
+    system = """You are a grader assessing whether an answer addresses / resolves a question. Give a binary score 'yes' or 'no'. Yes' means that the answer resolves the question, "No" means that the answer does not resolve the question."""
     answer_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", system),
