@@ -1295,11 +1295,10 @@ def get_graph():
 
         # Initialize a counter variable
         transform_query_counter = 0
-        loops=0
+        logging.info("---DECISION: Loop Initiated---")
+
         # Define a function to handle the conditional logic
         def check_transform_query(state):
-            if not 'loops' in state:
-                logging.info("---DECISION: Loop Initiated---")
                 
             if loops >= 3:
                 return "generate2"
