@@ -1289,14 +1289,29 @@ def get_graph():
                 "generate": "generate",
             },
         )
+
+        # Initialize a counter variable
+        transform_query_counter = 0
+
+        # Define a function to handle the conditional logic
+        def check_transform_query():
+            global transform_query_counter
+            transform_query_counter += 1
+            if transform_query_counter >= 3:
+                return "generate2"
+            else:
+                return "retrieve"
+
+        # Add conditional edges using the counter
         workflow.add_conditional_edges(
             "transform_query",
-            lambda x: "generate2" if x.get(RunnableConfig.recursion_key, 0) >= 3 else "retrieve",
+            check_transform_query,
             {
                 "generate2": "generate2",
                 "retrieve": "retrieve"
             }
         )
+
         workflow.add_conditional_edges(
             "generate",
             grade_generation_v_documents_and_question,
