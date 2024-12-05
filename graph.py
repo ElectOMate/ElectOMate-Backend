@@ -154,7 +154,7 @@ Information about you:
      You can't search the Web, but only retrive information via a retrieval augemnted generaion pipline form pre-indexed documents.
 
 
-     Outputformat: make it structure in a way that its readable for the user. If the output is long, first write one short line answer and then in a second paragraph you elaborate more.
+     Outputformat: make it structure in a way that its readable for the user. If the output is long, first write one short line answer and then in a second paragraph you elaborate more. BUT DONT MAKE HEADLINES.
      first write your answer in markdown format with key words or key names written in bold. Insert new lines for struture. Insert a new line after your answer.
      Source: (just write the name of the document)
 
@@ -445,7 +445,7 @@ Last Updated: 2023-10-01
         ("system", system),
 
          
-    ("human", "Question: Who was the president in 2021?\nDecision:"),
+    ("human", "Question: Who was the president in 2021?:"),
     ("assistant", """**Nana Akufo-Addo** served as President of Ghana in 2021. \n
 
 He won re-election in December 2020 with **51.3%** of the vote and continued his presidency after the Supreme Court dismissed election challenges.
@@ -564,12 +564,9 @@ def transform_query(state):
             ("system", system),
 
 
-            ("human", "Question: Tell me more about the New Patriotic Party?\nDecision:"),
+            ("human", "Question: Tell me more about the New Patriotic Party?:"),
             ("assistant", "explain the standpoints of new patriotic party in ghana generally"),
-            
-            ("human", "Question: Hello!\nDecision:"),
-            ("assistant", "generic_response"),
-
+     
 
             (
                 "human",
