@@ -8,6 +8,7 @@ from langgraph.graph import START, END, StateGraph
 from langchain_community.retrievers import AzureAISearchRetriever
 from langchain_openai import ChatOpenAI
 
+
 from typing import List, Literal
 from typing_extensions import TypedDict
 from pydantic import BaseModel, Field
@@ -44,7 +45,10 @@ def scoping(state):
     class QueryScope(BaseModel):
         """Decide on the scope of the query."""
         
-        scope: Literal["constitution", "movementforchange", "ndc", "npp", "thenewforce", "all"] = Field(
+
+
+        # "movementforchange", "ndc", "npp", "thenewforce",
+        scope: Literal["constitution", "all"] = Field(
             ...,
             description="Given a user question choose to route it either to specific party in the Ghana 2024 elections, either to the constitution or just to look through all the documents.",
         )
@@ -85,7 +89,7 @@ def retrieve(state):
     retriever = AzureAISearchRetriever(
         api_version="2024-07-01",
         content_key="chunk",
-        top_k=5
+        top_k=7
     )
         
     # Set Filter
@@ -443,6 +447,19 @@ Retrieved Context:
     return {"documents": [document.page_content for document in documents], "scope": scope, "question": question, "generation": generation}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 def grade_documents(state):
     """
     Determines whether the retrieved documents are relevant to the question.
@@ -797,6 +814,9 @@ def get_graph():
         workflow.add_node("transform_query", transform_query)
         workflow.add_node("handle_generic_response", handle_generic_response)  # New node
 
+
+
+
         # Build graph
         workflow.add_conditional_edges(
             START,
@@ -807,6 +827,10 @@ def get_graph():
                 "end": END,
             },
         )
+
+
+
+        
         workflow.add_edge("scoping", "retrieve")
         workflow.add_edge("retrieve", "grade_documents")
         workflow.add_edge("handle_generic_response", END)  # Direct path to end for generic responses
@@ -839,10 +863,18 @@ if __name__ == "__main__":
     app = get_graph()
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
     config = RunnableConfig(recursion_limit=10)
+    preamble = """Our algorithm has reach our self-imposed recursion limit of 10. 
+    This means that we are not confident enough that the data in the context is enough to answer your question. 
+    However, we will still provide the best answer we can given the data we have: \n\n"""  # Edit this text as needed
     try:
         for output in app.stream({'question': 'How does the New Patriotic Party want to improve the ghanaian economy?'}, config=config):
             for key, value in output.items():
                 logging.info(f'Node: {key}\n---\n')
         print(value['generation'])
-    except:
+    except Exception as e:
         logging.error("Graph recursion limit reached.")
+        # Output the last generation with the preamble
+        if 'value' in locals():
+            print(preamble + value['generation'])
+        else:
+            print(preamble + value['generation'])
