@@ -1259,6 +1259,15 @@ initial_state = GraphState(
     loopfix=False
 )
 
+def check_transform_query(state):
+            if not 'loops' in state:
+                state['loops'] = 0
+            if state['loops'] >= 3:
+                return "generate2"
+            else:
+                state['loops'] += 1
+                return "retrieve"
+
 def get_graph():
     if not hasattr(get_graph, 'app'):
         workflow = StateGraph(GraphState)
@@ -1304,16 +1313,6 @@ def get_graph():
 
         # Initialize a counter variable
         transform_query_counter = 0
-
-        # Define a function to handle the conditional logic
-        def check_transform_query(state):
-            if not 'loops' in state:
-                state['loops'] = 0
-            if state['loops'] >= 3:
-                return "generate2"
-            else:
-                state['loops'] += 1
-                return "retrieve"
 
         # Add conditional edges using the counter
         workflow.add_conditional_edges(
