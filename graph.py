@@ -1,3 +1,5 @@
+
+
 import os
 
 from langchain.schema import Document
@@ -111,6 +113,7 @@ def retrieve(state):
     # Retrieval
     documents = retriever.invoke(question)
     return {"documents": documents, "scope": scope, "question": question}
+
 
 
 
@@ -856,8 +859,6 @@ Retrieved Context:
 
 
 
-
-
 def grade_documents(state):
     """
     Determines whether the retrieved documents are relevant to the question.
@@ -1249,14 +1250,13 @@ class GraphState(TypedDict):
     scope: str
     loopfix: bool
 
-# Initialize the state with loopfix set to False and loops set to 0
+# Initialize the state with loopfix set to False
 initial_state = GraphState(
     question="",
     generation="",
     documents=[],
     scope="",
-    loopfix=False,
-    loops=0  # Initialize loops counter
+    loopfix=False
 )
 
 def get_graph():
@@ -1304,18 +1304,15 @@ def get_graph():
 
         # Initialize a counter variable
         transform_query_counter = 0
-        logging.info("---DECISION: Loop Initiated---")
 
         # Define a function to handle the conditional logic
         def check_transform_query(state):
-            loops = state.get('loops', 0)  # Retrieve loops from state
-
-            if loops >= 3:
+            if not 'loops' in state:
+                state['loops'] = 0
+            if state['loops'] >= 3:
                 return "generate2"
             else:
-                loops += 1
-                logging.info("---DECISION: Loop value: " + str(loops) + "---")
-
+                state['loops'] += 1
                 return "retrieve"
 
         # Add conditional edges using the counter
@@ -1349,7 +1346,7 @@ if __name__ == "__main__":
     dotenv.load_dotenv()
     app = get_graph()
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-    config = RunnableConfig(recursion_limit=20)
+    config = RunnableConfig(recursion_limit=10)
     preamble = """Our algorithm has reach our self-imposed recursion limit of 10. 
     This means that we are not confident enough that the data in the context is enough to answer your question. 
     However, we will still provide the best answer we can given the data we have: \n\n"""  # Edit this text as needed
