@@ -158,7 +158,10 @@ Information about you:
 
      Outputformat: make it structure in a way that its readable for the user. If the output is long, first write one short line answer and then in a second paragraph you elaborate more. BUT DONT MAKE HEADLINES.
      first write your answer in markdown format with key words or key names written in bold. Insert new lines for struture. Insert a new line after your answer.
-     Source: (just write the name of the document)
+     Source 1: (just write the name of the document)
+     Source 2 (if applicable): (just write the name of the document)
+     Source 3 (if applicable): (just write the name of the document)
+     Source ... (if applicable): (just write the name of the document)
 
 
 
@@ -436,7 +439,7 @@ Last Updated: 2023-10-01
 
 [End of general information]
 
-
+ONLY USE THE ABOVE INFORMATION AND THE PROVIDED CONTEXT FOR YOUR ANSWER. IF YOU CANNOT ANSWER THE QUESTION WITH THE AVAILABLE INFORMATION, SAY THAT YOU DO NOT KNOW BECAUSE THE CONTEXT DOESNT PROVIDE THE INFORMATION.
 
 
 
@@ -452,7 +455,8 @@ Last Updated: 2023-10-01
 
 He won re-election in December 2020 with **51.3%** of the vote and continued his presidency after the Supreme Court dismissed election challenges.
 
-Source: Ghana_ Freedom in the World 2023 Country Report.pdf"""),
+Source 1: Ghana_ Freedom in the World 2023 Country Report.pdf
+Source 2: System prompt"""),
 
 
     
@@ -520,7 +524,10 @@ Information about you:
 
      Outputformat: make it structure in a way that its readable for the user. If the output is long, first write one short line answer and then in a second paragraph you elaborate more. BUT DONT MAKE HEADLINES.
      first write your answer in markdown format with key words or key names written in bold. Insert new lines for struture. Insert a new line after your answer.
-     Source: (just write the name of the document)
+     Source 1: (just write the name of the document)
+     Source 2 (if applicable): (just write the name of the document)
+     Source 3 (if applicable): (just write the name of the document)
+     Source ... (if applicable): (just write the name of the document)
 
 
 
@@ -798,6 +805,7 @@ Last Updated: 2023-10-01
 
 [End of general information]
 
+ONLY USE THE ABOVE INFORMATION AND THE PROVIDED CONTEXT FOR YOUR ANSWER. IF YOU CANNOT ANSWER THE QUESTION WITH THE AVAILABLE INFORMATION, SAY THAT YOU DO NOT KNOW BECAUSE THE CONTEXT DOESNT PROVIDE THE INFORMATION.
 
 
 
@@ -809,16 +817,17 @@ Last Updated: 2023-10-01
         ("system", system),
 
          
-    ("human", "Question: Who was the president in 2021?:"),
+    ("human", "Question (the context might not contain the answer, so so answer as good as you can and mention if you are uncertain about the answers correctness): Who was the president in 2021?:"),
     ("assistant", """**Nana Akufo-Addo** served as President of Ghana in 2021. \n
 
-He won re-election in December 2020 with **51.3%** of the vote and continued his presidency after the Supreme Court dismissed election challenges.
+Based on limited context I think he won re-election in December 2020 with **51.3%** of the vote and continued his presidency after the Supreme Court dismissed election challenges. 
 
-Source: Ghana_ Freedom in the World 2023 Country Report.pdf"""),
+Source 1: Ghana_ Freedom in the World 2023 Country Report.pdf
+Source 2: System prompt"""),
 
 
     
-        ("human", """Answer in Markdown format. Question: {question}
+        ("human", """Answer in Markdown format. Question (the context might not contain the answer, so so answer as good as you can and mention if you are uncertain about the answers correctness): {question}
 
 Please provide a clear and concise answer based on the above information.
 Retrieved Context:
