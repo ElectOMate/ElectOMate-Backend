@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from graph.llm_config import get_llm
-from generate2_prompts import system_prompt, human_prompt_1, assistant_prompt_1, human_prompt_2
+from .generate2_prompts import system_prompt, human_prompt_1, assistant_prompt_1, human_prompt_2
 
 
 def generate2(state):
