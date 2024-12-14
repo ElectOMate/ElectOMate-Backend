@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from graph.llm_config import get_llm
-
+from transform_query_prompts import system_prompt, human_prompt_1, assistant_prompt_1, human_prompt_2
 
 
 def transform_query(state):
@@ -22,26 +22,12 @@ def transform_query(state):
     question = state["question"]
     documents = state["documents"]
 
-    # Ensure that question re-writer is built
-    system = """You are a question re-writer that converts an input question to a better version that is optimized for vectorstore retrieval. 
-    Look at the input and try to reason about the underlying semantic intent / meaning. Only output the new question. 
-    It should contain as good keywords as possible for the retrieval augentemnted generation as possible.
-
-
-    
-    """
-
     re_write_prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", system),
-
-            ("human", "Question: Tell me more about the New Patriotic Party?:"),
-            ("assistant", "explain the standpoints of new patriotic party in ghana generally"),
-
-            (
-                "human",
-                "Here is the initial question: \n\n {question} \n\nFormulate an improved question.",
-            )
+            ("system", system_prompt),
+            ("human", human_prompt_1),
+            ("assistant", assistant_prompt_1),
+            ("human", human_prompt_2)
         ]
     )
     question_rewriter = re_write_prompt | get_llm() | StrOutputParser()
