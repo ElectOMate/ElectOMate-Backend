@@ -1,0 +1,10 @@
+### RUN hi function
+GET http://localhost:7071/api/hi?name=John
+
+### RUN chat function
+GET http://localhost:7071/api/chat
+
+<> 2024-12-14T151145.400.txt
+
+### RUN matchparty function
+GET http://localhost:7071/api/match-party
