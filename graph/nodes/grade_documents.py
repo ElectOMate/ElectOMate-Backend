@@ -4,7 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 
 from graph.llm_config import get_llm
-
+from .grade_documents_prompts import system_prompt, human_prompt
 
 
 def grade_documents(state):
@@ -30,11 +30,10 @@ def grade_documents(state):
             description="Documents are relevant to the question, 'yes' or 'no'"
         )
 
-    system = """You are a grader assessing relevance of a retrieved document to a user question. If the document contains keyword(s) or semantic meaning related to the user question, grade it as relevant. It does not need to be a stringent test. The goal is to filter out erroneous retrievals. Give a binary score 'yes' or 'no' score to indicate whether the document is relevant to the question."""
     grade_prompt = ChatPromptTemplate.from_messages(
         [
-            ("system", system),
-            ("human", "Retrieved document: \n\n {document} \n\nUser Question: {question}"),
+            ("system", system_prompt),
+            ("human", human_prompt),
         ]
     )
     retrieval_grader = grade_prompt | get_llm().with_structured_output(GradeDocuments)
