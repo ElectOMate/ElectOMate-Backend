@@ -1,3 +1,11 @@
+import logging
+
+from langchain_core.prompts import ChatPromptTemplate
+from pydantic import BaseModel, Field
+
+from graph.llm_config import get_llm
+
+
 def grade_generation_v_documents_and_question(state):
     """
     Determines whether the generation is grounded in the document and answers question.
@@ -37,6 +45,7 @@ def grade_generation_v_documents_and_question(state):
         binary_score: str = Field(
             description="Answer addresses the question, 'yes' or 'no'"
         )
+
     system = """You are a grader assessing whether an answer addresses / resolves a question. Give a binary score 'yes' or 'no'. Yes' means that the answer resolves the question, "No" means that the answer does not resolve the question.
     You are part of a RAG pipeline for a chatbot to help people infrm themselves for the elections in Ghana. 
     Ask yourself if the generation handed over to you is a good answer to the question. 
@@ -49,20 +58,13 @@ def grade_generation_v_documents_and_question(state):
         [
             ("system", system),
 
-
-
             ("human", """User question: \n\n Who was the president in 2009? \n\n LLM generation: \n\n  John Atta Mills was the President of Ghana in 2009.
 
 He was elected in the 2008 elections and served as President until his death in July 2012, after which John Mahama, then Vice President, took over the presidency.
 
 Source: Wahlen in Ghana.pdf"""),
 
-
-
             ("assistant", "yes"),
-
-
-
 
             ("human", "User question: \n\n {question} \n\n LLM generation: {generation}"),
         ]
@@ -76,18 +78,15 @@ Source: Wahlen in Ghana.pdf"""),
     # grade = score.binary_score
     grade = 'yes'
 
-
     # Check hallucination
 
     # Check question-answering
-
 
     if grade == "yes":
         logging.info("---GRADE GENERATION vs QUESTION---")
         score = answer_grader.invoke({"question": question, "generation": generation})
         grade = score.binary_score
         generation = state["generation"]
-
 
         if grade == "yes":
             logging.info("---DECISION: GENERATION ADDRESSES QUESTION---")

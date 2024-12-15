@@ -4,6 +4,8 @@ GET http://localhost:7071/api/hi?name=John
 ### RUN chat function
 GET http://localhost:7071/api/chat
 
+{ "question" : "Who is the president of the Gahna?"}
+
 <> 2024-12-14T151145.400.txt
 
 ### RUN matchparty function
