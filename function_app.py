@@ -7,6 +7,8 @@ from langgraph.errors import GraphRecursionError
 import json
 from questions import match
 from dotenv import load_dotenv
+from calculation import evaluate_answers
+
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -161,27 +163,93 @@ def chat(req: func.HttpRequest) -> func.HttpResponse:
         )
     
 
-        
-@app.route(route="match-party", auth_level=func.AuthLevel.ANONYMOUS)
-def matchparty(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info("Puthon HTTP match-party function processed a request.") 
+  # OLD MATCH PARTY CALL:
+# @app.route(route="match-party", auth_level=func.AuthLevel.ANONYMOUS)
+# def matchparty(req: func.HttpRequest) -> func.HttpResponse:
+#     logging.info("Puthon HTTP match-party function processed a request.") 
     
+#     try:
+#         req_body = req.get_json()
+#     except ValueError:
+#         return func.HttpResponse(
+#             "Requires JSON payload",
+#             status_code=400
+#         )
+    
+#     try:
+#         answer = match(req_body)
+#         return func.HttpResponse(
+#             json.dumps(answer),
+#             status_code=200
+#         )
+#     except:
+#         return func.HttpResponse(
+#             "Error generating response",
+#             status_code=400
+#         )
+
+
+@app.route(route="match-party", methods=["POST"], auth_level=func.AuthLevel.ANONYMOUS)
+def matchparty(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info("Python HTTP match-party function processed a request.")
+
     try:
         req_body = req.get_json()
     except ValueError:
+        logging.error("Invalid JSON payload.")
         return func.HttpResponse(
             "Requires JSON payload",
             status_code=400
         )
     
-    try:
-        answer = match(req_body)
+    # Validate the payload structure
+    if not isinstance(req_body, list):
+        logging.error("Payload is not a list.")
         return func.HttpResponse(
-            json.dumps(answer),
-            status_code=200
-        )
-    except:
-        return func.HttpResponse(
-            "Error generating response",
+            "Invalid payload format. Expected a list of answers.",
             status_code=400
+        )
+    
+    try:
+        # Read party data from CSV
+        party_df = pd.read_csv('party_answers.csv')
+        
+        # Extract party names and full names
+        party_names = party_df['Party_Name'].unique().tolist()
+        party_full_names = party_df['Party_Full_Name'].unique().tolist()
+
+        # Prepare data_Party dictionary
+        data_Party = {
+            "party_names": party_names,
+            "party_full_names": party_full_names,
+            "party_answers": []
+        }
+
+        # Assuming the CSV has columns: Party_Name, Party_Full_Name, Party_Answer_Q1, Party_Answer_Q2, ..., Party_Answer_QN
+        for _, row in party_df.iterrows():
+            party_answers = {}
+            for col in party_df.columns:
+                if col.startswith("Party_Answer"):
+                    party_answers[col] = row[col]
+            data_Party['party_answers'].append({
+                "Party_Name": row['Party_Name'],
+                **party_answers
+            })
+        
+        # Prepare data_User list
+        data_User = req_body  # Assuming req_body is a list of dicts with 'users_answer', 'wheights', 'Skipped'
+
+        # Evaluate answers
+        scores = evaluate_answers(data_Party, data_User)
+
+        return func.HttpResponse(
+            json.dumps(scores),
+            status_code=200,
+            mimetype="application/json"
+        )
+    except Exception as e:
+        logging.exception("Error processing match-party request.")
+        return func.HttpResponse(
+            f"Error generating response: {str(e)}",
+            status_code=500
         )
