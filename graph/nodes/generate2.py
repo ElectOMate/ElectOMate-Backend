@@ -20,7 +20,6 @@ def generate2(state):
     logging.info("---GENERATE---")
     question = state["question"]
     documents = state["documents"]
-    scope = state["scope"]
 
     rag_prompt = ChatPromptTemplate.from_messages([
         ("system", system_prompt),
@@ -33,5 +32,5 @@ def generate2(state):
 
     # RAG generation
     generation = rag_chain.invoke({"context": documents, "question": question})
-    return {"documents": [document.page_content for document in documents], "scope": scope, "question": question,
+    return {"documents": [document.page_content for document in documents], "question": question,
             "generation": generation, "loopfix": True}

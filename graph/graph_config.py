@@ -9,7 +9,7 @@ from .nodes.generate import generate
 from .nodes.generate2 import generate2
 from .nodes.grade_documents import grade_documents
 from .nodes.retrieve import retrieve
-from .nodes.scoping import scoping
+from .nodes.embed import embed
 from .nodes.transform_query import transform_query
 
 
@@ -18,12 +18,11 @@ def get_graph():
         workflow = StateGraph(GraphState)
 
         # Define the nodes
-        workflow.add_node("scoping", scoping)
         workflow.add_node("retrieve", retrieve)
         workflow.add_node("grade_documents", grade_documents)
         workflow.add_node("generate", generate)
         workflow.add_node("generate2", generate2)
-
+        workflow.add_node("embed", embed)
         workflow.add_node("transform_query", transform_query)
         workflow.add_node("handle_generic_response", handle_generic_response)  # New node
 
@@ -32,13 +31,13 @@ def get_graph():
             START,
             route_question,
             {
-                "needs_context": "scoping",
+                "needs_context": "embed",
                 "generic": "handle_generic_response",
                 "end": END,
             },
         )
+        workflow.add_edge("embed", "retrieve")
 
-        workflow.add_edge("scoping", "retrieve")
         workflow.add_edge("retrieve", "grade_documents")
         workflow.add_edge("handle_generic_response", END)  # Direct path to end for generic responses
         workflow.add_conditional_edges(
@@ -59,7 +58,7 @@ def get_graph():
             check_transform_query,
             {
                 "generate2": "generate2",
-                "retrieve": "retrieve"
+                "retrieve": "embed"
             }
         )
 

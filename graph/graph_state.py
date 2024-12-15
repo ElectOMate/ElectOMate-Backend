@@ -16,5 +16,5 @@ class GraphState(TypedDict):
     question: str
     generation: str
     documents: List[str]
-    scope: str
+    question_embedding: List[float]
     loopfix: bool
