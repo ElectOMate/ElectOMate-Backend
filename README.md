@@ -5,6 +5,9 @@ This repository contains the backend code for the ElectOMate project in Ghana. T
 ## Table of Contents
 
 - [Installation](#installation)
+- [Local development](#local-development)
+- [Local testing](#test-the-deployement-locally)
+- [Deployement](#deploy-the-new-container)
 
 ## Installation
 
@@ -30,32 +33,52 @@ To set up the project locally, follow these steps:
     pip install -r requirements.txt
     ```
 
-4. **Install Azure Functions Core Tools:**
+4. **Setup the environment variables:** fill out the `.env-sample` file
 
-Install Azure Functions Core Tools to run the Azure Functions locally. You can find the installation instructions [here](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=linux%2Cisolated-process%2Cnode-v4%2Cpython-v2%2Chttp-trigger%2Ccontainer-apps&pivots=programming-language-python).
+## Local development
 
-5. **Set up environment variables:**
-
-   Create a `local.settings.json` file in the root directory and add the necessary environment variables. For example:
-
-    ```env
-    {
-        "IsEncrypted": false,
-        "Values": {
-            "AzureWebJobsStorage": "",
-            "FUNCTIONS_WORKER_RUNTIME": "python",
-            "OPENAI_API_KEY": "<YOUR_OPENAI_API_KEY>",
-            "AZURE_AI_SEARCH_SERVICE_NAME": "<SERVICE_NAME>",
-            "AZURE_AI_SEARCH_INDEX_NAME": "<SERVICE_INDEX_NAME>",
-            "AZURE_AI_SEARCH_API_KEY": "<YOUR_AZURE_SEARCH_API_KEY>",
-            "AZURE_AI_SEARCH_ADMIN_KEY": "<YOUR_AZURE_SEARCH_ADMIN_KEY>",
-            "AZURE_STORAGE_ID": "<YOUR_AZURE_STORAGE_ID>",
-        }
-    }
-    ```
-   
-6. **Start the function locally:**
+1. **Edit the files**
+2. **Test the server locally:**
 
     ```bash
-    func start
+    fastapi dev app.py
+    ```
+
+## Test the deployement locally
+
+1. **Build the container:**
+
+    ```bash
+    docker build --tag em-backend .
+    ```
+
+2. **Run the container:**
+
+    ```bash
+    docker run --detach --publish 3100:3100 em-backend
+    ```
+
+## Deploy the new container
+
+1. **Log into the azure cli:**
+
+    ```bash
+    az login
+    ```
+
+2. **Deploy the ew container:**
+
+    ```bash
+    az acr build \
+        --resource-group em-backend-rg \
+        --registry embackendacr \
+        --image em-backend:latest .
+    ```
+
+3. **Upgrade the webapp:**
+
+    ```bash
+    az webapp update \
+        --resource-group em-backend-rg \
+        --name em-backend
     ```
