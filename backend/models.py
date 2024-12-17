@@ -3,7 +3,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 class SupportedCountries(str, Enum):
-    GH = "GH"
+    # GH = "GH"
     DE = "DE"
     
 class Question(BaseModel):

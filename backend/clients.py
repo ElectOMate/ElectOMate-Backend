@@ -4,6 +4,9 @@ import weaviate.classes as wcs
 
 from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
 
+from typing import Any, Callable
+from pydantic_core import core_schema
+
 import logging
 
 # TODO: Make async???
@@ -30,16 +33,17 @@ class WeaviateClientManager:
                     http=ProtocolParams(
                         host=self.http_host,
                         port=80,
-                        secure=True
+                        secure=False
                     ),
                     grpc=ProtocolParams(
                         host=self.grcp_host,
                         port=50051,
-                        secure=True
+                        secure=False
                     )
                 ),
                 auth_client_secret=wcs.init.Auth.api_key(api_key=self.user_api_key),
             )
+            self.client.connect()
             logging.info("Weaviate client connection established.")
         except Exception as e:
             logging.error(f"Failed to connect to Weaviate: {e}")
@@ -89,6 +93,25 @@ class WeaviateClientManager:
         Ensure the connection is closed when the object is destroyed.
         """
         self.close_connection()
+    
+    
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: Callable[[Any], core_schema.CoreSchema]) -> core_schema.CoreSchema:
+        """
+        Return a Pydantic core schema for the AzureOpenAIClientManager class.
+        This allows Pydantic v2 to treat this class as a pydantic-compatible type,
+        enabling validation and schema generation.
+        """
+        return core_schema.model_schema(
+            cls,
+            schema=core_schema.model_fields_schema(
+                fields={
+                    'http_host': core_schema.model_field(core_schema.str_schema()),
+                    'grcp_host': core_schema.model_field(core_schema.str_schema()),
+                    'user_api_key': core_schema.model_field(core_schema.str_schema())
+                }   
+            )
+        )
 
 
 class AzureOpenAIClientManager:
@@ -104,7 +127,8 @@ class AzureOpenAIClientManager:
         self.api_version = api_version
         self.chat_deployement = chat_deployement
         self.embedding_deployement = embedding_deployement
-        self.client = None
+        self.chat_client = None
+        self.embedding_client = None
 
     def _chat_connect(self):
         """
@@ -120,7 +144,7 @@ class AzureOpenAIClientManager:
             logging.info("Azure OpenAI client connection established.")
         except Exception as e:
             logging.error(f"Failed to connect to Azure OpenAI: {e}")
-            self.client = None
+            self.chat_client = None
     
     def _embedding_connect(self):
         """
@@ -136,7 +160,7 @@ class AzureOpenAIClientManager:
             logging.info("Azure OpenAI client connection established.")
         except Exception as e:
             logging.error(f"Failed to connect to Azure OpenAI: {e}")
-            self.client = None
+            self.embedding_client = None
 
     def get_chat_client(self):
         """
@@ -179,3 +203,48 @@ class AzureOpenAIClientManager:
         Ensure the connection is closed when the object is destroyed.
         """
         self.close_connection()
+        
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type: Any, handler: Callable[[Any], core_schema.CoreSchema]) -> core_schema.CoreSchema:
+        """
+        Return a Pydantic core schema for the AzureOpenAIClientManager class.
+        This allows Pydantic v2 to treat this class as a pydantic-compatible type,
+        enabling validation and schema generation.
+        """
+        return core_schema.model_schema(
+            cls,
+            schema=core_schema.model_fields_schema(
+                fields={
+                'api_key': core_schema.model_field(core_schema.str_schema()),
+                'azure_endpoint': core_schema.model_field(core_schema.str_schema()),
+                'api_version': core_schema.model_field(core_schema.str_schema()),
+                'chat_deployement': core_schema.model_field(core_schema.str_schema()),
+                'embedding_deployement': core_schema.model_field(core_schema.str_schema())
+            }
+            )
+        )
+
+
+if __name__ == "__main__":
+    from dotenv import load_dotenv
+    import os
+    import pathlib
+    envfile = pathlib.Path(__file__).resolve().parent.parent / '.env'
+    load_dotenv(str(envfile))
+    client = weaviate.WeaviateClient(
+        connection_params=ConnectionParams(
+            http=ProtocolParams(
+                host=os.getenv('WEAVIATE_HTTP_HOST'),
+                port=80,
+                secure=False
+            ),
+            grpc=ProtocolParams(
+                host=os.getenv('WEAVIATE_GRCP_HOST'),
+                port=50051,
+                secure=False
+            )
+        ),
+        auth_client_secret=wcs.init.Auth.api_key(api_key=os.getenv('WEAVIATE_USER_API_KEY')),
+    )
+    client.connect()
+    client.close()

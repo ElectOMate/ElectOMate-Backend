@@ -1,14 +1,14 @@
-from .models import SupportedCountries, Question, Response
-from .responses import DEFAULT_RESPONSE
-from .clients import AzureOpenAIClientManager, WeaviateClientManager
-from .rag import RAG
+from backend.models import SupportedCountries, Question, Response
+from backend.responses import DEFAULT_RESPONSE
+from backend.clients import AzureOpenAIClientManager, WeaviateClientManager
+from backend.rag import RAG
 
 
 from fastapi import FastAPI, Depends
 from fastapi.responses import StreamingResponse
 
 from typing import Annotated
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 import logging
 
 class Settings(BaseSettings):
@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     openai_api_version: str
     chat_deployement: str
     embedding_deployement: str
+    model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()
 app = FastAPI()
@@ -43,6 +44,7 @@ async def get_azure_openai_client():
     return AzureOpenAIClientManager(
         api_key=settings.azure_api_key,
         endpoint=settings.azure_endpoint,
+        api_version=settings.openai_api_version,
         chat_deployement=settings.chat_deployement,
         embedding_deployement=settings.embedding_deployement
     )
@@ -95,4 +97,4 @@ def chat(
     rag = RAG()
 
     # Return the full response
-    return rag.invoke(question, weaviate_client, openai_client)
+    return {"r": rag.invoke(question, weaviate_client, openai_client)}
