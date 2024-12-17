@@ -22,7 +22,6 @@ class GraphState(BaseModel):
     """
 
     question: str
-    question_embedding: Optional[list[float]] = None
     documents: Optional[list[Document]] = None
     answer: Optional[str] = None
 
@@ -45,13 +44,11 @@ class RAG:
         graph = StateGraph(GraphState, config_schema=GraphConfig)
 
         # Add nodes
-        graph.add_node("embed", self.embed)
         graph.add_node("retrieve", self.retrieve)
         graph.add_node("generate", self.generate)
         
         # Add edges
-        graph.add_edge(START, "embed")
-        graph.add_edge("embed", "retrieve")
+        graph.add_edge(START, "retrieve")
         graph.add_edge("retrieve", "generate")
         graph.add_edge("generate", END)
         
@@ -70,17 +67,6 @@ class RAG:
         result = self.graph.invoke(init, config=config)
         return result["answer"]
 
-    def embed(self, state: GraphState, config: RunnableConfig):
-        openai_client = config["configurable"].get("openai_client", None)
-        if openai_client is None:
-            logging.error(
-                "Azure OpenAI client not passed to config when creating embeddings. Please modify the config when calling invoke."
-            )
-
-        question = state.question
-        question_embedding = openai_client.get_embedding_client().embed_query(question)
-        return {"question": question, "question_embedding": question_embedding}
-
     def retrieve(self, state: GraphState, config: RunnableConfig):
         weaviate_client = config["configurable"].get("weaviate_client", None)
         if weaviate_client is None:
@@ -91,9 +77,8 @@ class RAG:
 
         # Fetch results
         question = state.question
-        question_embedding = state.question_embedding
         response = collection.query.hybrid(
-            query=question, vector=question_embedding, limit=5
+            query=question, limit=5
         )
 
         # Create documents
@@ -103,7 +88,6 @@ class RAG:
 
         return {
             "question": question,
-            "question_embedding": question_embedding,
             "documents": documents,
         }
         
@@ -111,12 +95,11 @@ class RAG:
         openai_client = config["configurable"].get("openai_client", None)
         if openai_client is None:
             logging.error(
-                "Azure OpenAI client not passed to config when creating embeddings. Please modify the config when calling invoke."
+                "Azure OpenAI client not passed to config when generating response. Please modify the config when calling invoke."
             )
         
         documents = state.documents
         question = state.question
-        question_embedding = state.question_embedding
         
         docs_content = "\n\n".join(doc.page_content for doc in documents)
         messages = RAG_PROMPT.invoke({"question": question, "documents": docs_content})
@@ -124,7 +107,6 @@ class RAG:
         
         return {
             "question": question,
-            "question_embedding": question_embedding,
             "documents": documents,
             "answer": answer.content
         }

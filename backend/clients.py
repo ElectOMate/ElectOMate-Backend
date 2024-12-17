@@ -41,6 +41,9 @@ class WeaviateClientManager:
                         secure=False
                     )
                 ),
+                additional_headers={
+                    "X-Azure-Api-Key": os.getenv('AZURE_OPENAI_API_KEY'),
+                },
                 auth_client_secret=wcs.init.Auth.api_key(api_key=self.user_api_key),
             )
             self.client.connect()
