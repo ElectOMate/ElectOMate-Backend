@@ -1,6 +1,6 @@
-# ElectOMate-Ghana-Backend
+# ElectOMate-Backend
 
-This repository contains the backend code for the ElectOMate project in Ghana. The backend is built using Python and provides various functionalities related to election data management and processing.
+This repository contains the backend code for the ElectOMate project. The backend is built using Python and provides various functionalities related to election data management and processing.
 
 ## Table of Contents
 
