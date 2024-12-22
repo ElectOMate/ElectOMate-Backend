@@ -11,7 +11,7 @@ import logging
 
 # TODO: Make async???
 class WeaviateClientManager:
-    def __init__(self, http_host: str, grcp_host: str, user_api_key: str):
+    def __init__(self, http_host: str, grcp_host: str, user_api_key: str, openai_api_key: str):
         """
         Initialize the WeaviateClientManager with the URL and optional authentication credentials.
 
@@ -21,6 +21,7 @@ class WeaviateClientManager:
         self.http_host = http_host
         self.grcp_host = grcp_host
         self.user_api_key = user_api_key
+        self.openai_api_key = openai_api_key
         self.client = None
 
     def _connect(self):
@@ -42,7 +43,7 @@ class WeaviateClientManager:
                     )
                 ),
                 additional_headers={
-                    "X-Azure-Api-Key": os.getenv('AZURE_OPENAI_API_KEY'),
+                    "X-Azure-Api-Key": self.openai_api_key,
                 },
                 auth_client_secret=wcs.init.Auth.api_key(api_key=self.user_api_key),
             )

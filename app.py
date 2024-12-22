@@ -36,7 +36,8 @@ async def get_weaviate_client():
     return WeaviateClientManager(
         http_host=settings.weaviate_http_host,
         grcp_host=settings.weaviate_grcp_host,
-        user_api_key=settings.weaviate_user_api_key
+        user_api_key=settings.weaviate_user_api_key,
+        openai_api_key=settings.azure_openai_api_key
     )
 
 
