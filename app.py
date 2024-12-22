@@ -17,8 +17,9 @@ class Settings(BaseSettings):
     weaviate_user_api_key: str
     azure_openai_api_key: str
     azure_endpoint: str
-    openai_api_version: str
+    chat_api_version: str
     chat_deployement: str
+    embedding_api_version: str
     embedding_deployement: str
     model_config = SettingsConfigDict(env_file=".env")
 
