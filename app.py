@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     weaviate_http_host: str
     weaviate_grcp_host: str
     weaviate_user_api_key: str
-    azure_api_key: str
+    azure_openai_api_key: str
     azure_endpoint: str
     openai_api_version: str
     chat_deployement: str
