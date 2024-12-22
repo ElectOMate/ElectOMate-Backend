@@ -42,7 +42,7 @@ async def get_weaviate_client():
 
 async def get_azure_openai_client():
     return AzureOpenAIClientManager(
-        api_key=settings.azure_api_key,
+        api_key=settings.azure_openai_api_key,
         endpoint=settings.azure_endpoint,
         api_version=settings.openai_api_version,
         chat_deployement=settings.chat_deployement,
