@@ -1,15 +1,9 @@
-# DO NOT include azure-functions-worker in this file
-# The Python Worker is managed by Azure Functions platform
-# Manually managing azure-functions-worker may cause unexpected issues
-
-python-dotenv
-azure-core
-azure-identity
-azure-functions
-azure-ai-inference
-azure-search-documents
+fastapi[all]>=0.115.0,<0.116.0
 langchain
 langgraph
 langchain-openai
+openai
 tiktoken
-langchain-community
+weaviate-client
+uvicorn
+gunicorn
