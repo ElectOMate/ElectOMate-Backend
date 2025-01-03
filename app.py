@@ -6,6 +6,7 @@ from backend.rag import RAG
 
 from fastapi import FastAPI, Depends
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 from typing import Annotated
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -24,7 +25,13 @@ class Settings(BaseSettings):
 
 settings = Settings()
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8000", "http://127.0.0.1:8000","https://electomate.com", "http://localhost:5173", "http://127.0.0.1:5173" ],  # Replace with your domain(s)
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def read_root():
