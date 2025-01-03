@@ -4,10 +4,10 @@ from typing import Optional
 
 class SupportedCountries(str, Enum):
     # GH = "GH"
-    DE = "DE"
+    DE = "de"
     
 class Question(BaseModel):
-    q: Optional[str] = Field(
+    question: Optional[str] = Field(
         max_length=500,
         description="The question asked to the RAG pipeline."
     )

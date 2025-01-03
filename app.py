@@ -75,7 +75,7 @@ async def stream(
         logging.debug(f"POST body found with question '{question}'.")
     else: 
         return DEFAULT_RESPONSE("Germany")
-        
+
     # Inititate RAG
     rag = RAG()
 
@@ -86,7 +86,7 @@ async def stream(
 @app.post("/chat/{country_code}")
 def chat(
     country_code: SupportedCountries,
-    question: Question,
+    question_body: Question,
     weaviate_client: Annotated[WeaviateClientManager, Depends(get_weaviate_client)],
     openai_client: Annotated[
         AzureOpenAIClientManager, Depends(get_azure_openai_client)
@@ -95,7 +95,7 @@ def chat(
     logging.info(f"POST request received at /chat/{country_code}/...")
 
     # Extract question from json request body
-    question = question.q
+    question: str = question_body.question
     if question is not None:
         logging.debug(f"POST body found with question '{question}'.")
     else:
