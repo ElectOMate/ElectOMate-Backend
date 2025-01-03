@@ -73,7 +73,7 @@ class RAG:
             logging.error(
                 "Weaviate Client not passed to config when retrieving documents. Please modify the config when calling invoke."
             )
-        collection = weaviate_client.get_client().collections.get("Document_Chunk")
+        collection = weaviate_client.get_client().collections.get("TEST_Document_Chunk")
 
         # Fetch results
         question = state.question
