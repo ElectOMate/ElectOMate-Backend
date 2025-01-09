@@ -28,3 +28,13 @@ class UserAnswer(BaseModel):
 
 class CustomAnswerEvaluationRequest(BaseModel):
     custom_answers: List[UserAnswer]
+
+
+class PartyResponse(BaseModel):
+    party: str
+    description: str
+    policies: List[str]
+
+
+class AskAllPartiesResponse(BaseModel):
+    responses: List[PartyResponse]
