@@ -1,15 +1,15 @@
-from backend.models import SupportedCountries, Question, Response
+from backend.models import SupportedCountries, Question, Response, UserAnswer, CustomAnswerEvaluationRequest
 from backend.responses import DEFAULT_RESPONSE
 from backend.clients import AzureOpenAIClientManager, WeaviateClientManager
 from backend.rag import RAG
-
+from backend.custom_answer_evaluation import get_random_party_scores
 
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from typing import Annotated
+from typing import Annotated, List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import logging
 import markdown
@@ -123,3 +123,20 @@ def chat(
     # Return the full response
     return {"r": rag.invoke(question, weaviate_client, openai_client)}
 
+
+
+@app.post("/custom_answer_evaluation")
+async def custom_answer_evaluation(user_answers: List[UserAnswer]):
+    # At this point, user_answers is a Python list of UserAnswer objects.
+    # You can do whatever custom logic/evaluation you need here:
+    for answer in user_answers:
+        # For example, just print them out (or store them, score them, etc.)
+        print(f"users_answer={answer.users_answer}, custom_answer={answer.custom_answer}")
+    
+
+    custom_answers_results = get_random_party_scores(user_answers)
+
+
+
+    #custom_answers = {"custom_answers": [answer.custom_answer for answer in user_answers]}
+    return custom_answers_results
