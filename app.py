@@ -4,7 +4,7 @@ from backend.clients import AzureOpenAIClientManager, WeaviateClientManager
 from backend.rag import RAG
 from backend.custom_answer_evaluation import get_random_party_scores
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException,  File, UploadFile
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -14,6 +14,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 import logging
 import markdown
 from backend.bing_litellm import router as ai_router
+from backend.audio_transcription import router as audio_router
+
 
 
 class Settings(BaseSettings):
@@ -32,12 +34,17 @@ class Settings(BaseSettings):
     bing_api_key: str
     litellm_api_base_url: str
 
+    azure_openai_api_key_stt: str
+    azure_openai_endpoint_stt: str
+    openai_api_key: str
+
     model_config = SettingsConfigDict(env_file=".env")
 
 
 settings = Settings()
 app = FastAPI()
 
+app.include_router(audio_router)
 
 app.include_router(ai_router)
 
@@ -140,3 +147,6 @@ async def custom_answer_evaluation(user_answers: List[UserAnswer]):
 
     #custom_answers = {"custom_answers": [answer.custom_answer for answer in user_answers]}
     return custom_answers_results
+
+
+
