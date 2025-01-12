@@ -1,20 +1,44 @@
+import uvicorn
+import asyncio
+import base64
+import io
+import time
+import os
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Depends, HTTPException, File, UploadFile
+from fastapi.responses import StreamingResponse, HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Annotated, List
+from pydantic_settings import BaseSettings, SettingsConfigDict
+import logging
+import markdown
+
+# Importing from backend
 from backend.models import SupportedCountries, Question, Response, UserAnswer, CustomAnswerEvaluationRequest, PartyResponse, AskAllPartiesResponse
 from backend.responses import DEFAULT_RESPONSE
 from backend.clients import AzureOpenAIClientManager, WeaviateClientManager
 from backend.rag import RAG
 from backend.custom_answer_evaluation import get_random_party_scores
-
-from fastapi import FastAPI, Depends, HTTPException, File, UploadFile
-from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
-from typing import Annotated, List
-from pydantic_settings import BaseSettings, SettingsConfigDict
-import logging
-import markdown
 from backend.bing_litellm import router as ai_router
 from backend.audio_transcription import router as audio_router
+
+# <-- NEW: import our azure TTS function
+from backend.azure_tts import generate_speech
+
+# Importing from browser_use
+from browser_use.browser.browser import Browser, BrowserConfig
+from browser_use.browser.context import BrowserContext
+from browser_use.controller.service import Controller
+from browser_use.agent.service import Agent
+from langchain_openai import ChatOpenAI
+from playwright.async_api import Page
+
+class TTSRequest(BaseModel):
+    text: str
+
+global_browser = None
+global_context = None
+global_agent = None
 
 class Settings(BaseSettings):
     weaviate_http_host: str
@@ -36,11 +60,33 @@ class Settings(BaseSettings):
     azure_openai_endpoint_stt: str
     openai_api_key: str
 
-    model_config = SettingsConfigDict(env_file=".env")
+    azure_speech_key: str
+    azure_speech_region: str
 
+    model_config = SettingsConfigDict(env_file=".env",  extra="allow" )
 
 settings = Settings()
-app = FastAPI()
+
+async def lifespan(app: FastAPI):
+    global global_browser, global_context
+
+    global_browser = Browser(
+        config=BrowserConfig(
+            headless=False,
+            disable_security=True
+        )
+    )
+    global_context = await global_browser.new_context()
+    page = await global_context.get_current_page()
+    await page.goto("about:blank")
+
+    yield
+
+    if global_browser:
+        await global_browser.close()
+        global_browser = None
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(audio_router)
 app.include_router(ai_router)
@@ -93,18 +139,11 @@ async def stream(
     logging.info(f"POST request received at /stream/{country_code}/...")
 
     question = question.q
-    if question is not None:
-        logging.debug(f"POST body found with question '{question}'.")
-    else: 
+    if question is None:
         return DEFAULT_RESPONSE("Germany")
 
     rag = RAG()
     return StreamingResponse(rag.stream(question, weaviate_client, openai_client))
-
-
-
-
-
 
 @app.post("/chat/{country_code}")
 def chat(
@@ -114,13 +153,10 @@ def chat(
     openai_client: Annotated[AzureOpenAIClientManager, Depends(get_azure_openai_client)],
 ) -> Response:
     logging.info(f"POST request received at /chat/{country_code}/...")
-
     question: str = question_body.question
-    if question is not None:
-        logging.debug(f"POST body found with question '{question}'.")
-    else:
+    if question is None:
         return DEFAULT_RESPONSE("Germany")
-        
+
     rag = RAG()
     return {"r": rag.invoke(question, weaviate_client, openai_client)}
 
@@ -132,11 +168,6 @@ async def custom_answer_evaluation(user_answers: List[UserAnswer]):
     custom_answers_results = get_random_party_scores(user_answers)
     return custom_answers_results
 
-
-
-
-
-
 @app.post("/askallparties/{country_code}", response_model=AskAllPartiesResponse)
 def askallparties(
     country_code: SupportedCountries,
@@ -147,35 +178,104 @@ def askallparties(
     logging.info(f"POST request received at /askallparties/{country_code}/...")
 
     question: str = question_body.question
-    if question is None:
+    if not question:
         raise HTTPException(status_code=400, detail="Question cannot be empty.")
 
-    # Define the biggest German parties
     parties_info = [
-        {"party": "CDU",  "description": "Christian Democratic Union of Germany"},
-        {"party": "SPD",  "description": "Social Democratic Party of Germany"},
-        {"party": "FDP",  "description": "Free Democratic Party"},
-        {"party": "Grüne", "description": "Alliance 90/The Greens"},
-        {"party": "Linke", "description": "The Left"},
+        {"party": "CDU", "description": "Christian Democratic Union of Germany"},
+        {"party": "SPD", "description": "Social Democratic Party of Germany"},
     ]
 
     rag = RAG()
     responses = []
-
     for p in parties_info:
         prefixed_question = f"What would {p['party']} say to this: {question}"
-        logging.debug(f"Asking {p['party']}: {prefixed_question}")
         response = rag.invoke(prefixed_question, weaviate_client, openai_client)
 
-        # Split the response into policies (split by ".")
         policies = [s.strip() for s in response.split(".") if s.strip()]
-
-        # Append the structured response
         responses.append(PartyResponse(
             party=p["party"],
             description=p["description"],
             policies=policies
         ))
 
-    # Return the response model
     return AskAllPartiesResponse(responses=responses)
+
+# ------------------------------
+# NEW Azure TTS endpoint
+# ------------------------------
+@app.post("/tts")
+async def tts_endpoint(request: TTSRequest):
+    """
+    Receive text from the frontend, generate TTS audio using azure_tts.generate_speech,
+    and return the audio as a streaming response.
+    """
+    logging.info(f"TTS request for text: '{request.text}'")
+    audio_bytes = generate_speech(request.text)  # from azure_tts.py
+
+    if not audio_bytes:
+        raise HTTPException(
+            status_code=400, 
+            detail="Speech synthesis failed or returned empty audio."
+        )
+
+    # Return the audio as a streaming response
+    return StreamingResponse(io.BytesIO(audio_bytes), media_type="audio/mpeg")
+
+@app.websocket("/ws")
+async def ws_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    global global_agent, global_context
+    if not global_agent:
+        controller = Controller()
+        model = ChatOpenAI(model="gpt-4o")
+        global_agent = Agent(
+            task="(Empty task, we'll control it with manual instructions)",
+            llm=model,
+            controller=controller,
+            browser_context=global_context
+        )
+
+    sending_frames = True
+
+    async def send_frames_loop():
+        while sending_frames:
+            try:
+                page = await global_context.get_current_page()
+                screenshot_bytes = await page.screenshot(full_page=False)
+                screenshot_b64 = base64.b64encode(screenshot_bytes).decode("utf-8")
+                await websocket.send_json({"type": "frame", "data": screenshot_b64})
+                await asyncio.sleep(1.0)
+            except Exception as e:
+                print("Error sending frames:", e)
+                break
+
+    frame_task = asyncio.create_task(send_frames_loop())
+
+    try:
+        while True:
+            msg = await websocket.receive_text()
+            if msg.startswith("goto "):
+                url = msg.replace("goto ", "").strip()
+                page = await global_context.get_current_page()
+                await page.goto(url)
+            elif msg.startswith("scroll"):
+                page = await global_context.get_current_page()
+                await page.evaluate("window.scrollBy(0, 400);")
+            elif msg.startswith("done"):
+                await websocket.send_text("Okay, finishing up!")
+                break
+            else:
+                await websocket.send_text(f"Received unknown instruction: {msg}")
+
+            await websocket.send_text(f"Executed command: {msg}")
+
+    except WebSocketDisconnect:
+        print("Client disconnected.")
+    finally:
+        sending_frames = False
+        frame_task.cancel()
+        await websocket.close()
+
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
