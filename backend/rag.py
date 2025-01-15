@@ -1,5 +1,5 @@
 from .clients import AzureOpenAIClientManager, WeaviateClientManager
-from .prompts.rag_promps import RAG_PROMPT
+from .prompts.rag_promps import RAG_PROMPT, RAG_PROMPT_NEED_MORE_CONTEXT
 
 from langgraph.graph import START, END, StateGraph
 from langchain_core.documents import Document
@@ -19,11 +19,13 @@ class GraphState(BaseModel):
         question_embedding: embedding of the question
         generation: LLM generation
         documents: list of retrieved documents
+        retrieval_count: counter for retrieval attempts
     """
 
     question: str
     documents: Optional[list[Document]] = None
     answer: Optional[str] = None
+    retrieval_count: int = 0
 
 
 class GraphConfig(BaseModel):
@@ -49,7 +51,7 @@ class RAG:
         
         # Add edges
         graph.add_edge(START, "retrieve")
-        graph.add_edge("retrieve", "generate")
+        graph.add_conditional_edges("retrieve", self.should_retrieve_more)
         graph.add_edge("generate", END)
         
         self.graph = graph.compile()
@@ -82,13 +84,14 @@ class RAG:
         )
 
         # Create documents
-        documents = []
+        documents = state.documents or []
         for obj in response.objects:
             documents.append(Document(page_content=obj.properties["content"]))
 
         return {
             "question": question,
             "documents": documents,
+            "retrieval_count": state.retrieval_count + 1,
         }
         
     def generate(self, state: GraphState, config: RunnableConfig):
@@ -108,5 +111,32 @@ class RAG:
         return {
             "question": question,
             "documents": documents,
-            "answer": answer.content
+            "answer": answer.content,
+            "retrieval_count": state.retrieval_count
         }
+
+    def should_retrieve_more(self, state: GraphState, config: RunnableConfig):
+        logging.warning(f"Retrieval count: {state.retrieval_count}")
+        logging.warning(f"Documents: {len(state.documents)}")
+        if state.retrieval_count >= 3:
+            return "generate"
+
+        openai_client = config["configurable"].get("openai_client", None)
+        if openai_client is None:
+            logging.error(
+                "Azure OpenAI client not passed to config when generating response. Please modify the config when calling invoke."
+            )
+
+        documents = state.documents
+        question = state.question
+
+        docs_content = "\n\n".join(doc.page_content for doc in documents)
+        messages = RAG_PROMPT_NEED_MORE_CONTEXT.invoke({"question": question, "documents": docs_content})
+        answer = openai_client.get_chat_client().invoke(messages)
+
+        logging.warning(f"Answer: {answer.content}")
+
+        if answer.content.strip().lower() == "yes":
+            return "retrieve"
+        else:
+            return "generate"
