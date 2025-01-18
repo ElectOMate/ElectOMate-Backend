@@ -62,6 +62,7 @@ class RAG:
                 yield message.content
                 
     def invoke(self, question: str, weaviate_client: WeaviateClientManager, openai_client: AzureOpenAIClientManager):
+        logging.info(f"Invoking RAG with question: {question}")
         config = {"configurable": {"weaviate_client": weaviate_client, "openai_client": openai_client}}
         init = {"question": question}
         result = self.graph.invoke(init, config=config)
@@ -90,14 +91,15 @@ class RAG:
             "question": question,
             "documents": documents,
         }
-        
+
     def generate(self, state: GraphState, config: RunnableConfig):
+        logging.info(f"Generating response for question: {state.question}")
         openai_client = config["configurable"].get("openai_client", None)
         if openai_client is None:
             logging.error(
                 "Azure OpenAI client not passed to config when generating response. Please modify the config when calling invoke."
             )
-        
+
         documents = state.documents
         question = state.question
         
