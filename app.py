@@ -169,7 +169,7 @@ async def custom_answer_evaluation(user_answers: List[UserAnswer]):
     return custom_answers_results
 
 @app.post("/askallparties/{country_code}", response_model=AskAllPartiesResponse)
-def askallparties(
+async def askallparties(
     country_code: SupportedCountries,
     question_body: Question,
     weaviate_client: Annotated[WeaviateClientManager, Depends(get_weaviate_client)],
@@ -187,19 +187,25 @@ def askallparties(
     ]
 
     rag = RAG()
+    tasks = []
     responses = []
     for p in parties_info:
-        prefixed_question = f"What would {p['party']} say to this: {question}"
-        response = rag.invoke(prefixed_question, weaviate_client, openai_client)
+        task = asyncio.create_task(ask_party(p["party"], question, rag, weaviate_client, openai_client))
+        tasks.append(task)
 
-        policies = [s.strip() for s in response.split(".") if s.strip()]
-        responses.append(PartyResponse(
-            party=p["party"],
-            description=p["description"],
-            policies=policies
-        ))
+    responses = await asyncio.gather(*tasks)
 
     return AskAllPartiesResponse(responses=responses)
+
+async def ask_party(party: str, question: str, rag: RAG, weaviate_client: WeaviateClientManager, openai_client: AzureOpenAIClientManager):
+    prefixed_question = f"What would {party} say to this: {question}"
+    response = rag.invoke(prefixed_question, weaviate_client, openai_client)
+    policies = [s.strip() for s in response.split(".") if s.strip()]
+    return PartyResponse(
+        party=party,
+        description=party,
+        policies=policies
+    )
 
 # ------------------------------
 # NEW Azure TTS endpoint
