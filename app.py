@@ -161,11 +161,11 @@ def chat(
     return {"r": rag.invoke(question, weaviate_client, openai_client)}
 
 @app.post("/custom_answer_evaluation")
-async def custom_answer_evaluation(user_answers: List[UserAnswer]):
-    for answer in user_answers:
-        print(f"users_answer={answer.users_answer}, custom_answer={answer.custom_answer}")
+async def custom_answer_evaluation(custom_answer_evaluation_request: CustomAnswerEvaluationRequest):
+    for question, answer in zip(custom_answer_evaluation_request.questionnaire_questions, custom_answer_evaluation_request.custom_answers):
+        print(f"question={question.q}, users_answer={answer.users_answer}, custom_answer={answer.custom_answer}")
 
-    custom_answers_results = get_random_party_scores(user_answers)
+    custom_answers_results = get_random_party_scores(custom_answer_evaluation_request.custom_answers)
     return custom_answers_results
 
 @app.post("/askallparties/{country_code}", response_model=AskAllPartiesResponse)

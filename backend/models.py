@@ -26,8 +26,22 @@ class UserAnswer(BaseModel):
     def from_json(cls, data: dict):
         return cls(**data)
 
+class QuestionnaireQuestion(BaseModel):
+    q: str
+    t: str
+    fact: str
+
+    @classmethod
+    def from_json(cls, data: dict):
+        return cls(**data)
+
 class CustomAnswerEvaluationRequest(BaseModel):
     custom_answers: List[UserAnswer]
+    questionnaire_questions: List[QuestionnaireQuestion]
+
+    @classmethod
+    def from_json(cls, data: dict):
+        return cls(**data)
 
 
 class PartyResponse(BaseModel):
