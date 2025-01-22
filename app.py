@@ -18,7 +18,7 @@ from backend.models import SupportedCountries, Question, Response, UserAnswer, C
 from backend.responses import DEFAULT_RESPONSE
 from backend.clients import AzureOpenAIClientManager, WeaviateClientManager
 from backend.rag import RAG
-from backend.custom_answer_evaluation import get_random_party_scores
+from backend.custom_answer_evaluation import get_random_party_scores, get_custom_answers_evaluation
 from backend.bing_litellm import router as ai_router
 from backend.audio_transcription import router as audio_router
 
@@ -161,11 +161,14 @@ def chat(
     return {"r": rag.invoke(question, weaviate_client, openai_client)}
 
 @app.post("/custom_answer_evaluation")
-async def custom_answer_evaluation(custom_answer_evaluation_request: CustomAnswerEvaluationRequest):
+async def custom_answer_evaluation(
+    custom_answer_evaluation_request: CustomAnswerEvaluationRequest,
+    openai_client: Annotated[AzureOpenAIClientManager, Depends(get_azure_openai_client)],):
     for question, answer in zip(custom_answer_evaluation_request.questionnaire_questions, custom_answer_evaluation_request.custom_answers):
         print(f"question={question.q}, users_answer={answer.users_answer}, custom_answer={answer.custom_answer}")
 
-    custom_answers_results = get_random_party_scores(custom_answer_evaluation_request.custom_answers)
+    custom_answers_results = await get_custom_answers_evaluation(custom_answer_evaluation_request.questionnaire_questions,
+                            custom_answer_evaluation_request.custom_answers, openai_client)
     return custom_answers_results
 
 @app.post("/askallparties/{country_code}", response_model=AskAllPartiesResponse)
