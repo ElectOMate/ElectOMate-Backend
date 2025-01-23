@@ -1,7 +1,7 @@
 from langchain_core.prompts import PromptTemplate
 
 EVALUATION_PROMPT_TEXT = """
-You are tasked with classifying the similarity between a political party's response and a user's response to a given question.
+You are tasked with classifying the level of agreement between a political party's response and a user's response to a given question.
 
 ### Inputs:
 - **Party**: {party}
@@ -20,7 +20,7 @@ Classify the user's response compared to the party's response into one of the fo
 ### Output Format:
 - Respond **strictly in JSON format** with no additional text, headers, or labels (e.g., do not include "json" or other non-JSON content).
 - Your JSON response must include two keys:
-  1. `"similarity_classification"`: One of the five categories above.
+  1. `"agreement_classification"`: One of the five categories above.
   2. `"reasoning"`: A concise explanation for your classification.
 
 ### Examples:

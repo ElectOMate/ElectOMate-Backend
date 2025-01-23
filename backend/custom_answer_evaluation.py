@@ -106,7 +106,6 @@ async def get_custom_answers_evaluation(questionnaire_questions: List[Questionna
     for response_dict in responses:
         if response_dict is None:
             continue
-        print(response_dict)
         question_to_responses[response_dict["question_id"]].append(response_dict)
 
     parties_list = default_parties_list.copy()
@@ -116,12 +115,16 @@ async def get_custom_answers_evaluation(questionnaire_questions: List[Questionna
         print("No valid custom evaluation.")
         return parties_list
     
+    print(f"Number of valid custom questions to evaluate {len(question_to_responses)}")
+    
     party_to_score = {p : 0 for p in parties}
-    for question_id, response_dict in question_to_responses.items():
-        party_to_score[response_dict["party"]] += response_dict["agreement_score"]
+    for _, response_dicts in question_to_responses.items():
+        for response_dict in response_dicts:
+            print(response_dict)
+            party_to_score[response_dict["party"]] += response_dict["agreement_score"]
 
     for party_dict in parties_list:
-        party_dict["score"] = party_to_score[party_dict["short_name"]] / len(question_to_responses)
+        party_dict["score"] = (party_to_score[party_dict["short_name"]] / len(question_to_responses)) * 100
 
     # Sort parties by score descending
     parties_sorted = sorted(parties_list, key=lambda x: x["score"], reverse=True)
