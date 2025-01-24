@@ -175,7 +175,7 @@ async def custom_answer_evaluation(user_answers: List[UserAnswer]):
 # Example multi-party question route
 # ------------------------------
 @app.post("/askallparties/{country_code}", response_model=AskAllPartiesResponse)
-def askallparties(
+async def askallparties(
     country_code: SupportedCountries,
     question_body: Question,
     weaviate_client: Annotated[WeaviateClientManager, Depends(get_weaviate_client)],
@@ -191,6 +191,7 @@ def askallparties(
 
     logging.info("Preparing to query parties' responses.")
     rag = RAG()
+    tasks = []
     responses = []
     for party, isSelected in selected_parties.items():
         if isSelected:
