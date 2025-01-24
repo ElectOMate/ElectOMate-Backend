@@ -9,6 +9,9 @@ from pydantic_core import core_schema
 
 import logging
 
+logging.basicConfig(level=logging.DEBUG,  # Set to DEBUG to capture all logs
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
 # TODO: Make async???
 class WeaviateClientManager:
     def __init__(self, http_host: str, grcp_host: str, user_api_key: str, openai_api_key: str):
@@ -28,7 +31,10 @@ class WeaviateClientManager:
         """
         Establish a new Weaviate client connection.
         """
+        logging.info("Attempting to establish a Weaviate client connection.")
         try:
+            logging.debug(f"HTTP Host: {self.http_host}, GRPC Host: {self.grcp_host}")
+            logging.debug("Initializing Weaviate client with provided connection parameters and authentication.")
             self.client = weaviate.WeaviateClient(
                 connection_params=ConnectionParams(
                     http=ProtocolParams(
@@ -47,8 +53,9 @@ class WeaviateClientManager:
                 },
                 auth_client_secret=wcs.init.Auth.api_key(api_key=self.user_api_key),
             )
+            logging.debug("Attempting to connect the Weaviate client.")
             self.client.connect()
-            logging.info("Weaviate client connection established.")
+            logging.info("Weaviate client connection established successfully.")
         except Exception as e:
             logging.error(f"Failed to connect to Weaviate: {e}")
             self.client = None
@@ -138,6 +145,7 @@ class AzureOpenAIClientManager:
         """
         Establish a new Azure OpenAI client connection.
         """
+        logging.info("Attempting to establish a connection to Azure OpenAI chat client.")
         try:
             self.chat_client = AzureChatOpenAI(
                 api_key=self.api_key,
@@ -145,7 +153,7 @@ class AzureOpenAIClientManager:
                 azure_endpoint=self.azure_endpoint,
                 azure_deployment=self.chat_deployement
             )
-            logging.info("Azure OpenAI client connection established.")
+            logging.info("Azure OpenAI chat client connection established.")
         except Exception as e:
             logging.error(f"Failed to connect to Azure OpenAI: {e}")
             self.chat_client = None
@@ -154,6 +162,7 @@ class AzureOpenAIClientManager:
         """
         Establish a new Azure OpenAI embedding client connection.
         """
+        logging.info("Attempting to establish a connection to Azure OpenAI embedding client.")
         try:
             self.embedding_client = AzureOpenAIEmbeddings(
                 api_key=self.api_key,
@@ -161,7 +170,7 @@ class AzureOpenAIClientManager:
                 azure_endpoint=self.azure_endpoint,
                 azure_deployment=self.embedding_deployement
             )
-            logging.info("Azure OpenAI client connection established.")
+            logging.info("Azure OpenAI embedding client connection established.")
         except Exception as e:
             logging.error(f"Failed to connect to Azure OpenAI: {e}")
             self.embedding_client = None

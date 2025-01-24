@@ -1,0 +1,228 @@
+{
+    "meta": {
+      "abgeordnetenwatch_api": {
+        "version": "2.7",
+        "changelog": "https://www.abgeordnetenwatch.de/api/version-changelog/aktuell",
+        "licence": "CC0 1.0",
+        "licence_link": "https://creativecommons.org/publicdomain/zero/1.0/deed.de",
+        "documentation": "https://www.abgeordnetenwatch.de/api/entitaeten/topic"
+      },
+      "status": "ok",
+      "status_message": "",
+      "result": {
+        "count": 53,
+        "total": 53,
+        "range_start": 0,
+        "range_end": 100
+      }
+    },
+    "data": [
+      {
+        "id": 2,
+        "entity_type": "taxonomy_term",
+        "label": "Arbeit und Beschäftigung",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/2",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/arbeit-und-beschaeftigung",
+        "description": null,
+        "parent": null
+      },
+      {
+        "id": 21,
+        "entity_type": "taxonomy_term",
+        "label": "Außenpolitik und internationale Beziehungen",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/21",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/aussenpolitik-und-internationale-beziehungen",
+        "description": null,
+        "parent": null
+      },
+      {
+        "id": 11,
+        "entity_type": "taxonomy_term",
+        "label": "Außenwirtschaft",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/11",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/aussenwirtschaft",
+        "description": null,
+        "parent": null
+      },
+      {
+        "id": 3,
+        "entity_type": "taxonomy_term",
+        "label": "Bildung und Erziehung",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/3",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/bildung-und-erziehung",
+        "description": null,
+        "parent": null
+      },
+      {
+        "id": 6,
+        "entity_type": "taxonomy_term",
+        "label": "Bundestag",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/6",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/bundestag",
+        "description": null,
+        "parent": null
+      },
+      {
+        "id": 26,
+        "entity_type": "taxonomy_term",
+        "label": "Deutsche Einheit / Innerdeutsche Beziehungen (bis 1990)",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/26",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/deutsche-einheit/innerdeutsche-beziehungen-bis-1990",
+        "description": null,
+        "parent": null
+      },
+      {
+        "id": 39,
+        "entity_type": "taxonomy_term",
+        "label": "Digitale Agenda",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/39",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/digitale-agenda",
+        "description": null,
+        "parent": [
+          {
+            "id": 1,
+            "entity_type": "taxonomy_term",
+            "label": "Medien, Kommunikation und Informationstechnik",
+            "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/1",
+            "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/medien-kommunikation-und-informationstechnik"
+          }
+        ]
+      },
+      {
+        "id": 40,
+        "entity_type": "taxonomy_term",
+        "label": "digitale Infrastruktur",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/40",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/digitale-infrastruktur",
+        "description": null,
+        "parent": [
+          {
+            "id": 1,
+            "entity_type": "taxonomy_term",
+            "label": "Medien, Kommunikation und Informationstechnik",
+            "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/1",
+            "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/medien-kommunikation-und-informationstechnik"
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "entity_type": "taxonomy_term",
+        "label": "Energie",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/20",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/energie",
+        "description": null,
+        "parent": null
+      },
+      {
+        "id": 17,
+        "entity_type": "taxonomy_term",
+        "label": "Entwicklungspolitik",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/17",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/entwicklungspolitik",
+        "description": null,
+        "parent": null
+      },
+      {
+        "id": 4,
+        "entity_type": "taxonomy_term",
+        "label": "Europapolitik und Europäische Union",
+        "api_url": "https://www.abgeordnetenwatch.de/api/v2/topics/4",
+        "abgeordnetenwatch_url": "https://www.abgeordnetenwatch.de/themen-dip21/europapolitik-und-europaeische-union",
+        "description": null,
+        "parent": null
+      }
+    ]
+  }
+
+
+
+
+{
+  "abstimmung": {
+    "abstimmung": 1,
+    "bundestagssitzung": 10,
+    "datum": "29. Januar 2014",
+    "legislaturperiode": 18
+  },
+  "categories": [
+    "Bundeswehr",
+    "Ausland"
+  ],
+  "data": [
+    {
+      "title": "Abstimmungsergebnis 20140129_1-data.pdf",
+      "url": "/res/abstimmungsliste/20140129_1-data.pdf"
+    },
+    {
+      "title": "Abstimmungsergebnis 20140129_1_xls-data.csv",
+      "url": "/res/abstimmungsliste/csv/20140129_1_xls-data.csv"
+    }
+  ],
+  "documents": [
+    {
+      "local": "/res/abstimmungsdaten/018-010-01/1800262.pdf",
+      "title": "Drucksache 18/00262.pdf",
+      "url": "http://dip21.bundestag.de/dip21/btd/18/002/1800262.pdf"
+    },
+    {
+      "local": "/res/abstimmungsdaten/018-010-01/1800347.pdf",
+      "title": "Drucksache 18/00347.pdf",
+      "url": "http://dip21.bundestag.de/dip21/btd/18/003/1800347.pdf"
+    }
+  ],
+  "ergebnis": {
+    "cdu/csu": {
+      "enthaltung": 0,
+      "gesamt": 311,
+      "ja": 299,
+      "nein": 0,
+      "nichtabgegeben": 12,
+      "ungueltig": 0
+    },
+    "die.linke": {
+      "enthaltung": 0,
+      "gesamt": 64,
+      "ja": 0,
+      "nein": 61,
+      "nichtabgegeben": 3,
+      "ungueltig": 0
+    },
+    "file": "20140129_1_xls-data.csv",
+    "gruenen": {
+      "enthaltung": 4,
+      "gesamt": 63,
+      "ja": 53,
+      "nein": 2,
+      "nichtabgegeben": 4,
+      "ungueltig": 0
+    },
+    "spd": {
+      "enthaltung": 3,
+      "gesamt": 193,
+      "ja": 170,
+      "nein": 8,
+      "nichtabgegeben": 12,
+      "ungueltig": 0
+    }
+  },
+  "layout": "abstimmung",
+  "links": [
+    {
+      "title": "https://www.bundestag.de/parlament/plenum/abstimmung/abstimmung?id=250",
+      "url": "https://www.bundestag.de/parlament/plenum/abstimmung/abstimmung?id=250"
+    },
+    {
+      "title": "http://www.abgeordnetenwatch.de/fortsetzung_des_patriot_einsatzes_in_der_tuerkei-1105-546.html",
+      "url": "http://www.abgeordnetenwatch.de/fortsetzung_des_patriot_einsatzes_in_der_tuerkei-1105-546.html"
+    }
+  ],
+  "preview": "Deutscher Bundestag\n\n\n  10. Sitzung des Deutschen Bundestages\n\n  am Mittwoch, 29.Januar 2014\n\n  Endgültiges Ergebnis der Namentlichen Abstimmung Nr. 1\n\n\n  Beschlussempfehlung des Auswärtigen Ausschusses (3. Ausschuss) zu dem Antrag\n\n  der Bundesregierung\n\n  Fortsetzung der Entsendung bewaffneter deutscher Streitkräfte zur Verstärkung der\n\n  integrierten Luftverteidigung der NATO auf Ersuchen der Türkei und auf Grundlage\n\n  des Rechts auf kollektive Selbstverteidigung (Artikel 51 der Charta der Vereinten\n\n  Nationen) sowie des Beschlusses des Nordatlantikrates vom 4. Dezember 2012\n\n  Drucksachen 18/262 und 18/347\n\n\n  Abgegebene Stimmen insgesamt:\n\n\n  600\n\n\n  Nicht abgegebene Stimmen:\n\n  Ja-Stimmen:\n\n\n  31\n\n  522\n\n\n  Nein-Stimmen:\n\n\n  71\n\n\n  Enthaltungen:\n\n\n  7\n\n\n  Ungültige:\n\n\n  0\n\n\n  Berlin, den 29. Jan. 14\n\n\n  Beginn: 16:41\n\n  Ende: 16:44\n\n  ",
+  "tags": [
+    "Bundeswehr",
+    "OAF",
+    "Türkei",
+    "NATO"
+  ],
+  "title": "Abstimmung: Bundeswehreinsatz OAF (Türkei)"
+}

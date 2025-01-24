@@ -62,9 +62,15 @@ class RAG:
                 yield message.content
                 
     def invoke(self, question: str, weaviate_client: WeaviateClientManager, openai_client: AzureOpenAIClientManager):
+        logging.info(f"Invoking RAG with question: {question}")
+        
         config = {"configurable": {"weaviate_client": weaviate_client, "openai_client": openai_client}}
         init = {"question": question}
+        
         result = self.graph.invoke(init, config=config)
+        
+        logging.info(f"RAG invocation completed. Answer: {result['answer']}")
+        
         return result["answer"]
 
     def retrieve(self, state: GraphState, config: RunnableConfig):

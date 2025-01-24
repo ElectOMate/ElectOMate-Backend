@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 class SupportedCountries(str, Enum):
     DE = "de"
@@ -9,6 +9,9 @@ class Question(BaseModel):
     question: Optional[str] = Field(
         max_length=500,
         description="The question asked to the RAG pipeline."
+    )
+    selected_parties: Dict[str, bool] = Field(
+        description="Dictionary of selected parties."
     )
     
 class Response(BaseModel):
@@ -32,7 +35,6 @@ class CustomAnswerEvaluationRequest(BaseModel):
 
 class PartyResponse(BaseModel):
     party: str
-    description: str
     policies: List[str]
 
 
