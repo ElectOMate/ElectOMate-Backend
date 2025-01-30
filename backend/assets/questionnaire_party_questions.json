@@ -1,0 +1,1250 @@
+{
+    "parties": {
+        "CDU/CSU": {
+            "full_name": "Christlich Demokratische Union Deutschlands / Christlich-Soziale Union in Bayern e.V.",
+            "partyInfo": "Placeholder info for CDU/CSU",
+            "logo": "Flag_of_CDU_2023.svg.png"
+        },
+        "GRUENE": {
+            "full_name": "BÜNDNIS 90/DIE GRÜNEN",
+            "partyInfo": "Placeholder info for DIE GRÜNEN",
+            "logo": "B90Gruene_RGB_aufTanne.svg.png"
+        },
+        "SPD": {
+            "full_name": "Sozialdemokratische Partei Deutschlands",
+            "partyInfo": "Placeholder info for SPD",
+            "logo": "Flag_of_the_Social_Democratic_Party_of_Germany.svg.png"
+        },
+        "AfD": {
+            "full_name": "Alternative für Deutschland",
+            "partyInfo": "Placeholder info for AfD",
+            "logo": "AfD_Logo_2021.svg.png"
+        },
+        "DIE LINKE": {
+            "full_name": "DIE LINKE",
+            "partyInfo": "Placeholder info for DIE LINKE",
+            "logo": "Flag_of_Die_Linke.svg.png"
+        },
+        "FDP": {
+            "full_name": "Freie Demokratische Partei",
+            "partyInfo": "Placeholder info for FDP",
+            "logo": "Flag_of_the_Free_Democratic_Party_of_Germany_(main_variant).svg.png"
+        },
+        "Die PARTEI": {
+            "full_name": "Partei für Arbeit, Rechtsstaat, Tierschutz, Elitenförderung und basisdemokratische Initiative",
+            "partyInfo": "Placeholder info for Die PARTEI",
+            "logo": "Die_PARTEI_Logo_Blur_Schatten_Vektor_V2.svg.png"
+        },
+        "FREIE WÄHLER": {
+            "full_name": "FREIE WÄHLER",
+            "partyInfo": "Placeholder info for FREIE WÄHLER",
+            "logo": "Logo_of_the_Free_Voters.svg.png"
+        },
+        "Tierschutzpartei": {
+            "full_name": "PARTEI MENSCH UMWELT TIERSCHUTZ",
+            "partyInfo": "Placeholder info for Tierschutzpartei",
+            "logo": "Logo_Partei_Mensch_Umwelt_Tierschutz_Tierschutzpartei_(2024).svg.png"
+        },
+        "ÖDP": {
+            "full_name": "Ökologisch-Demokratische Partei - Die Naturschutzpartei",
+            "partyInfo": "Placeholder info for ÖDP",
+            "logo": "OEDP_Logo_CMYK.svg.png"
+        },
+        "FAMILIE": {
+            "full_name": "Familien-Partei Deutschlands",
+            "partyInfo": "Placeholder info for FAMILIE",
+            "logo": "FamilienPartei_Logo2007.svg.png"
+        },
+        "Volt": {
+            "full_name": "Volt Deutschland",
+            "partyInfo": "Placeholder info for Volt",
+            "logo": "Logo_of_Volt.svg.png"
+        },
+        "PIRATEN": {
+            "full_name": "Piratenpartei Deutschland",
+            "partyInfo": "Placeholder info for PIRATEN",
+            "logo": "#"
+        },
+        "MERA25": {
+            "full_name": "MERA25 - Gemeinsam für Europäische Unabhängigkeit",
+            "partyInfo": "Placeholder info for MERA25",
+            "logo": "#"
+        },
+        "HEIMAT": {
+            "full_name": "Die Heimat",
+            "partyInfo": "Placeholder info for HEIMAT",
+            "logo": "#"
+        },
+        "TIERSCHUTZ hier!": {
+            "full_name": "Aktion Partei für Tierschutz",
+            "partyInfo": "Placeholder info for TIERSCHUTZ hier!",
+            "logo": "Tierschutz_hier-partei_logo.jpg"
+        },
+        "PfsV": {
+            "full_name": "Partei für schulmedizinische Verjüngungsforschung",
+            "partyInfo": "Placeholder info for PfsV",
+            "logo": "#"
+        },
+        "BIG": {
+            "full_name": "Bündnis für Innovation & Gerechtigkeit",
+            "partyInfo": "Placeholder info for BIG",
+            "logo": "Buendnis_fuer_Innovation_und_Gerechtigkeit_logo.svg.png"
+        },
+        "Bündnis C": {
+            "full_name": "Bündnis C - Christen für Deutschland",
+            "partyInfo": "Placeholder info for Bündnis C",
+            "logo": "Logo_der_Partei_Bündnis_C_-_Christen_für_Deutschland.svg.png"
+        },
+        "PdH": {
+            "full_name": "Partei der Humanisten",
+            "partyInfo": "Placeholder info for PdH",
+            "logo": "#"
+        },
+        "MENSCHLICHE WELT": {
+            "full_name": "Menschliche Welt - für das Wohl und Glücklichsein aller",
+            "partyInfo": "Placeholder info for MENSCHLICHE WELT",
+            "logo": "#"
+        },
+        "DKP": {
+            "full_name": "Deutsche Kommunistische Partei",
+            "partyInfo": "Placeholder info for DKP",
+            "logo": "#"
+        },
+        "MLPD": {
+            "full_name": "Marxistisch-Leninistische Partei Deutschlands",
+            "partyInfo": "Placeholder info for MLPD",
+            "logo": "#"
+        },
+        "SGP": {
+            "full_name": "Sozialistische Gleichheitspartei, Vierte Internationale",
+            "partyInfo": "Placeholder info for SGP",
+            "logo": "#"
+        },
+        "ABG": {
+            "full_name": "Aktion Bürger für Gerechtigkeit",
+            "partyInfo": "Placeholder info for ABG",
+            "logo": "Aktion_Bürger_für_Gerechtigkeit_Logo.png"
+        },
+        "dieBasis": {
+            "full_name": "Basisdemokratische Partei Deutschland",
+            "partyInfo": "Placeholder info for dieBasis",
+            "logo": "#"
+        },
+        "BÜNDNIS DEUTSCHLAND": {
+            "full_name": "BÜNDNIS DEUTSCHLAND",
+            "partyInfo": "Placeholder info for BÜNDNIS DEUTSCHLAND",
+            "logo": "Bündnis_Deutschland_Logo_(2023).svg.png"
+        },
+        "BSW": {
+            "full_name": "Bündnis Sahra Wagenknecht - Vernunft und Gerechtigkeit",
+            "partyInfo": "Placeholder info for BSW",
+            "logo": "Bündnis_Sahra_Wagenknecht_logo.svg.png"
+        },
+        "DAVA": {
+            "full_name": "Demokratische Allianz für Vielfalt und Aufbruch",
+            "partyInfo": "Placeholder info for DAVA",
+            "logo": "#"
+        },
+        "KLIMALISTE": {
+            "full_name": "Klimaliste Deutschland",
+            "partyInfo": "Placeholder info for KLIMALISTE",
+            "logo": "#"
+        },
+        "LETZTE GENERATION": {
+            "full_name": "Parlament aufmischen – Stimme der Letzten Generation",
+            "partyInfo": "Placeholder info for LETZTE GENERATION",
+            "logo": "#"
+        },
+        "PDV": {
+            "full_name": "Partei der Vernunft",
+            "partyInfo": "Placeholder info for PDV",
+            "logo": "#"
+        },
+        "PdF": {
+            "full_name": "Partei des Fortschritts",
+            "partyInfo": "Placeholder info for PdF",
+            "logo": "Partei_des_Fortschritts_Logo.svg.png"
+        },
+        "V-Partei³": {
+            "full_name": "V-Partei³ - Partei für Veränderung, Vegetarier und Veganer",
+            "partyInfo": "Placeholder info for V-Partei³",
+            "logo": "#"
+        }
+    },
+    "questions": [
+        {
+            "id": 1,
+            "q": "Die EU soll eigene Steuern erheben dürfen.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "GRUENE": "**Die GRÜNEN** sind der Ansicht, dass die Erhebung eigener Steuern durch die EU ein entscheidender Schritt zur Stärkung der europäischen Integration und zur Förderung einer nachhaltigen und gerechten Wirtschaft ist. Ihre Hauptargumente sind:\n- **Förderung der europäischen Integration** durch finanzielle Unabhängigkeit.\n- **Bereitstellung von Mitteln** für Klimaschutz und soziale Gerechtigkeit.\n- **Reduzierung der Abhängigkeit** von nationalen Beiträgen.\n- **Einführung von Transparenz- und Rechenschaftsmechanismen** zur Stärkung des Bürgervertrauens. \n \n  Sie argumentieren, dass dies der EU die notwendigen finanziellen Mittel verschaffen würde, um wichtige Projekte im Bereich des Klimaschutzes, der sozialen Gerechtigkeit und der technologischen Innovation zu finanzieren. Darüber hinaus sehen sie in der Steuererhebung eine Möglichkeit, die Abhängigkeit von nationalen Beiträgen zu verringern und die EU unabhängiger und handlungsfähiger zu machen. Die GRÜNEN betonen, dass eine solche Maßnahme mit strengen Transparenz- und Rechenschaftsmechanismen einhergehen muss, um das Vertrauen der Bürger in die EU zu stärken und sicherzustellen, dass die Mittel effektiv und effizient eingesetzt werden. ",
+                        "DIE LINKE": "Placeholder stance text",
+                        "FREIE WÄHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "ÖDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-Partei³": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "Bündnis C": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 2,
+            "q": "Fahrzeuge mit Verbrennungsmotoren sollen auch nach 2035 in der EU neu zugelassen werden können.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FREIE WÄHLER": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "Bündnis C": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "PDV": "Placeholder stance text",
+                        "PdF": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "ÖDP": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "V-Partei³": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 3,
+            "q": "Die EU soll eine eigene Seenotrettung im Mittelmeer aufbauen.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "FREIE WÄHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "ÖDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-Partei³": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "Bündnis C": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 4,
+            "q": "Die Ukraine soll Mitglied der EU werden.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FREIE WÄHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "PdF": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "Die PARTEI": "Placeholder stance text",
+                        "ÖDP": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "V-Partei³": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "AfD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 5,
+            "q": "Die EU soll vorrangig ökologische Landwirtschaft fördern.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "ÖDP": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-Partei³": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "FREIE WÄHLER": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Bündnis C": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 6,
+            "q": "In Deutschland soll der Euro durch eine nationale Währung ersetzt werden.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "AfD": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "Bündnis C": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "FREIE WÄHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "ÖDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-Partei³": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 7,
+            "q": "Die EU soll den Mitgliedstaaten empfehlen, außer \"weiblich\" und \"männlich\" auch die Eintragung einer anderen Geschlechtsidentität im Pass zu ermöglichen.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "FAMILIE": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "Buendnis C": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 8,
+            "q": "Die Jagd von Wölfen soll in Regionen erlaubt sein, in denen der Bestand dadurch nicht gefährdet ist.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "Buendnis C": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "PDV": "Placeholder stance text",
+                        "PdF": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "SPD": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 9,
+            "q": "Beim Bau neuer Wohngebäude in der EU soll die Errichtung von Photovoltaikanlagen verpflichtend sein.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "PDV": "Placeholder stance text",
+                        "PdF": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 10,
+            "q": "Mehr außenpolitische Entscheidungen der EU sollen mit Mehrheit statt einstimmig getroffen werden.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "MERA25": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "AfD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 11,
+            "q": "Der Flugzeugtreibstoff Kerosin soll für Flüge in der EU steuerfrei sein.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "FAMILIE": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "BIG": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "Buendnis C": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 12,
+            "q": "Die gemeinsame europäische Polizeibehörde Europol soll weitere Befugnisse erhalten.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "BSW": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "AfD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 13,
+            "q": "Die EU soll länderübergreifende, mehrsprachige Angebote des öffentlich-rechtlichen Rundfunks stärker finanziell fördern.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "Buendnis C": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "PDV": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 14,
+            "q": "Die EU soll das Ziel verwerfen, klimaneutral zu werden.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "AfD": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "FAMILIE": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "PdF": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 15,
+            "q": "Bei den Wahlen zum Europäischen Parlament sollen die Parteien weiterhin frei entscheiden können, wie groß der Anteil der Geschlechter auf ihren Listen ist.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "Buendnis C": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "PDV": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 16,
+            "q": "Die EU soll Vorgaben für die Höhe der sozialen Grundsicherung in den Mitgliedstaaten machen.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "AfD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "Buendnis C": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 17,
+            "q": "Betreiber sozialer Netzwerke sollen frei entscheiden dürfen, wie sie mit Desinformation auf ihren Plattformen umgehen.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "AfD": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "CDU/CSU": "Placeholder stance text",
+                        "PDV": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "Buendnis C": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 18,
+            "q": "In der EU sollen mehr Flächen als Naturschutzgebiete ausgewiesen werden.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "Buendnis C": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PDV": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "SPD": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "AfD": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 19,
+            "q": "EU-Fördermittel für Mitgliedstaaten, die Regeln und Werte der EU verletzen, sollen weiterhin zurückgehalten werden.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "Die PARTEI": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "PdF": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "PfsV": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text",
+                        "PDV": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "AfD": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text"
+                    }
+                }
+            }
+        },
+        {
+            "id": 20,
+            "q": "Die EU soll mehr Waffen für die Ukraine finanzieren.",
+            "t": "Placeholder topic",
+            "fact": "Placeholder fact",
+            "positions": {
+                "pro": {
+                    "parties": {
+                        "CDU/CSU": "Placeholder stance text",
+                        "GRUENE": "Placeholder stance text",
+                        "SPD": "Placeholder stance text",
+                        "FDP": "Placeholder stance text",
+                        "FREIE WAEHLER": "Placeholder stance text",
+                        "OeDP": "Placeholder stance text",
+                        "Volt": "Placeholder stance text",
+                        "PIRATEN": "Placeholder stance text",
+                        "PdH": "Placeholder stance text",
+                        "PdF": "Placeholder stance text"
+                    }
+                },
+                "neutral": {
+                    "parties": {
+                        "Die PARTEI": "Placeholder stance text",
+                        "Tierschutzpartei": "Placeholder stance text",
+                        "FAMILIE": "Placeholder stance text",
+                        "MERA25": "Placeholder stance text",
+                        "PfsV": "Placeholder stance text",
+                        "Buendnis C": "Placeholder stance text",
+                        "KLIMALISTE": "Placeholder stance text",
+                        "LETZTE GENERATION": "Placeholder stance text"
+                    }
+                },
+                "contra": {
+                    "parties": {
+                        "AfD": "Placeholder stance text",
+                        "DIE LINKE": "Placeholder stance text",
+                        "HEIMAT": "Placeholder stance text",
+                        "TIERSCHUTZ hier!": "Placeholder stance text",
+                        "BIG": "Placeholder stance text",
+                        "MENSCHLICHE WELT": "Placeholder stance text",
+                        "DKP": "Placeholder stance text",
+                        "MLPD": "Placeholder stance text",
+                        "SGP": "Placeholder stance text",
+                        "ABG": "Placeholder stance text",
+                        "dieBasis": "Placeholder stance text",
+                        "BUENDNIS DEUTSCHLAND": "Placeholder stance text",
+                        "BSW": "Placeholder stance text",
+                        "DAVA": "Placeholder stance text",
+                        "PDV": "Placeholder stance text",
+                        "V-PARTEI3": "Placeholder stance text"
+                    }
+                }
+            }
+        }
+    ]
+}

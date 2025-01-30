@@ -1,3 +1,5 @@
+# custom_answer_evaluation.py
+
 import random
 import json
 import asyncio
@@ -6,7 +8,7 @@ from typing import List
 from backend.models import QuestionnaireQuestion, UserAnswer
 from backend.assets.questionnaire_party_answers import questionnaire_party_answers
 from backend.clients import AzureOpenAIClientManager
-from backend.prompts.eval_prompts import EVALUATION_PROMPT
+from backend.prompts.eval_prompts import EVALUATION_PROMPT, GENERATE_LOOKUP_PROMPT, EVALUATION_PROMPT2
 
 classication_to_score = {"strongly disagree" : -1, "disagree" : -0.5, "neutral" : 0, "agree" : 0.5, "strongly agree" : 1}
 
@@ -15,7 +17,7 @@ default_parties_list = [
             "score": 0,
             "short_name": "SPD",
             "full_name": "Sozialdemokratische Partei Deutschlands",
-            "partyInfo": "The SPD is a social-democratic party advocating for social justice, welfare state expansion, and pro-EU policies."
+            "partyInfo": "The SPD is a social-democratic party advocating for social justice, welfare state expansion, and pro-EU policies." 
         },
         {
             "score": 0,
@@ -49,32 +51,60 @@ default_parties_list = [
         }
 ]
 
+
+# TEMPORARY: To display the JSON structure I will be working with to integrate the discrete answers from the buttons into the evaluation score
+sample_json_structure = {
+    "custom_answer": "",
+    "users_answer": "",
+    "wheights": "",
+    "skipped": ""
+}
+
 async def compare_user_response_to_party(question_id : int, question: str, 
-                                         party: str, party_response: str, 
-                                         user_response: str, openai_client: AzureOpenAIClientManager
+                                         main_parties: List[str], smaller_parties: List[str],
+                                         party_responses: List[str], 
+                                         user_response: str, main_contexts: List[str],
+                                         smaller_contexts: List[str],
+                                         openai_client: AzureOpenAIClientManager
                                          ):
     """
     Compares a user's custom response to a party's response using an LLM. Creates a classification of agreement and provides concise reasoning.
     """
-    messages = EVALUATION_PROMPT.invoke({"question" : question, "party" : party, "party_response" : 
-                                          party_response, "user_response" : user_response})
+    
+    # TODO: fetch the smaller parties contexts
+    messages = EVALUATION_PROMPT2.invoke({"question" : question, "main_parties" : main_parties, "party_responses" : 
+                                          party_responses, "user_response" : user_response, "smaller_parties": smaller_parties, "main_contexts": main_contexts, "smaller_contexts": smaller_contexts})
     evaluation_response = openai_client.get_chat_client().invoke(messages)
     try:
         evaluation_dict = json.loads(evaluation_response.content)
-        if "agreement_classification" not in evaluation_dict or "reasoning" not in evaluation_dict:
-            return None
-        
-        if evaluation_dict["agreement_classification"] in classication_to_score:
-            evaluation_dict["agreement_score"] = classication_to_score[evaluation_dict["agreement_classification"]]
-        else:
-            return None
-        evaluation_dict["question_id"] = question_id
-        evaluation_dict["party"] = party
-
-        return evaluation_dict
+        agreement_scores = {}
+        reasonings = {}
+        for party, items in evaluation_dict.items():
+            if "agreement_score" not in items or "reasoning" not in items:
+                return None
+            agreement_scores[party] = items["agreement_score"]
+            reasonings[party] = items["reasoning"]
+        return question_id, agreement_scores, reasonings
+    
     except:
-        print("Failed Parsing with Response Content: ", evaluation_response.content)
+        print("Failed Parsing Agreement Score Responses with Response Content: ", evaluation_response.content)
         return None
+
+# Fetches the RAG prompts needed to do the context lookups in the party programmes for better evaluation of the custom answers
+async def getRAGPrompts(question: QuestionnaireQuestion, answer: UserAnswer,  openai_client: AzureOpenAIClientManager):
+    
+    messages = GENERATE_LOOKUP_PROMPT.invoke({"question" : question.q, "custom_answer" : answer.custom_answer})
+    lookup_response = openai_client.get_embedding_client().invoke(messages)
+    
+    try:
+        lookup_dict = json.loads(lookup_response.content)
+        if "lookupPrompts" not in lookup_dict or len(lookup_dict["lookupPrompts"]) < 1:
+            return None
+        return lookup_dict["lookupPrompts"] # Python List
+    except:
+        print("Failed Parsing Lookup Prompt with Response Content: ", lookup_response.content)
+        return None
+    
         
 
 async def get_custom_answers_evaluation(questionnaire_questions: List[QuestionnaireQuestion], 
@@ -86,46 +116,77 @@ async def get_custom_answers_evaluation(questionnaire_questions: List[Questionna
     If a custom answer is provided will use an LLM to rank the similarity to the party's stance on the issue.
     """
     
-    tasks = []
-    responses = []
-    parties = set()
-
+    
+    parties_list = []
+    question_to_responses = {}
+    
+    # task = asyncio.create_task(compare_user_response_to_party(i, question.q, party, party_response, answer.custom_answer, openai_client))
     for i, (question, answer) in enumerate(zip(questionnaire_questions, custom_answers)):
         if answer.custom_answer == "":
             continue
-    
+        
+        
         party_to_response = questionnaire_party_answers[i]
-        for party, party_response in party_to_response.items():
-            parties.add(party)
-            task = asyncio.create_task(compare_user_response_to_party(i, question.q, party, party_response, answer.custom_answer, openai_client))
-            tasks.append(task)
-            
-    responses = await asyncio.gather(*tasks)
+        if len(parties_list) < 1:
+            parties_list = [k for k, v in party_to_response.items()]
+        parties = parties_list 
+        
+        # TODO: Split parties into main and smaller
+        main_parties = ["SPD", ..., "AfD"] 
+        smaller_parties = ["Tierpartei", ..., "Piratenpartei"]
 
-    question_to_responses = defaultdict(list)
-    for response_dict in responses:
-        if response_dict is None:
-            continue
-        question_to_responses[response_dict["question_id"]].append(response_dict)
+        party_responses = [v for k, v in party_to_response.items()]
+       
+        # TODO: Implement the actual retrieval of information with the prompts
+        lookupPrompts = getRAGPrompts(question, answer, openai_client=openai_client)
+        main_contexts = {
+            "SPD": ["", ..., ""],
+            # ...
+            "AfD": ["", ..., ""]
+        }
+        
+        # TODO: Implement the fetching of the smaller parties' descriptions
+        smaller_contexts = {
+            "Tierpartei": "Tiere und so",
+            # ...
+            "Piratenpartei": "Piraten und so"
+        }
 
-    parties_list = default_parties_list.copy()
+        resp = await compare_user_response_to_party(question_id=i, question=question, 
+                                         main_parties=main_parties, smaller_parties=smaller_parties,
+                                         party_responses=party_responses, 
+                                         user_response=answer, main_contexts=main_contexts,
+                                         smaller_contexts=smaller_contexts,
+                                         openai_client=openai_client
+                                         )
+        if resp is None:
+            print("Failed parsing the LLMs response to generate the agreement scores")
+            return
+        else:
+            _, agreement_scores, reasonings = resp
+    
+        question_to_responses[i] = {
+            "question": question,
+            "user_answer": answer,
+            "agreement_scores": agreement_scores,
+            "reasonings": reasonings
+        } 
+
     # Only count questions that have a response for every party
-    question_to_responses = {q : response_dicts for q, response_dicts in question_to_responses.items() if len(response_dicts) == len(parties)}
+    question_to_responses = {q : response_dicts for q, response_dicts in question_to_responses.items() if len(response_dicts) == len(parties_list)}
     if len(question_to_responses) == 0:
         print("No valid custom evaluation.")
         return parties_list
     
-    print(f"Number of valid custom questions to evaluate {len(question_to_responses)}")
+    # TODO: Here the implementation basically aggregates a score from all the scores obtained from the questions
+    # However what we want to do is to output the scores for each single question
     
-    party_to_score = {p : 0 for p in parties}
-    for _, response_dicts in question_to_responses.items():
-        for response_dict in response_dicts:
-            print(response_dict)
-            party_to_score[response_dict["party"]] += response_dict["agreement_score"]
-
-    for party_dict in parties_list:
-        party_dict["score"] = (party_to_score[party_dict["short_name"]] / len(question_to_responses)) * 100
-
+    # The other question is also how to aggregate the button scores with the scores
+    
+    return question_to_responses
+    
+    print(f"Number of valid custom questions to evaluate {len(question_to_responses)}")
+   
     # Sort parties by score descending
     parties_sorted = sorted(parties_list, key=lambda x: x["score"], reverse=True)
 
