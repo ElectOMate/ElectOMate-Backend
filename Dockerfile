@@ -1,15 +1,17 @@
-# syntax=docker/dockerfile:1
+FROM python:3.12-slim 
 
-FROM python:3.12
 
 WORKDIR /code
 
-COPY requirements.txt .
 
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+COPY ./requirements.txt /code/requirements.txt
 
-COPY . .
 
-EXPOSE 3100
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-CMD ["gunicorn", "app:app"]
+
+COPY .env /code/.env
+COPY ./app /code/app
+
+
+CMD ["fastapi", "run", "app/main.py", "--port", "8000"]
