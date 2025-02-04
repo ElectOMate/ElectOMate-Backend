@@ -35,3 +35,50 @@ query_generation_tools = {
         )
     ),
 }
+
+realtime_session_tools = {
+    SupportedLanguages.EN: {
+        "type": "function",
+        "name": "fetchRagData",
+        "description": "Retrieves verified political information from ourdatabase.",
+        "strict": True,
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "country_code": {
+                    "type": "string",
+                    "description": "The country code corresponding to the language of the conversation",
+                    "enum": ["DE", "EN"],
+                },
+                "question": {
+                    "type": "string",
+                    "description": "A question related to the 2025 German Federal Elections that will be answered in a fact-based manner",
+                },
+            },
+            "required": ["country_code", "question"],
+            "additionalProperties": False,
+        },
+    },
+    SupportedLanguages.DE: {
+        "type": "function",
+        "name": "fetchRagData",
+        "description": "Ruft verifizierte politische Informationen aus unserer Datenbank ab.",
+        "strict": True,
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "country_code": {
+                    "type": "string",
+                    "description": "Der Ländercode, der der Sprache des Gesprächs entspricht.",
+                    "enum": ["DE", "EN"],
+                },
+                "question": {
+                    "type": "string",
+                    "description": "Eine Frage zu den Bundestagswahlen 2025, die faktenbasiert beantwortet wird.",
+                },
+            },
+            "required": ["country_code", "question"],
+            "additionalProperties": False,
+        },
+    },
+}

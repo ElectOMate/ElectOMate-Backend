@@ -1,3 +1,5 @@
+from fastapi import UploadFile
+
 import pymupdf4llm
 import pymupdf
 from langchain_core.documents import Document
@@ -8,13 +10,11 @@ from langchain_text_splitters import (
 import cohere
 import weaviate
 import weaviate.classes as wvc
-# from asyncer import asyncify
+
+from ..config import CHUNK_SIZE, CHUNK_OVERLAP
+
 import asyncio
 import logging
-
-from fastapi import UploadFile
-
-from .config import CHUNK_SIZE, CHUNK_OVERLAP
 
 
 async def process_file(

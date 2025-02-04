@@ -32,3 +32,8 @@ class AnswerChunk(BaseModel):
     text: Optional[str] = Field(
         description="The chunk content. A part of the answer if chunk type is 'response-chunk'. The citation content if chunk type is 'citation'"
     )
+
+class RealtimeToken(BaseModel):
+    client_secret: str = Field(
+        description="A realtime session token to be used in the browser directly."
+    )

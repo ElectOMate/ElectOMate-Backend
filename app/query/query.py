@@ -1,16 +1,17 @@
-from .statics.prompts import query_generation_instructions
-from .statics.tools import query_generation_tools
-
 import cohere
 from cohere import UserChatMessageV2, SystemChatMessageV2, Document, CitationOptions
 import weaviate
+
+from ..statics.prompts import query_generation_instructions
+from ..statics.tools import query_generation_tools
+from ..models import AnswerChunk, Answer, SupportedLanguages
 
 import json
 import asyncio
 import httpx
 
 from typing import AsyncGenerator
-from .models import AnswerChunk, Answer, SupportedLanguages
+
 
 # Advanced document retrieval
 async def get_documents_rerank(
