@@ -20,6 +20,8 @@ class Response(BaseModel):
     )
 
 class UserAnswer(BaseModel):
+    question: str
+    question_id: int
     users_answer: int  # -1, 0, +1
     wheights: str      # "true" / "false"
     Skipped: str       # "true" / "false"

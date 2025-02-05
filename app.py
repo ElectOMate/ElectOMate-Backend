@@ -164,8 +164,11 @@ def chat(
 # Evaluate custom user answers
 # ------------------------------
 @app.post("/custom_answer_evaluation")
-async def custom_answer_evaluation(user_answers: List[UserAnswer]):
+async def custom_answer_evaluation(payload: CustomAnswerEvaluationRequest):
+    user_answers = payload.custom_answers
+    logging.info(f"user_answers={user_answers}")
     print(f"user_answers={user_answers}")
+    logging.info(f"user_answers={user_answers}")
     for answer in user_answers:
         print(f"users_answer={answer.users_answer}, custom_answer={answer.custom_answer}")
     custom_answers_results = get_random_party_scores(user_answers)
