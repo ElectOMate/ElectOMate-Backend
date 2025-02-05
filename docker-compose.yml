@@ -32,7 +32,7 @@ services:
       - backend-network
 
   backend:
-    image: em-backend-image
+    image: backend-image
     ports:
       - 8000:8000
     networks:

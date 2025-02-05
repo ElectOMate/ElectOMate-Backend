@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
-from typing import Literal, Optional, Enum
+from typing import Literal, Optional
+from enum import Enum
 
 class SupportedLanguages(str, Enum):
     DE = "de"

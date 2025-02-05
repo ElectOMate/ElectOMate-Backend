@@ -5,7 +5,7 @@ from .upload import upload_documents
 
 import logging
 
-router = APIRouter
+router = APIRouter()
 
 @router.post("/uploadfiles")
 async def uploadfiles(files: list[UploadFile]):
