@@ -156,10 +156,34 @@ async def search_route(query: SearchQuery) -> dict:
 
 
 
+
+
+
         # Build a “system prompt” referencing the Bing results
         # (In practice, you might want more logic, additional context, etc.)
-        system_prompt_lines = []
-        system_prompt_lines.append("You are a helpful AI assistant. The user asked a question.")
+        system_prompt_lines = ["""
+You are a helpful AI assistant. The user asked a question. use the provided Bing results to answer the question. Format in Markdown. Use numbered bulletpoints and linebreaks and indents, headings and paragraphs with empty lines in between
+
+Please generate your markdown output such that every URL reference is embedded using the following format:
+
+  (see source [<reference_number>](<url>))
+
+For example, if you reference a Tagesschau article, the link should appear exactly like:
+
+  (see source [2](https://www.tagesschau.de/inland/innenpolitik/krankenhausreform-bundesrat-100.html))
+
+Make sure that:
+- The link text always contains a reference number inside square brackets (e.g., “[2]”).
+- The overall format remains consistent across all links.
+
+This exact format is required because our frontend will scan for the number within the link text and render a clickable green dot containing that number next to the link.
+
+
+ """]#Markdown. Use numbered bulletpoints and linebreaks and indents, headings and parakgraphs with empty lines in between
+       
+       
+       
+       
         system_prompt_lines.append("You have these Bing results:\n")
         for i, r in enumerate(results):
             system_prompt_lines.append(f"({i+1}) \"{r['title']}\"\nURL: {r['url']}\nSnippet: {r['snippet']}\n")
@@ -183,6 +207,7 @@ async def search_route(query: SearchQuery) -> dict:
         
              # Convert LLM response to HTML via Markdown
         formatted_response = format_response_to_markdown(raw_llm_response)
+        print(raw_llm_response)
 
 
         # Update chat history
@@ -195,7 +220,7 @@ async def search_route(query: SearchQuery) -> dict:
         # Return data in JSON form
         return {
             "sessionId": session_id,
-            "summary": formatted_response,
+            "summary": raw_llm_response,
             "sources": results,
         }
 
