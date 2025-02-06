@@ -1,9 +1,9 @@
 fastapi[all]>=0.115.0,<0.116.0
-langchain
-langgraph
-langchain-openai
 openai
-tiktoken
+cohere
 weaviate-client
-uvicorn
-gunicorn
+langchain_core
+langchain_text_splitters
+pymupdf4llm
+asyncer
+prometheus_fastapi_instrumentator
