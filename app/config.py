@@ -13,11 +13,11 @@ CHUNK_OVERLAP = 50
 
 class Settings(BaseSettings):
     # Weaviate API keys
-    weaviate_host: str
-    weaviate_port: int
-    weaviate_grpc_host: str
-    weaviate_grpc_port: int
-    weaviate_api_key: str
+    wv_http_host: str
+    wv_http_port: int
+    wv_grpc_host: str
+    wv_grpc_port: int
+    wv_api_key: str
 
     # Cohere API keys
     command_r_url: str
@@ -38,7 +38,6 @@ class Settings(BaseSettings):
 
     # Deployement config
     allow_origins: str = "*"
-    prod: bool
 
     model_config = SettingsConfigDict(env_file=".env")
 
@@ -71,13 +70,13 @@ cohere_async_clients = {
 }
 
 weaviate_async_client = weaviate.use_async_with_custom(
-    http_host=settings.weaviate_host,
-    http_port=settings.weaviate_port,
+    http_host=settings.wv_http_host,
+    http_port=settings.wv_http_port,
     http_secure=False,
-    grpc_host=settings.weaviate_grpc_host,
-    grpc_port=settings.weaviate_grpc_port,
+    grpc_host=settings.wv_grpc_host,
+    grpc_port=settings.wv_grpc_port,
     grpc_secure=False,
-    auth_credentials=wvc.init.Auth.api_key(settings.weaviate_api_key),
+    auth_credentials=wvc.init.Auth.api_key(settings.wv_api_key),
     additional_config=wvc.init.AdditionalConfig(timeout=wvc.init.Timeout(init=30, query=60, insert=120)),
 )
 
