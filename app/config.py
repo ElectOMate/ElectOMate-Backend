@@ -67,9 +67,15 @@ cohere_async_clients = {
     ),
 }
 
-weaviate_async_client = weaviate.use_async_with_local(
-    host=settings.weaviate_host,
+weaviate_async_client = weaviate.use_async_with_custom(
+    http_host=settings.weaviate_host,
+    http_port=8080,
+    http_secure=False,
+    grpc_host=settings.weaviate_host + '-grpc',
+    grpc_port=50051,
+    grpc_secure=False,
     auth_credentials=wvc.init.Auth.api_key(settings.weaviate_api_key),
+    additional_config=wvc.init.AdditionalConfig(timeout=wvc.init.Timeout(init=30, query=60, insert=120)),
 )
 
 openai_async_client = openai.AsyncClient(api_key=settings.openai_api_key)

@@ -1,6 +1,6 @@
 dependencies:
 - name: weaviate
   repository: oci://embackendacr.azurecr.io/helm
-  version: 17.4.2
-digest: sha256:63668e0b8fc2c664fda44f23382be51f0a26ebd9ddd0c14cb8762110682f5afb
-generated: "2025-02-05T18:16:58.562044888+01:00"
+  version: 17.4.5
+digest: sha256:42457f7684013d3be0b46cda3f733cae81a020d8154adb177371177f13702039
+generated: "2025-02-06T01:15:05.567761873+01:00"

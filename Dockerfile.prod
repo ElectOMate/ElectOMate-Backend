@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 COPY .env /code/.env
 COPY ./app /code/app
 
-ENV PROD=True
+ENV WEAVIATE_HOST=weaviate
 ENV WEAVIATE_API_KEY=viewer-key-qib
 
 

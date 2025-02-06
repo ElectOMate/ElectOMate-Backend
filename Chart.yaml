@@ -25,5 +25,5 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: weaviate
-    version: 17.4.2
+    version: 17.4.5
     repository: oci://embackendacr.azurecr.io/helm

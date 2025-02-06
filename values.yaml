@@ -9,12 +9,14 @@ replicaCount: 1
 image:
   repository: embackendacr.azurecr.io/docker/backend
   # This sets the pull policy for images.
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "v1"
 
 # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-imagePullSecrets: []
+imagePullSecrets:
+  - name: acr-secret
+
 # This is to override the chart name.
 nameOverride: ""
 fullnameOverride: ""
