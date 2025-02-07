@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     openai_api_key: str
 
     # Bing API keys
-    bing_api_key: str 
+    bing_api_key: str
 
     # Deployement config
     allow_origins: str = "*"
@@ -82,10 +82,13 @@ weaviate_async_client = weaviate.use_async_with_custom(
     grpc_port=settings.wv_grpc_port,
     grpc_secure=False,
     auth_credentials=wvc.init.Auth.api_key(settings.wv_api_key),
-    additional_config=wvc.init.AdditionalConfig(timeout=wvc.init.Timeout(init=30, query=60, insert=120)),
+    additional_config=wvc.init.AdditionalConfig(
+        timeout=wvc.init.Timeout(init=30, query=60, insert=120)
+    ),
 )
 
 openai_async_client = openai.AsyncClient(api_key=settings.openai_api_key)
+
 
 # Bing client setup
 class BingClient:
@@ -97,6 +100,7 @@ class BingClient:
         params = {"q": query, "count": count}
         headers = {"Ocp-Apim-Subscription-Key": self.api_key}
         return requests.get(self.endpoint, params=params, headers=headers)
+
 
 # Instantiate Bing client
 bing_client = BingClient(api_key=settings.bing_api_key)

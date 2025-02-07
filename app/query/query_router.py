@@ -9,6 +9,7 @@ import logging
 
 router = APIRouter()
 
+
 @router.post("/stream/{language_code}")
 async def stream(
     language_code: SupportedLanguages, question: Question
@@ -24,7 +25,7 @@ async def stream(
             question.rerank,
             cohere_async_clients,
             weaviate_async_client,
-            language_code
+            language_code,
         ),
         media_type="text/event-stream",
     )
@@ -33,17 +34,16 @@ async def stream(
 @router.post("/query/{language_code}")
 async def query(language_code: SupportedLanguages, question: Question) -> Answer:
     logging.debug(f"POST request received at /query/{language_code}...")
-    print(f"question: {question}")
 
     if not await weaviate_async_client.is_ready():
         raise HTTPException(status_code=503, detail="Weaviate is not ready.")
-    else:
-        print("Weaviate is ready.")
 
     # Return the full response
     response = await query_rag(
-        question.question, question.rerank, cohere_async_clients, weaviate_async_client, language_code
+        question.question,
+        question.rerank,
+        cohere_async_clients,
+        weaviate_async_client,
+        language_code,
     )
-    return JSONResponse(
-        response
-    )
+    return JSONResponse(response)

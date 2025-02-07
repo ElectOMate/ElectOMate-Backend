@@ -1,11 +1,9 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException, APIRouter
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from contextlib import asynccontextmanager
 import json
 import logging
-import os
-import subprocess
 
 from .config import weaviate_async_client, settings
 from .query import query_router
@@ -31,11 +29,6 @@ app.include_router(upload_router.router)
 app.include_router(Bingsearch_router.router)
 app.include_router(transcription_router.router)
 app.include_router(askallparties_router.router)
-router = APIRouter()
-
-
-
-app.include_router(router)
 
 app.add_middleware(
     CORSMiddleware,

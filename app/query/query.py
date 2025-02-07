@@ -14,7 +14,7 @@ from typing import AsyncGenerator
 
 
 # Advanced document retrieval
-async def get_documents_rerank(
+async def get_documents(
     question: str,
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
@@ -46,7 +46,7 @@ async def get_documents_rerank(
 
     collection = weaviate_async_client.collections.get(name="Documents")
     tasks = [
-        collection.query.hybrid(search_queries[i], vector=embedding, limit=5)
+        collection.query.hybrid(search_queries[i], vector=embedding, limit=30)
         for i, embedding in enumerate(
             search_queries_embeddings_response.embeddings.float
         )
@@ -82,59 +82,15 @@ async def get_documents_rerank(
     return documents
 
 
-# Basic document retrieval
-async def get_documents(
-    question: str,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
-    weaviate_async_client: weaviate.WeaviateAsyncClient,
-    language: SupportedLanguages
-) -> list[Document]:
-
-    question_embedding_response = await cohere_async_clients[
-        "embed_multilingual_async_client"
-    ].embed(
-        texts=[question],
-        model="embed-multilingual-v3.0",
-        input_type="search_query",
-        embedding_types=["float"],
-    )
-
-    collection = weaviate_async_client.collections.get(name="Documents")
-    query_response = await collection.query.hybrid(
-        question,
-        vector=question_embedding_response.embeddings.float[0],
-        limit=5,
-    )
-
-    documents = [
-        Document(
-            id=str(i),
-            data={
-                "text": object.properties["chunk_content"],
-                "title": object.properties["title"],
-            },
-        )
-        for i, object in enumerate(query_response.objects)
-    ]
-
-    return documents
-
-
 async def stream_rag(
     question: str,
-    rerank: bool,
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages
 ) -> AsyncGenerator[AnswerChunk, None]:
-    if rerank is True:
-        documents = await get_documents_rerank(
-            question, cohere_async_clients, weaviate_async_client, language
-        )
-    else:
-        documents = await get_documents(
-            question, cohere_async_clients, weaviate_async_client, language
-        )
+    documents = await get_documents(
+        question, cohere_async_clients, weaviate_async_client, language
+    )
 
     response = cohere_async_clients["command_r_async_client"].chat_stream(
         model="command-r-08-2024",
@@ -154,7 +110,6 @@ async def stream_rag(
                         }
                     )
                     yield "data: " + content + "\n\n"
-                    print(f"Content: {content}")
                 elif chunk.type == "citation-start":
                     content = json.dumps(
                         {
@@ -168,37 +123,27 @@ async def stream_rag(
                         }
                     )
                     yield "data: " + content + "\n\n"
-                    print(f"Citation: {content}")
     except httpx.RemoteProtocolError:
         pass
     finally:
-        yield "data: [DONE]\n\n" 
-        print("DONE")
-
+        yield "data: [DONE]\n\n"
+        
 async def query_rag(
     question: str,
-    rerank: bool,
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages
 ) -> Answer:
 
-    if rerank is True:
-        documents = await get_documents_rerank(
-            question, cohere_async_clients, weaviate_async_client, language
-        )
-    else:
-        documents = await get_documents(
-            question, cohere_async_clients, weaviate_async_client, language
-        )
-        print(f"Weaviate retrieved these documents: {documents}")
+    documents = await get_documents(
+        question, cohere_async_clients, weaviate_async_client, language
+    )
 
     response = await cohere_async_clients["command_r_async_client"].chat(
         model="command-r-08-2024",
         messages=[UserChatMessageV2(content=question)],
         documents=documents,
     )
-    print(f"Cohere response: {response}")
     # Ensure citations are not None
     citations = response.message.citations if response.message.citations else []
 

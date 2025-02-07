@@ -7,6 +7,7 @@ class SupportedLanguages(str, Enum):
     DE = "de"
     EN = "en"
 
+
 class Question(BaseModel):
     question: str = Field(
         max_length=500, description="The question asked to the RAG pipeline."
@@ -16,12 +17,9 @@ class Question(BaseModel):
     )
 
 
-
 class ChatFunctionCallRequest(BaseModel):
     country_code: str
     question_body: Question  # e.g. "question": "User's RAG query"
-
-
 
 
 class Answer(BaseModel):
@@ -43,21 +41,20 @@ class AnswerChunk(BaseModel):
         description="The chunk content. A part of the answer if chunk type is 'response-chunk'. The citation content if chunk type is 'citation'"
     )
 
+
 class RealtimeToken(BaseModel):
     client_secret: str = Field(
         description="A realtime session token to be used in the browser directly."
     )
 
 
-
 class PartyResponse(BaseModel):
     party: str
     policies: list[str]
 
+
 class AskAllPartiesResponse(BaseModel):
     responses: list[PartyResponse]
-
-
 
 
 class AskAllPartiesRequest(BaseModel):
