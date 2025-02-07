@@ -22,6 +22,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(query_router.router)
 app.include_router(realtime_router.router)
 app.include_router(upload_router.router)
+app.include_router(Bingsearch_router.router)
 
 
 app.add_middleware(
