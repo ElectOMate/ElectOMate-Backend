@@ -37,48 +37,58 @@ query_generation_tools = {
 }
 
 realtime_session_tools = {
-    SupportedLanguages.EN: {
-        "type": "function",
-        "name": "fetchRagData",
-        "description": "Retrieves verified political information from ourdatabase.",
-        "strict": True,
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "country_code": {
-                    "type": "string",
-                    "description": "The country code corresponding to the language of the conversation",
-                    "enum": ["DE", "EN"],
-                },
-                "question": {
-                    "type": "string",
-                    "description": "A question related to the 2025 German Federal Elections that will be answered in a fact-based manner",
-                },
-            },
-            "required": ["country_code", "question"],
-            "additionalProperties": False,
-        },
-    },
     SupportedLanguages.DE: {
         "type": "function",
         "name": "fetchRagData",
-        "description": "Ruft verifizierte politische Informationen aus unserer Datenbank ab.",
-        "strict": True,
+        "description": "Ruft verifizierte politische Informationen aus unserem RAG-System ab.",
         "parameters": {
             "type": "object",
             "properties": {
                 "country_code": {
                     "type": "string",
-                    "description": "Der Ländercode, der der Sprache des Gesprächs entspricht.",
-                    "enum": ["DE", "EN"],
+                    "description": "Der Ländercode (z.B. 'de' für Deutschland)",
+                    "enum": ["DE"]  # Nur deutsche Anfragen zulassen
                 },
-                "question": {
-                    "type": "string",
-                    "description": "Eine Frage zu den Bundestagswahlen 2025, die faktenbasiert beantwortet wird.",
-                },
+                "question_body": {
+                    "type": "object",
+                    "properties": {
+                        "question": {
+                            "type": "string",
+                            "description": "Die politische Frage, die nachgeschlagen werden soll"
+                        }
+                    },
+                    "required": ["question"]
+                }
             },
-            "required": ["country_code", "question"],
-            "additionalProperties": False,
-        },
+            "required": ["country_code", "question_body"]
+        }
     },
+    SupportedLanguages.EN: {
+                        "type": "function",
+                        "name": "fetchRagData",
+                        "description": "Retrieves verified political information from our RAG system",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "country_code": {
+                                    "type": "string",
+                                    "description": "The country code (e.g., 'de' for Germany)",
+                                    "enum": ["EN"]  # Only allow German queries for now
+                                },
+                                "question_body": {
+                                    "type": "object",
+                                    "properties": {
+                                        "question": {
+                                            "type": "string",
+                                            "description": "The political question to look up"
+                                        }
+                                    },
+                                    "required": ["question"]
+                                }
+                            },
+                            "required": ["country_code", "question_body"]
+                        }
+                    }
+                
 }
+

@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
-from typing import Literal, Optional
+from typing import Literal, Optional, Dict
 from enum import Enum
+
 
 class SupportedLanguages(str, Enum):
     DE = "de"
@@ -13,6 +14,14 @@ class Question(BaseModel):
     rerank: bool = Field(
         default=False, description="Use more advanced reranking models"
     )
+
+
+
+class ChatFunctionCallRequest(BaseModel):
+    country_code: str
+    question_body: Question  # e.g. "question": "User's RAG query"
+
+
 
 
 class Answer(BaseModel):
@@ -38,3 +47,19 @@ class RealtimeToken(BaseModel):
     client_secret: str = Field(
         description="A realtime session token to be used in the browser directly."
     )
+
+
+
+class PartyResponse(BaseModel):
+    party: str
+    policies: list[str]
+
+class AskAllPartiesResponse(BaseModel):
+    responses: list[PartyResponse]
+
+
+
+
+class AskAllPartiesRequest(BaseModel):
+    question_body: Question
+    selected_parties: Dict[str, bool]

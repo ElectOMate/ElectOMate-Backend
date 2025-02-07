@@ -154,6 +154,7 @@ async def stream_rag(
                         }
                     )
                     yield "data: " + content + "\n\n"
+                    print(f"Content: {content}")
                 elif chunk.type == "citation-start":
                     content = json.dumps(
                         {
@@ -167,9 +168,12 @@ async def stream_rag(
                         }
                     )
                     yield "data: " + content + "\n\n"
+                    print(f"Citation: {content}")
     except httpx.RemoteProtocolError:
         pass
-
+    finally:
+        yield "data: [DONE]\n\n" 
+        print("DONE")
 
 async def query_rag(
     question: str,
@@ -187,12 +191,16 @@ async def query_rag(
         documents = await get_documents(
             question, cohere_async_clients, weaviate_async_client, language
         )
+        print(f"Weaviate retrieved these documents: {documents}")
 
     response = await cohere_async_clients["command_r_async_client"].chat(
         model="command-r-08-2024",
         messages=[UserChatMessageV2(content=question)],
         documents=documents,
     )
+    print(f"Cohere response: {response}")
+    # Ensure citations are not None
+    citations = response.message.citations if response.message.citations else []
 
     return {
         "answer": response.message.content[0].text,
@@ -201,6 +209,6 @@ async def query_rag(
                 "title": citation.sources[0].document["title"],
                 "text": citation.sources[0].document["text"],
             }
-            for citation in response.message.citations
+            for citation in citations
         ],
     }

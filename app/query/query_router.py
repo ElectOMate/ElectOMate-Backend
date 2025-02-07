@@ -33,9 +33,12 @@ async def stream(
 @router.post("/query/{language_code}")
 async def query(language_code: SupportedLanguages, question: Question) -> Answer:
     logging.debug(f"POST request received at /query/{language_code}...")
+    print(f"question: {question}")
 
     if not await weaviate_async_client.is_ready():
         raise HTTPException(status_code=503, detail="Weaviate is not ready.")
+    else:
+        print("Weaviate is ready.")
 
     # Return the full response
     response = await query_rag(

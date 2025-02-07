@@ -2,6 +2,8 @@ import openai
 import cohere
 import weaviate
 import weaviate.classes as wvc
+import os
+import requests
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -35,6 +37,9 @@ class Settings(BaseSettings):
 
     # Open AI API keys
     openai_api_key: str
+
+    # Bing API keys
+    bing_api_key: str 
 
     # Deployement config
     allow_origins: str = "*"
@@ -81,3 +86,17 @@ weaviate_async_client = weaviate.use_async_with_custom(
 )
 
 openai_async_client = openai.AsyncClient(api_key=settings.openai_api_key)
+
+# Bing client setup
+class BingClient:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.endpoint = "https://api.bing.microsoft.com/v7.0/search"
+
+    def search(self, query: str, count: int = 5) -> requests.Response:
+        params = {"q": query, "count": count}
+        headers = {"Ocp-Apim-Subscription-Key": self.api_key}
+        return requests.get(self.endpoint, params=params, headers=headers)
+
+# Instantiate Bing client
+bing_client = BingClient(api_key=settings.bing_api_key)
