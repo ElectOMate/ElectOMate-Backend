@@ -15,12 +15,12 @@ async def upload_audio_webm(file: UploadFile):
             detail="Invalid file type. Must be 'audio/webm' or 'video/webm'.",
         )
 
-    transcribed_text = transcribe(file)
+    transcription = await transcribe(file)
 
     # 5) Return transcription text to the front-end
     return JSONResponse(
         content={
             "message": "Audio converted to MP3 and transcribed successfully!",
-            "transcription": transcribed_text,
+            "transcription": transcription,
         }
     )

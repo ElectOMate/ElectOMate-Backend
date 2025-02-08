@@ -21,12 +21,12 @@ async def get_session(language: SupportedLanguages):
             
             json={
                 "model": "gpt-4o-realtime-preview-2024-12-17",
-                "voice": "verse",
+                "voice": "coral",
                 "modalities": ["audio", "text"],
                 "instructions": realtime_session_instructions[language],
                 "tools": [realtime_session_tools[language]],
-                "tool_choice": "required",
-                "temperature": 0.0,
+                # "tool_choice": "required",
+                # "temperature": 0.0,
                 # "turn_detection": False,
 
             },

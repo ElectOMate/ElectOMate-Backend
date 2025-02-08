@@ -40,6 +40,7 @@ async def askallparties(
                 logging.debug(
                     f"Querying RAG for party: {party} with question: {prefixed_question}"
                 )
+                print(f"Request: {request}")
                 # Return the full response
                 response = await query_rag(
                     request.question_body.question,
@@ -48,8 +49,18 @@ async def askallparties(
                     weaviate_async_client,
                     country_code,
                 )
+                print(f"Response: {response}")
+                # Log the type and content of the response
+                logging.debug(f"Type of response: {type(response)}")
+                logging.debug(f"Content of response: {response}")
 
-                policies = [s.strip() for s in response.split(".") if s.strip()]
+                # Ensure response is a dictionary with 'answer' key
+                if isinstance(response, dict) and 'answer' in response:
+                    policies = [response['answer']]
+                else:
+                    logging.error("Response is not in the expected format.")
+                    policies = []
+
                 logging.debug(f"Received policies for {party}: {policies}")
                 responses.append(PartyResponse(party=party, policies=policies))
 

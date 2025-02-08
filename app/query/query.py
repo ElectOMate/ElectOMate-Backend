@@ -130,6 +130,7 @@ async def stream_rag(
         
 async def query_rag(
     question: str,
+    rerank: bool,
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages
