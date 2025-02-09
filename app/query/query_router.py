@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse, JSONResponse
 
-from ..models import Question, Answer, SupportedLanguages
+from ..models import Question, Answer, AnswerChunk, SupportedLanguages
 from ..config import weaviate_async_client, cohere_async_clients
 from .query import stream_rag, query_rag
 
@@ -13,7 +13,7 @@ router = APIRouter()
 @router.post("/stream/{language_code}")
 async def stream(
     language_code: SupportedLanguages, question: Question
-) -> StreamingResponse:
+) -> AnswerChunk:
     logging.debug(f"POST request received at /stream/{language_code}...")
 
     if not await weaviate_async_client.is_ready():
@@ -25,6 +25,7 @@ async def stream(
             cohere_async_clients,
             weaviate_async_client,
             language_code,
+            question.selected_parties,
         ),
         media_type="text/event-stream",
     )
@@ -43,5 +44,7 @@ async def query(language_code: SupportedLanguages, question: Question) -> Answer
         cohere_async_clients,
         weaviate_async_client,
         language_code,
+        question.selected_parties,
+        question.web_search
     )
     return JSONResponse(response)

@@ -1,11 +1,22 @@
 import cohere
-from cohere import UserChatMessageV2, SystemChatMessageV2, Document, CitationOptions
+from cohere import (
+    AssistantChatMessageV2,
+    UserChatMessageV2,
+    SystemChatMessageV2,
+    ToolMessageV2,
+    CitationOptions,
+)
 import weaviate
-from weaviate.collections.classes.filters import Filter
 
-from ..statics.prompts import query_generation_instructions, query_rag_system_instructions
-from ..statics.tools import query_generation_tools
-from ..models import AnswerChunk, Answer, SupportedLanguages
+from .db_search import database_search
+from .web_search import web_search
+from ..statics.prompts import (
+    query_rag_system_instructions,
+    multiparty_detection_instructions,
+    multiparty_detection_response_format,
+)
+from ..statics.tools import database_search_tools, web_search_tools
+from ..models import AnswerChunk, Answer, SupportedLanguages, SupportedParties
 
 import json
 import asyncio
@@ -14,152 +25,68 @@ import httpx
 from typing import AsyncGenerator
 
 
-# Advanced document retrieval
-async def get_documents(
+async def single_party_search(
     question: str,
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
-    language: SupportedLanguages
-) -> list[Document]:
-    res = await cohere_async_clients["command_r_async_client"].chat(
-        model="command-r-08-2024",
-        messages=[
-            SystemChatMessageV2(content=query_generation_instructions[language]),
+    language: SupportedLanguages,
+    party: SupportedParties,
+    use_web_search: bool,
+):
+    messages = [
+        [
+            SystemChatMessageV2(content=query_rag_system_instructions[language]),
             UserChatMessageV2(content=question),
         ],
-        tools=[query_generation_tools[language]],
+    ]
+
+    if use_web_search is True:
+        tools = [database_search_tools[language], web_search_tools[language]]
+    else:
+        tools = [database_search_tools[language]]
+
+    res = await cohere_async_clients["command_r_async_client"].chat(
+        model="command-r-08-2024",
+        messages=messages,
+        tools=tools,
     )
 
-    search_queries = list()
-    if res.message.tool_calls:
+    while res.message.tool_calls:
+        messages.append(
+            AssistantChatMessageV2(
+                tool_calls=res.message.tool_calls, tool_plan=res.message.tool_plan
+            )
+        )
+
         for tc in res.message.tool_calls:
-            queries = json.loads(tc.function.arguments)["queries"]
-            search_queries.extend(queries)
 
-    search_queries_embeddings_response = await cohere_async_clients[
-        "embed_multilingual_async_client"
-    ].embed(
-        texts=search_queries,
-        model="embed-multilingual-v3.0",
-        input_type="search_query",
-        embedding_types=["float"],
-    )
+            if tc.function.name == "database_search":
+                tool_results = await database_search(
+                    **json.loads(tc.function.arguments),
+                    party=party,
+                    question=question,
+                    cohere_async_clients=cohere_async_clients,
+                    weaviate_async_client=weaviate_async_client,
+                    language=language
+                )
+            elif tc.function.name == "web_search":
+                tool_results = await web_search(
+                    **json.loads(tc.function.arguments),
+                    cohere_async_clients=cohere_async_clients,
+                    language=language
+                )
 
-    collection = weaviate_async_client.collections.get(name="Documents")
+            messages.append(ToolMessageV2(tool_call_id=tc.id, content=tool_results))
 
-    # Define the filter to check if the document name contains "CDU"
-    cdu_filter = Filter.by_property("title").like("*CDU*")
+            res = cohere_async_clients.chat(
+                model="command-r-08-2024", messages=messages, tools=tools
+            )
 
-    tasks = [
-        collection.query.hybrid(
-            search_queries[i],
-            vector=embedding,
-            limit=30,
-            filters=cdu_filter  # Apply the filter here
-        )
-        for i, embedding in enumerate(
-            search_queries_embeddings_response.embeddings.float
-        )
-    ]
-    chunks_responses = await asyncio.gather(*tasks)
-
-    chunks = [
-        {
-            "title": object.properties["title"],
-            "chunk_content": object.properties["chunk_content"],
-        }
-        for chunks_response in chunks_responses
-        for object in chunks_response.objects
-    ]
-
-    rerank_response = await cohere_async_clients["rerank_multilingual_async_client"].rerank(
-        model="rerank-v3.5",
-        query=question,
-        documents=map(lambda x: x["chunk_content"], chunks),
-        top_n=3,
-    )
-
-    documents = [
-        Document(
-            id=str(i),
-            data={
-                "text": chunks[result.index]["chunk_content"],
-                "title": chunks[result.index]["title"],
-            },
-        )
-        for i, result in enumerate(rerank_response.results)
-    ]
-    return documents
-
-
-async def stream_rag(
-    question: str,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
-    weaviate_async_client: weaviate.WeaviateAsyncClient,
-    language: SupportedLanguages
-) -> AsyncGenerator[AnswerChunk, None]:
-    documents = await get_documents(
-        question, cohere_async_clients, weaviate_async_client, language
-    )
-
-    response = cohere_async_clients["command_r_async_client"].chat_stream(
-        model="command-r-08-2024",
-        messages=[UserChatMessageV2(content=question)],
-        documents=documents,
-        citation_options=CitationOptions(mode="FAST"),
-    )
-
-    try:
-        async for chunk in response:
-            if chunk:
-                if chunk.type == "content-delta":
-                    content = json.dumps(
-                        {
-                            "type": "response-chunk",
-                            "text": chunk.delta.message.content.text,
-                        }
-                    )
-                    yield "data: " + content + "\n\n"
-                elif chunk.type == "citation-start":
-                    content = json.dumps(
-                        {
-                            "type": "citation",
-                            "title": chunk.delta.message.citations.sources[0].document[
-                                "title"
-                            ],
-                            "text": chunk.delta.message.citations.sources[0].document[
-                                "text"
-                            ],
-                        }
-                    )
-                    yield "data: " + content + "\n\n"
-    except httpx.RemoteProtocolError:
-        pass
-    finally:
-        yield "data: [DONE]\n\n"
-        
-async def query_rag(
-    question: str,
-    rerank: bool,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
-    weaviate_async_client: weaviate.WeaviateAsyncClient,
-    language: SupportedLanguages
-) -> Answer:
-
-    documents = await get_documents(
-        question, cohere_async_clients, weaviate_async_client, language
-    )
-
-    response = await cohere_async_clients["command_r_async_client"].chat(
-        model="command-r-08-2024",
-        messages=[SystemChatMessageV2(content=query_rag_system_instructions[language]), UserChatMessageV2(content=question),],
-        documents=documents,
-    )
     # Ensure citations are not None
-    citations = response.message.citations if response.message.citations else []
+    citations = res.message.citations if res.message.citations else []
 
     return {
-        "answer": response.message.content[0].text,
+        "answer": res.message.content[0].text,
         "citations": [
             {
                 "title": citation.sources[0].document["title"],
@@ -168,3 +95,105 @@ async def query_rag(
             for citation in citations
         ],
     }
+
+
+async def stream_rag(
+    question: str,
+    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    weaviate_async_client: weaviate.WeaviateAsyncClient,
+    language: SupportedLanguages,
+    party: SupportedParties,
+) -> AsyncGenerator[AnswerChunk, None]:
+    raise NotImplementedError("This function has not been implemented yet.")
+
+    # response = cohere_async_clients["command_r_async_client"].chat_stream(
+    #     model="command-r-08-2024",
+    #     messages=[
+    #         SystemChatMessageV2(content=query_rag_system_instructions[language]),
+    #         UserChatMessageV2(content=question),
+    #     ],
+    #     documents=documents,
+    #     citation_options=CitationOptions(mode="FAST"),
+    # )
+
+    # try:
+    #     async for chunk in response:
+    #         if chunk:
+    #             if chunk.type == "content-delta":
+    #                 content = json.dumps(
+    #                     {
+    #                         "type": "response-chunk",
+    #                         "text": chunk.delta.message.content.text,
+    #                     }
+    #                 )
+    #                 yield "data: " + content + "\n\n"
+    #             elif chunk.type == "citation-start":
+    #                 content = json.dumps(
+    #                     {
+    #                         "type": "citation",
+    #                         "title": chunk.delta.message.citations.sources[0].document[
+    #                             "title"
+    #                         ],
+    #                         "text": chunk.delta.message.citations.sources[0].document[
+    #                             "text"
+    #                         ],
+    #                     }
+    #                 )
+    #                 yield "data: " + content + "\n\n"
+    # except httpx.RemoteProtocolError:
+    #     pass
+    # finally:
+    #     yield "data: [DONE]\n\n"
+
+
+async def query_rag(
+    question: str,
+    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    weaviate_async_client: weaviate.WeaviateAsyncClient,
+    language: SupportedLanguages,
+    parties: list[SupportedParties],
+    use_web_search: bool,
+) -> Answer:
+
+    if len(parties) > 1:
+        # Model to decide if a single party is refered to in multiparty scenario
+        res = await cohere_async_clients["command_r_async_client"].chat(
+            model="command-r-08-2024",
+            messages=[
+                SystemChatMessageV2(multiparty_detection_instructions[language]),
+                UserChatMessageV2(content=question),
+            ],
+            response_format=multiparty_detection_response_format,
+        )
+        parties = json.loads(res.message.content[0].text)["parties"]
+
+        if "all" in parties:
+            parties = list(SupportedParties)
+
+        if "unspecified" in parties:
+            parties = []
+
+    if len(parties) == 0:
+        results = await single_party_search(
+            question,
+            cohere_async_clients,
+            weaviate_async_client,
+            language,
+            None,
+            use_web_search,
+        )
+    else:
+        tasks = [
+            single_party_search(
+                question,
+                cohere_async_clients,
+                weaviate_async_client,
+                language,
+                party,
+                use_web_search,
+            )
+            for party in parties
+        ]
+        results = asyncio.gather(*tasks)
+
+    return results

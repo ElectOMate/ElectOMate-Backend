@@ -8,3 +8,4 @@ pymupdf4llm
 asyncer
 prometheus_fastapi_instrumentator
 markdown
+azure-cognitiveservices-search-websearch
