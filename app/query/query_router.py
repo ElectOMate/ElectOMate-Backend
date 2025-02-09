@@ -22,7 +22,6 @@ async def stream(
     return StreamingResponse(
         stream_rag(
             question.question,
-            question.rerank,
             cohere_async_clients,
             weaviate_async_client,
             language_code,
@@ -41,7 +40,6 @@ async def query(language_code: SupportedLanguages, question: Question) -> Answer
     # Return the full response
     response = await query_rag(
         question.question,
-        question.rerank,
         cohere_async_clients,
         weaviate_async_client,
         language_code,

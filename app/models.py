@@ -12,9 +12,6 @@ class Question(BaseModel):
     question: str = Field(
         max_length=500, description="The question asked to the RAG pipeline."
     )
-    rerank: bool = Field(
-        default=False, description="Use more advanced reranking models"
-    )
 
 
 class ChatFunctionCallRequest(BaseModel):
