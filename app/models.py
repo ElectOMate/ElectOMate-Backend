@@ -57,3 +57,7 @@ class AskAllPartiesResponse(BaseModel):
 class AskAllPartiesRequest(BaseModel):
     question_body: Question
     selected_parties: Dict[str, bool]
+
+
+class SearchQuery(BaseModel):
+    query: str

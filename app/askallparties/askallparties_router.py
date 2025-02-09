@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+import asyncio
 
 from ..models import (
     SupportedLanguages,
@@ -30,28 +31,47 @@ async def askallparties(
         logging.error("Received an empty question.")
         raise HTTPException(status_code=400, detail="Question cannot be empty.")
 
+    async def query_party(party, question, country_code):
+        prefixed_question = f"What would {party} say to this: {question}"
+        logging.debug(
+            f"Querying RAG for party: {party} with question: {prefixed_question}"
+        )
+        print(f"Request: {request}")
+        # Return the full response
+        response = await query_rag(
+            request.question_body.question,
+            request.question_body.rerank,
+            cohere_async_clients,
+            weaviate_async_client,
+            country_code,
+        )
+        print(f"Response: {response}")
+        # Log the type and content of the response
+        logging.debug(f"Type of response: {type(response)}")
+        logging.debug(f"Content of response: {response}")
+
+        # Ensure response is a dictionary with 'answer' key
+        if isinstance(response, dict) and 'answer' in response:
+            policies = [response['answer']]
+        else:
+            logging.error("Response is not in the expected format.")
+            policies = []
+
+        logging.debug(f"Received policies for {party}: {policies}")
+        return PartyResponse(party=party, policies=policies)
+
     try:
         logging.info("Preparing to query parties' responses.")
 
-        responses = []
-        for party, isSelected in selected_parties.items():
-            if isSelected:
-                prefixed_question = f"What would {party} say to this: {question}"
-                logging.debug(
-                    f"Querying RAG for party: {party} with question: {prefixed_question}"
-                )
-                # Return the full response
-                response = await query_rag(
-                    request.question_body.question,
-                    request.question_body.rerank,
-                    cohere_async_clients,
-                    weaviate_async_client,
-                    country_code,
-                )
+        selected_parties_count = sum(selected_parties.values())
+        logging.info(f"Number of selected parties: {selected_parties_count}")
 
-                policies = [s.strip() for s in response.split(".") if s.strip()]
-                logging.debug(f"Received policies for {party}: {policies}")
-                responses.append(PartyResponse(party=party, policies=policies))
+        tasks = [
+            query_party(party, question, country_code)
+            for party, isSelected in selected_parties.items() if isSelected
+        ]
+
+        responses = await asyncio.gather(*tasks)
 
         logging.info(f"responses={responses}")
         logging.info("Successfully gathered responses from selected parties.")

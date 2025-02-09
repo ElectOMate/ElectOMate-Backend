@@ -97,7 +97,7 @@ async def call_cohere_chat(
 # -----------------------
 # The main function: perform_search
 # -----------------------
-async def perform_search(query: dict) -> dict:
+async def perform_search(query: SearchQuery) -> dict:
     """
     1. Retrieve the user question from `query`
     2. Perform a Bing search
@@ -105,8 +105,9 @@ async def perform_search(query: dict) -> dict:
     4. Call the Cohere model (async) to summarize
     5. Return final text plus the sources
     """
+
     try:
-        user_question = query.get("question")
+        user_question = query.query
         if not user_question:
             raise HTTPException(
                 status_code=400, detail="Query parameter 'question' is required"
