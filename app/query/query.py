@@ -242,6 +242,21 @@ async def stream_rag(
         )
         async for chunk in result:
             yield json.dumps(chunk)
+    elif len(parties) == 1:
+        yield json.dumps(
+            {"type": "answer-type-chunk", "answer_type": "standard-answer"}
+        )
+        result = single_pary_stream(
+            question,
+            party=parties[0],
+            use_web_search=use_web_search,
+            use_database_search=use_database_search,
+            cohere_async_clients=cohere_async_clients,
+            weaviate_async_client=weaviate_async_client,
+            language=language,
+        )
+        async for chunk in result:
+            yield json.dumps(chunk)
     else:
         yield json.dumps(
             {"type": "answer-type-chunk", "answer_type": "multi-party-answer"}
@@ -418,6 +433,17 @@ async def query_rag(
         result = await single_party_search(
             question,
             party=None,
+            use_web_search=use_web_search,
+            use_database_search=use_database_search,
+            cohere_async_clients=cohere_async_clients,
+            weaviate_async_client=weaviate_async_client,
+            language=language,
+        )
+        return {"answer": result}
+    elif len(parties) == 1:
+        result = await single_party_search(
+            question,
+            party=parties[0],
             use_web_search=use_web_search,
             use_database_search=use_database_search,
             cohere_async_clients=cohere_async_clients,
