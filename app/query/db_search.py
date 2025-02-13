@@ -18,6 +18,8 @@ async def get_documents(
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
 ) -> list[DocumentToolContent]:
+    print(f"DB search with party {party}")
+    
     search_query_embedding_response = await cohere_async_clients[
         "embed_multilingual_async_client"
     ].embed(
@@ -30,7 +32,7 @@ async def get_documents(
     collection = weaviate_async_client.collections.get(name="Documents")
     
     if party is not None:
-        party_filter = wvc.query.Filter.by_property("filename").like(f"{party}.pdf")
+        party_filter = wvc.query.Filter.by_property("filename").like(f"{party.lower()}.pdf")
         
         results = await collection.query.hybrid(
             search_query,

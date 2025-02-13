@@ -310,6 +310,7 @@ async def single_party_search(
                 tool_calls=res.message.tool_calls, tool_plan=res.message.tool_plan
             )
         )
+        print(res.message.tool_plan)
 
         for tc in res.message.tool_calls:
 

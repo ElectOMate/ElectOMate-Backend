@@ -17,11 +17,11 @@ async def web_search(
     Returns a list of dicts, each containing 'title', 'url', and 'snippet'.
     """
     response = bing_client.web.search(
-        query=search_query + "Tagesschau",
+        query=search_query,
         market="de-DE",
         set_lang=language.upper(),
         response_filter=[AnswerType.news, AnswerType.web_pages],
-        count=5,
+        count=20,
     )
 
     chunks = []
