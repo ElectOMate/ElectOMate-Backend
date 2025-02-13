@@ -48,14 +48,14 @@ async def get_documents(
     collection = weaviate_async_client.collections.get(name="Documents")
 
     # Define the filter to check if the document name contains "CDU"
-    cdu_filter = Filter.by_property("title").like("*CDU*")
+    cdu_filter = Filter.by_property("title").like("*linke*")
 
     tasks = [
         collection.query.hybrid(
             search_queries[i],
             vector=embedding,
             limit=30,
-            filters=cdu_filter  # Apply the filter here
+            # filters=cdu_filter  # Apply the filter here
         )
         for i, embedding in enumerate(
             search_queries_embeddings_response.embeddings.float
@@ -152,7 +152,10 @@ async def query_rag(
 
     response = await cohere_async_clients["command_r_async_client"].chat(
         model="command-r-08-2024",
-        messages=[SystemChatMessageV2(content=query_rag_system_instructions[language]), UserChatMessageV2(content=question),],
+        messages = [
+            SystemChatMessageV2(content=query_rag_system_instructions[language]),
+            UserChatMessageV2(content=question),
+        ],
         documents=documents,
     )
     # Ensure citations are not None

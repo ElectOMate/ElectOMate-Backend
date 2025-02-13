@@ -12,12 +12,16 @@ from .upload import upload_router
 from .Bingsearch import Bingsearch_router
 from .transcription import transcription_router
 from .askallparties import askallparties_router
+from .api2 import router as api2_router
+from .custom_answer_evaluation import custom_answer_evaluation
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(app: FastAPI):
+    # Startup
     await weaviate_async_client.connect()
     yield
+    # Shutdown
     await weaviate_async_client.close()
 
 
@@ -29,10 +33,11 @@ app.include_router(upload_router.router)
 app.include_router(Bingsearch_router.router)
 app.include_router(transcription_router.router)
 app.include_router(askallparties_router.router)
-
+app.include_router(api2_router.router)
+app.include_router(custom_answer_evaluation.router)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=json.loads(settings.allow_origins),
+    allow_origins=["*"],  # Adjust this to your frontend URL in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,5 +49,15 @@ Instrumentator().instrument(app).expose(app)
 async def read_root():
     logging.debug("GET request received at root...")
     return {"health": "Ok"}
+
+@app.on_event("startup")
+async def startup_event():
+    for route in app.routes:
+        logger.info(f"Registered route: {route.path} with methods: {route.methods}")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    # Add your shutdown logic here
+    pass
 
 

@@ -74,18 +74,27 @@ cohere_async_clients = {
     ),
 }
 
-weaviate_async_client = weaviate.use_async_with_custom(
-    http_host=settings.wv_http_host,
-    http_port=settings.wv_http_port,
-    http_secure=False,
-    grpc_host=settings.wv_grpc_host,
-    grpc_port=settings.wv_grpc_port,
-    grpc_secure=False,
-    auth_credentials=wvc.init.Auth.api_key(settings.wv_api_key),
-    additional_config=wvc.init.AdditionalConfig(
-        timeout=wvc.init.Timeout(init=30, query=60, insert=120)
-    ),
-)
+class WeaviateClientSingleton:
+    _instance = None
+
+    @staticmethod
+    def get_instance():
+        if WeaviateClientSingleton._instance is None:
+            WeaviateClientSingleton._instance = weaviate.use_async_with_custom(
+                http_host=settings.wv_http_host,
+                http_port=settings.wv_http_port,
+                http_secure=False,
+                grpc_host=settings.wv_grpc_host,
+                grpc_port=settings.wv_grpc_port,
+                grpc_secure=False,
+                auth_credentials=wvc.init.Auth.api_key(settings.wv_api_key),
+                additional_config=wvc.init.AdditionalConfig(
+                    timeout=wvc.init.Timeout(init=30, query=60, insert=120)
+                ),
+            )
+        return WeaviateClientSingleton._instance
+
+weaviate_async_client = WeaviateClientSingleton.get_instance()
 
 openai_async_client = openai.AsyncClient(api_key=settings.openai_api_key)
 

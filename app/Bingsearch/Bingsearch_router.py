@@ -8,6 +8,18 @@ router = APIRouter()
 async def search_route(query: SearchQuery) -> dict:
     try:
         # Call the service function that implements the search logic
-        return await perform_search(query)
+      
+      
+       return {
+            "sessionId": "123",
+            "summary": "test",  # or `formatted_response`
+            "sources": [
+                {
+                    "title": "Example Title",
+                    "url": "https://test.com",
+                    "snippet": "Example snippet from the source."
+                }
+            ],
+        }
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))

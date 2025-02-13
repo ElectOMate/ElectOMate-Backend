@@ -64,3 +64,16 @@ class AskAllPartiesRequest(BaseModel):
 
 class SearchQuery(BaseModel):
     query: str
+
+
+class QuestionnaireQuestion(BaseModel):
+    q: str
+    id: int
+    context: Optional[str] = None
+
+
+class UserAnswer(BaseModel):
+    custom_answer: str
+    users_answer: str
+    wheights: str
+    skipped: bool

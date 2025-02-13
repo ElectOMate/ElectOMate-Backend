@@ -1,0 +1,3017 @@
+{
+  "timestamp": "2025-02-11T00:23:08.620413",
+  "question_id": 0,
+  "question": "Die EU soll eigene Steuern erheben dürfen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.641102",
+  "question_id": 1,
+  "question": "Fahrzeuge mit Verbrennungsmotoren sollen auch nach 2035 in der EU neu zugelassen werden können.",
+  "user_custom_answer": "I totally agree with this statement, this is very important to me",
+  "button_answer": "0",
+  "answer_type": "custom",
+  "lookup_response": {
+    "lookupPrompts": [
+      "EU vehicle emission standards 2035",
+      "European Union combustion engine ban",
+      "EU parties on vehicle emission regulations"
+    ]
+  },
+  "party_contexts": {
+    "SPD": [
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Ein Großteil der Neuwagen wird gewerblich genutzt. Hier werden wir durch bessere\n**Abschreibungsbedingungen und Änderungen bei der Dienstwagenbesteuerung die Attraktivität der**\nE-Mobilität weiter verbessern. Die Kfz-Steuer-Befreiung für E-Autos werden wir bis 2035 verlängern.\n\n**Wir wollen, dass Unternehmen die besten Rahmenbedingungen haben, um in Deutschland zu**\n**investieren.**\n\nWir können etwas tun für unsere Unternehmen und für den Wirtschaftsstandort Deutschland."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\n55 Euro in 2025 und maximal 65 Euro in 2026 gilt. Wenn ab 2027 die europäische Regelung in Kraft\ntritt, werden wir durch geeignete Maßnahmen auf europäischer und nationaler Ebene (zum Beispiel\nKlimageld) dafür Sorge tragen, dass niemand überfordert wird."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Deutschland soll ein führendes Land für die Herstellung von Fahrzeugen bleiben. Wir setzen uns dafür\nein, dass die deutschen Automobilhersteller aktuell keine Strafzahlungen im Zusammenhang mit\nden CO2-Flottengrenzwerten an Brüssel leisten müssen. Diese Mittel werden jetzt für Investitionen in\nklimafreundliche Fahrzeuge und die Sicherung von Arbeitsplätzen gebraucht. Wir werden mit der EUKommission in Verhandlungen treten, die Ziele beizubehalten, aber den Weg dorthin pragmatischer"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Regelungen an, die die Verlagerung von CO2-Emissionen (Carbon Leakage) vermeiden. Wir wollen die\n**Luftverkehrsteuer in eine EU-Klimaabgabe umwandeln, die von allen Airlines gezahlt wird, auch von**\ndenen außerhalb Europas. Wir werden die Wasserstraßeninfrastruktur ertüchtigen, die Nationale\n**Hafenstrategie zügig umsetzen und die Modernisierung der Schiffsflotten unterstützen. Forschung**\nund Markthochlauf für nachhaltige Kraftstoffe wie E-Fuels sind besonders für Luftverkehr und"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "35"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Einbeziehung von jungen Gebrauchten sowie Leasingmodellen helfen wir auch Menschen mit\ngeringeren Einkommen. Mit diesem Paket unterstützen wir vor allem Haushalte mit niedrigen\nund normalen Einkommen beim Umstieg auf ein E-Auto, noch bevor sich die Mobilitätskosten der\nVerbrenner durch den Anstieg des CO2-Preises deutlich erhöhen. Wir wollen diesen Weg gemeinsam\n**mit unseren europäischen Nachbarn gehen und erwarten von der EU-Kommission kurzfristig eine**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Einbeziehung von jungen Gebrauchten sowie Leasingmodellen helfen wir auch Menschen mit\ngeringeren Einkommen. Mit diesem Paket unterstützen wir vor allem Haushalte mit niedrigen\nund normalen Einkommen beim Umstieg auf ein E-Auto, noch bevor sich die Mobilitätskosten der\nVerbrenner durch den Anstieg des CO2-Preises deutlich erhöhen. Wir wollen diesen Weg gemeinsam\n**mit unseren europäischen Nachbarn gehen und erwarten von der EU-Kommission kurzfristig eine**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Deutschland soll ein führendes Land für die Herstellung von Fahrzeugen bleiben. Wir setzen uns dafür\nein, dass die deutschen Automobilhersteller aktuell keine Strafzahlungen im Zusammenhang mit\nden CO2-Flottengrenzwerten an Brüssel leisten müssen. Diese Mittel werden jetzt für Investitionen in\nklimafreundliche Fahrzeuge und die Sicherung von Arbeitsplätzen gebraucht. Wir werden mit der EUKommission in Verhandlungen treten, die Ziele beizubehalten, aber den Weg dorthin pragmatischer"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Regelungen an, die die Verlagerung von CO2-Emissionen (Carbon Leakage) vermeiden. Wir wollen die\n**Luftverkehrsteuer in eine EU-Klimaabgabe umwandeln, die von allen Airlines gezahlt wird, auch von**\ndenen außerhalb Europas. Wir werden die Wasserstraßeninfrastruktur ertüchtigen, die Nationale\n**Hafenstrategie zügig umsetzen und die Modernisierung der Schiffsflotten unterstützen. Forschung**\nund Markthochlauf für nachhaltige Kraftstoffe wie E-Fuels sind besonders für Luftverkehr und"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "Wir bekennen uns klar zu den Klimazielen für Deutschland und die EU. Wir müssen den Anstieg\nder globalen Durchschnittstemperatur auf deutlich unter zwei Grad Celsius begrenzen und nach\nMöglichkeit auf den 1,5-Grad-Pfad führen. Wir unterstützen den europäischen Green Deal, damit\nEuropa der erste klimaneutrale Kontinent wird. Eine Abschwächung der erreichten Errungenschaften\nist mit uns nicht zu machen. Unsere Wirtschaft braucht Planungssicherheit. Beschlossene Gesetze"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 14. Wir kämpfen für einen Staat, der besser funktioniert.",
+        "content": "europäischer Ebene stärken."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Der europäische Binnenmarkt ist von enormer Bedeutung für die wirtschaftliche Entwicklung in\nDeutschland und außerdem Motor für den europäischen Wohlstand.\n\nWir begrüßen die Berichte von Enrico Letta und Mario Draghi zur Stärkung der europäischen\nWettbewerbsfähigkeit und unterstützen die EU-Kommission bei der Umsetzung."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Ziele unserer Klimaschutzpolitik sind die Vermeidung von Treibhausgasemissionen durch den\nbeschleunigten Ausbau Erneuerbarer Energien, effizientes Energiemanagement, Dekarbonisierung\nder Industrie und eine umfassendere Kreislaufwirtschaft. Wir folgen deshalb dem Grundsatz „CO2**Vermeidung vor CO2-Abscheidung“.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Deutschland soll ein führendes Land für die Herstellung von Fahrzeugen bleiben. Wir setzen uns dafür\nein, dass die deutschen Automobilhersteller aktuell keine Strafzahlungen im Zusammenhang mit\nden CO2-Flottengrenzwerten an Brüssel leisten müssen. Diese Mittel werden jetzt für Investitionen in\nklimafreundliche Fahrzeuge und die Sicherung von Arbeitsplätzen gebraucht. Wir werden mit der EUKommission in Verhandlungen treten, die Ziele beizubehalten, aber den Weg dorthin pragmatischer"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Regelungen an, die die Verlagerung von CO2-Emissionen (Carbon Leakage) vermeiden. Wir wollen die\n**Luftverkehrsteuer in eine EU-Klimaabgabe umwandeln, die von allen Airlines gezahlt wird, auch von**\ndenen außerhalb Europas. Wir werden die Wasserstraßeninfrastruktur ertüchtigen, die Nationale\n**Hafenstrategie zügig umsetzen und die Modernisierung der Schiffsflotten unterstützen. Forschung**\nund Markthochlauf für nachhaltige Kraftstoffe wie E-Fuels sind besonders für Luftverkehr und"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Einbeziehung von jungen Gebrauchten sowie Leasingmodellen helfen wir auch Menschen mit\ngeringeren Einkommen. Mit diesem Paket unterstützen wir vor allem Haushalte mit niedrigen\nund normalen Einkommen beim Umstieg auf ein E-Auto, noch bevor sich die Mobilitätskosten der\nVerbrenner durch den Anstieg des CO2-Preises deutlich erhöhen. Wir wollen diesen Weg gemeinsam\n**mit unseren europäischen Nachbarn gehen und erwarten von der EU-Kommission kurzfristig eine**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 22. Wir kämpfen für ein starkes und handlungsfähiges Europa.",
+        "content": "Deutschland kommt als größtem und wirtschaftlich stärkstem Mitgliedstaat innerhalb der EU eine\nbesondere Verantwortung zu. Dafür ist es wichtig, dass die Partner in der Bundesregierung auf\nEU-Ebene mit einer Stimme sprechen. Wir erwarten von allen demokratischen Parteien, dass sie\ndie Brandmauer gegen Rechtspopulismus und -extremismus, auch im Europäischen Parlament,\naufrechterhalten.\n\n59"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Ein Großteil der Neuwagen wird gewerblich genutzt. Hier werden wir durch bessere\n**Abschreibungsbedingungen und Änderungen bei der Dienstwagenbesteuerung die Attraktivität der**\nE-Mobilität weiter verbessern. Die Kfz-Steuer-Befreiung für E-Autos werden wir bis 2035 verlängern.\n\n**Wir wollen, dass Unternehmen die besten Rahmenbedingungen haben, um in Deutschland zu**\n**investieren.**\n\nWir können etwas tun für unsere Unternehmen und für den Wirtschaftsstandort Deutschland."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "Wir bekennen uns klar zu den Klimazielen für Deutschland und die EU. Wir müssen den Anstieg\nder globalen Durchschnittstemperatur auf deutlich unter zwei Grad Celsius begrenzen und nach\nMöglichkeit auf den 1,5-Grad-Pfad führen. Wir unterstützen den europäischen Green Deal, damit\nEuropa der erste klimaneutrale Kontinent wird. Eine Abschwächung der erreichten Errungenschaften\nist mit uns nicht zu machen. Unsere Wirtschaft braucht Planungssicherheit. Beschlossene Gesetze"
+      }
+    ],
+    "GRUENE": [
+      {
+        "title": "",
+        "content": "Environmental party advocating for climate action and sustainability"
+      }
+    ],
+    "FDP": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "CDU/CSU": [
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "Bürokratie abzubauen und die Ausbildung effizient zu gestalten. Das Verbrenner-Verbot\nmuss rückgängig gemacht werden. Die Flottengrenzwerte müssen überprüft, Strafzahlungen verhindert werden. Für die E-Mobilität muss die Ladeinfrastruktur angemessen\nausgebaut werden."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "Bürokratie abzubauen und die Ausbildung effizient zu gestalten. Das Verbrenner-Verbot\nmuss rückgängig gemacht werden. Die Flottengrenzwerte müssen überprüft, Strafzahlungen verhindert werden. Für die E-Mobilität muss die Ladeinfrastruktur angemessen\nausgebaut werden."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir setzen auf den Emissionshandel. Er ist das richtige Instrument, um die Emissionsmenge effizient zu begrenzen und damit das Klima bestmöglich zu schützen.\n\nDeutschland fit machen für Innovationen, Digitalisierung und Startups"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir setzen auf den Emissionshandel. Er ist das richtige Instrument, um die Emissionsmenge effizient zu begrenzen und damit das Klima bestmöglich zu schützen.\n\nDeutschland fit machen für Innovationen, Digitalisierung und Startups"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "- TTransport weiterentwickeln. Die Zukunft des Güterverkehrs gehört dem emissionsfreien\nLastenverkehr, der Schiene und den Wasserstraßen. Wir werden dabei auch neue Technologien in den Blick nehmen. Zur Bekämpfung des Fahrermangels bei LKW und Bus\nreformieren wir die Berufskraftfahrerqualifikation."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "- TTransport weiterentwickeln. Die Zukunft des Güterverkehrs gehört dem emissionsfreien\nLastenverkehr, der Schiene und den Wasserstraßen. Wir werden dabei auch neue Technologien in den Blick nehmen. Zur Bekämpfung des Fahrermangels bei LKW und Bus\nreformieren wir die Berufskraftfahrerqualifikation."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Klimaziele einhalten",
+        "content": "- VVerantwortung für die Welt übernehmen. Wir unterstützen andere Länder beim Klimaschutz. Dabei setzen wir auf Technologie- und Wissenstransfer mit Innovationen „Made\nin Germany“."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- EEU-Bürokratie kleinhalten. Mit einem Gesetz gegen Draufsatteln – „Anti-Gold-PlatingGesetz“ – nehmen wir Regelungen zurück, die über europäisches Recht hinausgehen,\nund unterbinden künftig jegliche Übererfüllung. Parallelregulierungen auf europäischer\nund nationaler Ebene lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- EEU-Bürokratie kleinhalten. Mit einem Gesetz gegen Draufsatteln – „Anti-Gold-PlatingGesetz“ – nehmen wir Regelungen zurück, die über europäisches Recht hinausgehen,\nund unterbinden künftig jegliche Übererfüllung. Parallelregulierungen auf europäischer\nund nationaler Ebene lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "Bürokratie abzubauen und die Ausbildung effizient zu gestalten. Das Verbrenner-Verbot\nmuss rückgängig gemacht werden. Die Flottengrenzwerte müssen überprüft, Strafzahlungen verhindert werden. Für die E-Mobilität muss die Ladeinfrastruktur angemessen\nausgebaut werden."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "Bürokratie abzubauen und die Ausbildung effizient zu gestalten. Das Verbrenner-Verbot\nmuss rückgängig gemacht werden. Die Flottengrenzwerte müssen überprüft, Strafzahlungen verhindert werden. Für die E-Mobilität muss die Ladeinfrastruktur angemessen\nausgebaut werden."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Mit Innovationen und Technologien durchstarten",
+        "content": "- EEU-Projekte voranbringen. Die Projekte der EU „Important Project of Common European\nInterest“ (IPCEI) oder der „European Chips Act“ dienen der Wettbewerbsfähigkeit der gesamten EU und damit auch Deutschlands. Wir bekennen uns zu diesen wichtigen Förderinstrumenten und deren möglichst wirkungsvollen Einsatz in Deutschland."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Mit Innovationen und Technologien durchstarten",
+        "content": "- EEU-Projekte voranbringen. Die Projekte der EU „Important Project of Common European\nInterest“ (IPCEI) oder der „European Chips Act“ dienen der Wettbewerbsfähigkeit der gesamten EU und damit auch Deutschlands. Wir bekennen uns zu diesen wichtigen Förderinstrumenten und deren möglichst wirkungsvollen Einsatz in Deutschland."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: FFür ein Europa, das Prioritäten setzt",
+        "content": "- AAktionsplan für weniger Bürokratie in Europa. Wir wollen einen sofortigen Belastungsstopp für neue und laufende EU-Initiativen, einen EU-Wettbewerbsfähigkeits-Check und\neinen unabhängigen europäischen Normenkontrollrat, der die Bürokratiekosten misst\nund auch die Erfahrungen in den Mitgliedstaaten mit der Anwendung des EU-Rechts berücksichtigt. Wir wollen eine starke Bürokratiebremse („One in, two out“) in Europa\ndurchsetzen."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir setzen auf den Emissionshandel. Er ist das richtige Instrument, um die Emissionsmenge effizient zu begrenzen und damit das Klima bestmöglich zu schützen.\n\nDeutschland fit machen für Innovationen, Digitalisierung und Startups"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir setzen auf den Emissionshandel. Er ist das richtige Instrument, um die Emissionsmenge effizient zu begrenzen und damit das Klima bestmöglich zu schützen.\n\nDeutschland fit machen für Innovationen, Digitalisierung und Startups"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Emissionshandel richtig umsetzen",
+        "content": "- EEmissionshandel international voranbringen. Wir wollen ihn in der EU durch schrittweise Einbeziehung aller Sektoren mit ihren energiebedingten Emissionen als zentrales\nKlimainstrument stärken."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Emissionshandel richtig umsetzen",
+        "content": "- EEmissionshandel international voranbringen. Wir wollen ihn in der EU durch schrittweise Einbeziehung aller Sektoren mit ihren energiebedingten Emissionen als zentrales\nKlimainstrument stärken."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- EEU-Bürokratie kleinhalten. Mit einem Gesetz gegen Draufsatteln – „Anti-Gold-PlatingGesetz“ – nehmen wir Regelungen zurück, die über europäisches Recht hinausgehen,\nund unterbinden künftig jegliche Übererfüllung. Parallelregulierungen auf europäischer\nund nationaler Ebene lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- EEU-Bürokratie kleinhalten. Mit einem Gesetz gegen Draufsatteln – „Anti-Gold-PlatingGesetz“ – nehmen wir Regelungen zurück, die über europäisches Recht hinausgehen,\nund unterbinden künftig jegliche Übererfüllung. Parallelregulierungen auf europäischer\nund nationaler Ebene lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Klimaziele einhalten",
+        "content": "- VVerantwortung für die Welt übernehmen. Wir unterstützen andere Länder beim Klimaschutz. Dabei setzen wir auf Technologie- und Wissenstransfer mit Innovationen „Made\nin Germany“."
+      }
+    ],
+    "LINKE": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "AFD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "FREIE WÄHLER": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "Volt": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "MLPD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BÜNDNIS DEUTSCHLAND": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BSW": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ]
+  },
+  "evaluation_scores": {},
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.691501",
+  "question_id": 2,
+  "question": "Die EU soll eine eigene Seenotrettung im Mittelmeer aufbauen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.723673",
+  "question_id": 3,
+  "question": "Die Ukraine soll Mitglied der EU werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.754902",
+  "question_id": 4,
+  "question": "Die EU soll vorrangig ökologische Landwirtschaft fördern.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.785289",
+  "question_id": 5,
+  "question": "In Deutschland soll der Euro durch eine nationale Währung ersetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.816475",
+  "question_id": 6,
+  "question": "Die EU soll den Mitgliedstaaten empfehlen, außer \"weiblich\" und \"männlich\" auch die Eintragung einer anderen Geschlechtsidentität im Pass zu ermöglichen.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.850565",
+  "question_id": 7,
+  "question": "Die Jagd von Wölfen soll in Regionen erlaubt sein, in denen der Bestand dadurch nicht gefährdet ist.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.882756",
+  "question_id": 8,
+  "question": "Beim Bau neuer Wohngebäude in der EU soll die Errichtung von Photovoltaikanlagen verpflichtend sein.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.913310",
+  "question_id": 9,
+  "question": "Mehr außenpolitische Entscheidungen der EU sollen mit Mehrheit statt einstimmig getroffen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:21.942825",
+  "question_id": 10,
+  "question": "Der Flugzeugtreibstoff Kerosin soll für Flüge in der EU steuerfrei sein.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:22.004610",
+  "question_id": 11,
+  "question": "Die gemeinsame europäische Polizeibehörde Europol soll weitere Befugnisse erhalten.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:22.065140",
+  "question_id": 12,
+  "question": "Die EU soll länderübergreifende, mehrsprachige Angebote des öffentlich-rechtlichen Rundfunks stärker finanziell fördern.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:22.094156",
+  "question_id": 13,
+  "question": "Die EU soll das Ziel verwerfen, klimaneutral zu werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:22.122658",
+  "question_id": 14,
+  "question": "Bei den Wahlen zum Europäischen Parlament sollen die Parteien weiterhin frei entscheiden können, wie groß der Anteil der Geschlechter auf ihren Listen ist.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:22.152489",
+  "question_id": 15,
+  "question": "Die EU soll Vorgaben für die Höhe der sozialen Grundsicherung in den Mitgliedstaaten machen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:22.181285",
+  "question_id": 16,
+  "question": "Betreiber sozialer Netzwerke sollen frei entscheiden dürfen, wie sie mit Desinformation auf ihren Plattformen umgehen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:22.210729",
+  "question_id": 17,
+  "question": "In der EU sollen mehr Flächen als Naturschutzgebiete ausgewiesen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:22.240004",
+  "question_id": 18,
+  "question": "EU-Fördermittel für Mitgliedstaaten, die Regeln und Werte der EU verletzen, sollen weiterhin zurückgehalten werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:23:22.270698",
+  "question_id": 19,
+  "question": "Die EU soll mehr Waffen für die Ukraine finanzieren.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.016165",
+  "question_id": 1,
+  "question": "Fahrzeuge mit Verbrennungsmotoren sollen auch nach 2035 in der EU neu zugelassen werden können.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.099827",
+  "question_id": 2,
+  "question": "Die EU soll eine eigene Seenotrettung im Mittelmeer aufbauen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.133825",
+  "question_id": 3,
+  "question": "Die Ukraine soll Mitglied der EU werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.164277",
+  "question_id": 4,
+  "question": "Die EU soll vorrangig ökologische Landwirtschaft fördern.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.193982",
+  "question_id": 5,
+  "question": "In Deutschland soll der Euro durch eine nationale Währung ersetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.225041",
+  "question_id": 6,
+  "question": "Die EU soll den Mitgliedstaaten empfehlen, außer \"weiblich\" und \"männlich\" auch die Eintragung einer anderen Geschlechtsidentität im Pass zu ermöglichen.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.256528",
+  "question_id": 7,
+  "question": "Die Jagd von Wölfen soll in Regionen erlaubt sein, in denen der Bestand dadurch nicht gefährdet ist.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.286101",
+  "question_id": 8,
+  "question": "Beim Bau neuer Wohngebäude in der EU soll die Errichtung von Photovoltaikanlagen verpflichtend sein.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.316361",
+  "question_id": 9,
+  "question": "Mehr außenpolitische Entscheidungen der EU sollen mit Mehrheit statt einstimmig getroffen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.347801",
+  "question_id": 10,
+  "question": "Der Flugzeugtreibstoff Kerosin soll für Flüge in der EU steuerfrei sein.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.378675",
+  "question_id": 11,
+  "question": "Die gemeinsame europäische Polizeibehörde Europol soll weitere Befugnisse erhalten.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.408300",
+  "question_id": 12,
+  "question": "Die EU soll länderübergreifende, mehrsprachige Angebote des öffentlich-rechtlichen Rundfunks stärker finanziell fördern.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.438859",
+  "question_id": 13,
+  "question": "Die EU soll das Ziel verwerfen, klimaneutral zu werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.493108",
+  "question_id": 14,
+  "question": "Bei den Wahlen zum Europäischen Parlament sollen die Parteien weiterhin frei entscheiden können, wie groß der Anteil der Geschlechter auf ihren Listen ist.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.524522",
+  "question_id": 15,
+  "question": "Die EU soll Vorgaben für die Höhe der sozialen Grundsicherung in den Mitgliedstaaten machen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.556768",
+  "question_id": 16,
+  "question": "Betreiber sozialer Netzwerke sollen frei entscheiden dürfen, wie sie mit Desinformation auf ihren Plattformen umgehen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.587704",
+  "question_id": 17,
+  "question": "In der EU sollen mehr Flächen als Naturschutzgebiete ausgewiesen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.620153",
+  "question_id": 18,
+  "question": "EU-Fördermittel für Mitgliedstaaten, die Regeln und Werte der EU verletzen, sollen weiterhin zurückgehalten werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:10.652896",
+  "question_id": 19,
+  "question": "Die EU soll mehr Waffen für die Ukraine finanzieren.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.552472",
+  "question_id": 0,
+  "question": "Die EU soll eigene Steuern erheben dürfen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.651312",
+  "question_id": 1,
+  "question": "Fahrzeuge mit Verbrennungsmotoren sollen auch nach 2035 in der EU neu zugelassen werden können.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.702585",
+  "question_id": 2,
+  "question": "Die EU soll eine eigene Seenotrettung im Mittelmeer aufbauen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.734490",
+  "question_id": 3,
+  "question": "Die Ukraine soll Mitglied der EU werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.764037",
+  "question_id": 4,
+  "question": "Die EU soll vorrangig ökologische Landwirtschaft fördern.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.792887",
+  "question_id": 5,
+  "question": "In Deutschland soll der Euro durch eine nationale Währung ersetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.821843",
+  "question_id": 6,
+  "question": "Die EU soll den Mitgliedstaaten empfehlen, außer \"weiblich\" und \"männlich\" auch die Eintragung einer anderen Geschlechtsidentität im Pass zu ermöglichen.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.850861",
+  "question_id": 7,
+  "question": "Die Jagd von Wölfen soll in Regionen erlaubt sein, in denen der Bestand dadurch nicht gefährdet ist.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.880568",
+  "question_id": 8,
+  "question": "Beim Bau neuer Wohngebäude in der EU soll die Errichtung von Photovoltaikanlagen verpflichtend sein.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.918867",
+  "question_id": 9,
+  "question": "Mehr außenpolitische Entscheidungen der EU sollen mit Mehrheit statt einstimmig getroffen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:23.971723",
+  "question_id": 10,
+  "question": "Der Flugzeugtreibstoff Kerosin soll für Flüge in der EU steuerfrei sein.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:24.002218",
+  "question_id": 11,
+  "question": "Die gemeinsame europäische Polizeibehörde Europol soll weitere Befugnisse erhalten.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:24.032853",
+  "question_id": 12,
+  "question": "Die EU soll länderübergreifende, mehrsprachige Angebote des öffentlich-rechtlichen Rundfunks stärker finanziell fördern.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:24.064021",
+  "question_id": 13,
+  "question": "Die EU soll das Ziel verwerfen, klimaneutral zu werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:24.095585",
+  "question_id": 14,
+  "question": "Bei den Wahlen zum Europäischen Parlament sollen die Parteien weiterhin frei entscheiden können, wie groß der Anteil der Geschlechter auf ihren Listen ist.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:40.345380",
+  "question_id": 15,
+  "question": "Die EU soll Vorgaben für die Höhe der sozialen Grundsicherung in den Mitgliedstaaten machen.",
+  "user_custom_answer": "I totally agree with this statement, this is very important to me",
+  "button_answer": "0",
+  "answer_type": "custom",
+  "lookup_response": {
+    "lookupPrompts": [
+      "EU social security standards",
+      "party positions on social security in the EU",
+      "EU member states social welfare policies",
+      "political parties and social safety nets in the EU"
+    ]
+  },
+  "party_contexts": {
+    "SPD": [
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Um eine angemessene soziale Absicherung zu gewährleisten und Armut zu bekämpfen, setzen wir\nuns für europäische Mindeststandards bei den nationalen Grundsicherungssystemen ein."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Soziale Standards sind ein geopolitischer Standortvorteil unseres Wirtschaftsraumes. Wir\nunterstützen Industrie und Wirtschaft, nehmen sie aber auch in die Pflicht. Wirtschaftliche Stärke\nund soziale Sicherheit sind zwei Seiten derselben Medaille. Deswegen setzen wir die Europäische\n**Säule sozialer Rechte entschieden national wie europäisch um. Wir wollen eine echte Europäische**\n**Sozialunion. Wir wollen einen Binnenmarkt, der den Arbeitnehmerinnen und Arbeitnehmern dient.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 24. Wir kämpfen für eine gerechte Welt.",
+        "content": "Wir wollen konkrete Vereinbarungen zu internationalen Standards, die gute Arbeit mit\nexistenzsichernden Löhnen sicherstellt. Mit der EU-Lieferkettenrichtlinie haben wir klare Regelungen\nund gleiche Voraussetzungen für alle Unternehmen in Europa geschaffen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 20. Wir kämpfen für eine moderne Einwanderungsgesellschaft.",
+        "content": "für das Gemeinsame Europäische Asylsystem. Grenzverfahren müssen hohe rechtliche Standards\ngewährleisten. Unser Ziel ist eine wirklich solidarische Verteilung, an der sich alle Mitgliedstaaten\nbeteiligen. Dafür braucht es mehr als einen lose verabredeten Solidaritätsmechanismus in der\nEuropäischen Union."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 20. Wir kämpfen für eine moderne Einwanderungsgesellschaft.",
+        "content": "Wir haben für neue Klarheit in der Migrationspolitik gesorgt – für einen Paradigmenwechsel hin zu\neiner geordneten Migration auf den Arbeitsmarkt und eine bessere Kontrolle der Fluchtmigration. Auf\neuropäischer Ebene gilt ab 2026 das Gemeinsame Europäische Asylsystem (GEAS). Wir wollen, dass\nin ganz Europa humanitäre Standards für Geflüchtete bestehen und Migration solidarisch gesteuert\nwird. Das individuelle Menschenrecht auf Asyl und das internationale Flüchtlingsrecht sind die Basis"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 5. Wir kämpfen für eine Finanzpolitik, die der Zukunft unseres Landes dient.",
+        "content": "Auf europäischer Ebene hat Next Generation EU einen entscheidenden Impuls für nachhaltige\nZukunftsinvestitionen gegeben. Wir wollen die europäische Wirtschaft und ihre Arbeitnehmerinnen\nund Arbeitnehmer in der Transformation unterstützen. Um die Eurozone vor ökonomischen\nSchocks zu schützen, treten wir für eine europäische Arbeitslosenrückversicherung ein, die in\nZeiten schwerer wirtschaftlicher Krisen greift. So sollen alle Mitgliedstaaten ihre wichtigen sozialen"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 8. Wir kämpfen für stabile Renten.",
+        "content": "Die gesetzliche Rentenversicherung ist die erste starke Säule der Alterssicherung und muss es\nbleiben. Es geht uns um einen guten Lebensstandard im Alter. Das Sicherungsniveau der gesetzlichen\nRente muss deshalb stabilisiert werden. Für die Lebensstandardsicherung müssen aber auch die\nzweite, betriebliche Säule und die dritte, private Säule stärker gefördert werden, damit insbesondere\nGeringverdiener überhaupt die Chance bekommen, vorzusorgen.\n\n24"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Soziale Standards sind ein geopolitischer Standortvorteil unseres Wirtschaftsraumes. Wir\nunterstützen Industrie und Wirtschaft, nehmen sie aber auch in die Pflicht. Wirtschaftliche Stärke\nund soziale Sicherheit sind zwei Seiten derselben Medaille. Deswegen setzen wir die Europäische\n**Säule sozialer Rechte entschieden national wie europäisch um. Wir wollen eine echte Europäische**\n**Sozialunion. Wir wollen einen Binnenmarkt, der den Arbeitnehmerinnen und Arbeitnehmern dient.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 8. Wir kämpfen für stabile Renten.",
+        "content": "Die gute Absicherung im Alter ist ein Kernversprechen unseres Sozialstaats. Wer jahrzehntelang\nBeiträge gezahlt hat, muss auf dieses Versprechen vertrauen können. Der Wert der Arbeit spiegelt\nsich auch in guten Renten im Alter. Dies gilt auch für die heute jungen Menschen, die jetzt ins\nErwerbsleben kommen und viele Jahre Beiträge zahlen werden. Wir lehnen die Rentenkürzungspläne\nvon Union und FDP ab.\n\n**Wir wollen, dass Deine Arbeit auch in der Rente ihren Wert behält.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 5. Wir kämpfen für eine Finanzpolitik, die der Zukunft unseres Landes dient.",
+        "content": "Auf europäischer Ebene hat Next Generation EU einen entscheidenden Impuls für nachhaltige\nZukunftsinvestitionen gegeben. Wir wollen die europäische Wirtschaft und ihre Arbeitnehmerinnen\nund Arbeitnehmer in der Transformation unterstützen. Um die Eurozone vor ökonomischen\nSchocks zu schützen, treten wir für eine europäische Arbeitslosenrückversicherung ein, die in\nZeiten schwerer wirtschaftlicher Krisen greift. So sollen alle Mitgliedstaaten ihre wichtigen sozialen"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Um eine angemessene soziale Absicherung zu gewährleisten und Armut zu bekämpfen, setzen wir\nuns für europäische Mindeststandards bei den nationalen Grundsicherungssystemen ein."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 14. Wir kämpfen für einen Staat, der besser funktioniert.",
+        "content": "Die SPD sorgt für einen Sozialstaat, der den Menschen verlässlich Sicherheit in wichtigen\nLebenslagen bietet. Wir wollen einen bürgerfreundlicheren Staat, der unterstützt und hilft – schnell,\nunbürokratisch und gerecht. Mit einem starken öffentlichen Dienst, modern und digital, der als guter\nArbeitgeber beispielhaft vorangeht.\n\n**Wir wollen einen bürgernahen Staat, der unnötige Wege erspart.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 22. Wir kämpfen für ein starkes und handlungsfähiges Europa.",
+        "content": "Deutschland kommt als größtem und wirtschaftlich stärkstem Mitgliedstaat innerhalb der EU eine\nbesondere Verantwortung zu. Dafür ist es wichtig, dass die Partner in der Bundesregierung auf\nEU-Ebene mit einer Stimme sprechen. Wir erwarten von allen demokratischen Parteien, dass sie\ndie Brandmauer gegen Rechtspopulismus und -extremismus, auch im Europäischen Parlament,\naufrechterhalten.\n\n59"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten",
+        "content": "**gerechte Steuern und Abgaben, für sichere Arbeitsplätze und eine stabile Rente sorgen.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Soziale Standards sind ein geopolitischer Standortvorteil unseres Wirtschaftsraumes. Wir\nunterstützen Industrie und Wirtschaft, nehmen sie aber auch in die Pflicht. Wirtschaftliche Stärke\nund soziale Sicherheit sind zwei Seiten derselben Medaille. Deswegen setzen wir die Europäische\n**Säule sozialer Rechte entschieden national wie europäisch um. Wir wollen eine echte Europäische**\n**Sozialunion. Wir wollen einen Binnenmarkt, der den Arbeitnehmerinnen und Arbeitnehmern dient.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Um eine angemessene soziale Absicherung zu gewährleisten und Armut zu bekämpfen, setzen wir\nuns für europäische Mindeststandards bei den nationalen Grundsicherungssystemen ein."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 20. Wir kämpfen für eine moderne Einwanderungsgesellschaft.",
+        "content": "Wir haben für neue Klarheit in der Migrationspolitik gesorgt – für einen Paradigmenwechsel hin zu\neiner geordneten Migration auf den Arbeitsmarkt und eine bessere Kontrolle der Fluchtmigration. Auf\neuropäischer Ebene gilt ab 2026 das Gemeinsame Europäische Asylsystem (GEAS). Wir wollen, dass\nin ganz Europa humanitäre Standards für Geflüchtete bestehen und Migration solidarisch gesteuert\nwird. Das individuelle Menschenrecht auf Asyl und das internationale Flüchtlingsrecht sind die Basis"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 5. Wir kämpfen für eine Finanzpolitik, die der Zukunft unseres Landes dient.",
+        "content": "Auf europäischer Ebene hat Next Generation EU einen entscheidenden Impuls für nachhaltige\nZukunftsinvestitionen gegeben. Wir wollen die europäische Wirtschaft und ihre Arbeitnehmerinnen\nund Arbeitnehmer in der Transformation unterstützen. Um die Eurozone vor ökonomischen\nSchocks zu schützen, treten wir für eine europäische Arbeitslosenrückversicherung ein, die in\nZeiten schwerer wirtschaftlicher Krisen greift. So sollen alle Mitgliedstaaten ihre wichtigen sozialen"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 20. Wir kämpfen für eine moderne Einwanderungsgesellschaft.",
+        "content": "für das Gemeinsame Europäische Asylsystem. Grenzverfahren müssen hohe rechtliche Standards\ngewährleisten. Unser Ziel ist eine wirklich solidarische Verteilung, an der sich alle Mitgliedstaaten\nbeteiligen. Dafür braucht es mehr als einen lose verabredeten Solidaritätsmechanismus in der\nEuropäischen Union."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 14. Wir kämpfen für einen Staat, der besser funktioniert.",
+        "content": "Unser Sozialstaat soll an Lebenslagen und Bedürfnissen der Menschen ausgerichtet werden und\nnicht an Zuständigkeiten. Indem wir Antragsverfahren vereinfachen, Leistungen zusammenfassen\n**und aufeinander abstimmen, wollen wir verhindern, dass man von einer Stelle zur nächsten**\nverwiesen wird. Wir arbeiten auf zentrale Anlaufstellen hin, die für alle wohnortnah, sozialräumlich,\nniedrigschwellig, mehrsprachig, barrierefrei und auch digital erreichbar sind. Es geht dabei nicht um"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 3. Wir kämpfen für einen starken Arbeitsmarkt und",
+        "content": "anerkennen, dass ein erheblicher Anteil von Bürgergeldbeziehenden gesundheitlich eingeschränkt\nist. Sie müssen besser im Betreuungs- und Integrationsprozess unterstützt werden. Neben\nWeiterbildung hat sich auch das Instrument des sozialen Arbeitsmarkts, der neue Chancen eröffnet,\neiner sozialversicherten Arbeit nachzugehen, bewährt. Wir haben die Regelungen für den sozialen\n**Arbeitsmarkt deshalb entfristet. Wir wollen so Arbeitsuchenden Teilhabe ermöglichen und sie aus der**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Soziale Standards sind ein geopolitischer Standortvorteil unseres Wirtschaftsraumes. Wir\nunterstützen Industrie und Wirtschaft, nehmen sie aber auch in die Pflicht. Wirtschaftliche Stärke\nund soziale Sicherheit sind zwei Seiten derselben Medaille. Deswegen setzen wir die Europäische\n**Säule sozialer Rechte entschieden national wie europäisch um. Wir wollen eine echte Europäische**\n**Sozialunion. Wir wollen einen Binnenmarkt, der den Arbeitnehmerinnen und Arbeitnehmern dient.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 22. Wir kämpfen für ein starkes und handlungsfähiges Europa.",
+        "content": "Deutschland kommt als größtem und wirtschaftlich stärkstem Mitgliedstaat innerhalb der EU eine\nbesondere Verantwortung zu. Dafür ist es wichtig, dass die Partner in der Bundesregierung auf\nEU-Ebene mit einer Stimme sprechen. Wir erwarten von allen demokratischen Parteien, dass sie\ndie Brandmauer gegen Rechtspopulismus und -extremismus, auch im Europäischen Parlament,\naufrechterhalten.\n\n59"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten",
+        "content": "**gerechte Steuern und Abgaben, für sichere Arbeitsplätze und eine stabile Rente sorgen.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 14. Wir kämpfen für einen Staat, der besser funktioniert.",
+        "content": "Die SPD sorgt für einen Sozialstaat, der den Menschen verlässlich Sicherheit in wichtigen\nLebenslagen bietet. Wir wollen einen bürgerfreundlicheren Staat, der unterstützt und hilft – schnell,\nunbürokratisch und gerecht. Mit einem starken öffentlichen Dienst, modern und digital, der als guter\nArbeitgeber beispielhaft vorangeht.\n\n**Wir wollen einen bürgernahen Staat, der unnötige Wege erspart.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 5. Wir kämpfen für eine Finanzpolitik, die der Zukunft unseres Landes dient.",
+        "content": "Auf europäischer Ebene hat Next Generation EU einen entscheidenden Impuls für nachhaltige\nZukunftsinvestitionen gegeben. Wir wollen die europäische Wirtschaft und ihre Arbeitnehmerinnen\nund Arbeitnehmer in der Transformation unterstützen. Um die Eurozone vor ökonomischen\nSchocks zu schützen, treten wir für eine europäische Arbeitslosenrückversicherung ein, die in\nZeiten schwerer wirtschaftlicher Krisen greift. So sollen alle Mitgliedstaaten ihre wichtigen sozialen"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Um eine angemessene soziale Absicherung zu gewährleisten und Armut zu bekämpfen, setzen wir\nuns für europäische Mindeststandards bei den nationalen Grundsicherungssystemen ein."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen",
+        "content": "und Demokraten sowie Organisationen für eine starke Zivilgesellschaft."
+      }
+    ],
+    "GRUENE": [
+      {
+        "title": "",
+        "content": "Environmental party advocating for climate action and sustainability"
+      }
+    ],
+    "FDP": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "CDU/CSU": [
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Pflege zukunftsfest machen",
+        "content": "Pflege darf kein Armutsrisiko sein – das ist unser Anspruch. Wir lassen uns von Solidarität\nund Generationengerechtigkeit leiten. Die Soziale Pflegeversicherung in Deutschland ist\nein Erfolgsmodell in der Sozialpolitik. Aufgrund veränderter Rahmenbedingungen braucht\nsie 30 Jahre nach ihrer Einführung durch die Union ein Update. Dazu brauchen wir einen"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Pflege zukunftsfest machen",
+        "content": "Pflege darf kein Armutsrisiko sein – das ist unser Anspruch. Wir lassen uns von Solidarität\nund Generationengerechtigkeit leiten. Die Soziale Pflegeversicherung in Deutschland ist\nein Erfolgsmodell in der Sozialpolitik. Aufgrund veränderter Rahmenbedingungen braucht\nsie 30 Jahre nach ihrer Einführung durch die Union ein Update. Dazu brauchen wir einen"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Solides Haushalten, verantwortungsvoller Umgang mit Steuergeld",
+        "content": "- SSubsidiaritätsprinzip beachten. Haushaltsmittel der EU müssen für Aufgaben eingesetzt\nwerden, die einen europäischen Mehrwert schaffen und den Bürgerinnen und Bürgern\nEuropas nutzen.\n\n- EEuropa krisenfest machen. Wir setzen uns für eine Insolvenzordnung für Mitgliedstaaten\nein, um besser für den Ernstfall vorbereitet zu sein."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Solides Haushalten, verantwortungsvoller Umgang mit Steuergeld",
+        "content": "- SSubsidiaritätsprinzip beachten. Haushaltsmittel der EU müssen für Aufgaben eingesetzt\nwerden, die einen europäischen Mehrwert schaffen und den Bürgerinnen und Bürgern\nEuropas nutzen.\n\n- EEuropa krisenfest machen. Wir setzen uns für eine Insolvenzordnung für Mitgliedstaaten\nein, um besser für den Ernstfall vorbereitet zu sein."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- AArbeitsmarktpolitik ist Aufgabe der einzelnen Mitgliedstaaten. Eine europäische Arbeitslosenversicherung lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- AArbeitsmarktpolitik ist Aufgabe der einzelnen Mitgliedstaaten. Eine europäische Arbeitslosenversicherung lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- AArbeitnehmerfreizügigkeit stärken. Wir machen uns dafür stark, dass insbesondere das\nVerfahren zur grenzüberschreitenden Entsendung von Erwerbstätigen in das EU-Ausland vereinfacht und digitalisiert wird (A1-Bescheinigung, Melde- und Registrierungsverfahren).\n\n- RRechtssicherheit schaffen, Scheinselbständigkeit verhindern. Wir passen das Statusfeststellungsverfahren im Sinne der Selbständigen und Unternehmen an."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- AArbeitsmarktpolitik ist Aufgabe der einzelnen Mitgliedstaaten. Eine europäische Arbeitslosenversicherung lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- AArbeitsmarktpolitik ist Aufgabe der einzelnen Mitgliedstaaten. Eine europäische Arbeitslosenversicherung lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Rente und Altersvorsorge langfristig sichern",
+        "content": "lich oberhalb der Grundsicherung im Alter liegen. Mit der Union wird es keine Rentenkürzungen geben. Unser Ziel: ein durch wirtschaftliches Wachstum garantiertes stabiles\nRentenniveau und weiterhin steigende Renten. Wer vorzeitig aus dem Erwerbsleben ausscheiden muss, soll sich auf eine auskömmliche Alterssicherung verlassen können."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Rente und Altersvorsorge langfristig sichern",
+        "content": "lich oberhalb der Grundsicherung im Alter liegen. Mit der Union wird es keine Rentenkürzungen geben. Unser Ziel: ein durch wirtschaftliches Wachstum garantiertes stabiles\nRentenniveau und weiterhin steigende Renten. Wer vorzeitig aus dem Erwerbsleben ausscheiden muss, soll sich auf eine auskömmliche Alterssicherung verlassen können."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Rente und Altersvorsorge langfristig sichern",
+        "content": "Mehr denn je gilt: Im Sinne eines starken und stabilen Rentensystems muss unser Land\nendlich wieder wirtschaftlich zulegen. Denn je mehr Menschen sozialversicherungspflichtig arbeiten, desto besser ist dies für stabile soziale Sicherungssysteme und die Rente. Wir\nsetzen auf Sicherheit und Verlässlichkeit bei der Rente, Generationengerechtigkeit, Anreize\nfür freiwilliges Arbeiten und eine Stärkung von ergänzender betrieblicher und privater Vorsorge."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Rente und Altersvorsorge langfristig sichern",
+        "content": "Mehr denn je gilt: Im Sinne eines starken und stabilen Rentensystems muss unser Land\nendlich wieder wirtschaftlich zulegen. Denn je mehr Menschen sozialversicherungspflichtig arbeiten, desto besser ist dies für stabile soziale Sicherungssysteme und die Rente. Wir\nsetzen auf Sicherheit und Verlässlichkeit bei der Rente, Generationengerechtigkeit, Anreize\nfür freiwilliges Arbeiten und eine Stärkung von ergänzender betrieblicher und privater Vorsorge."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Pflege zukunftsfest machen",
+        "content": "Pflege darf kein Armutsrisiko sein – das ist unser Anspruch. Wir lassen uns von Solidarität\nund Generationengerechtigkeit leiten. Die Soziale Pflegeversicherung in Deutschland ist\nein Erfolgsmodell in der Sozialpolitik. Aufgrund veränderter Rahmenbedingungen braucht\nsie 30 Jahre nach ihrer Einführung durch die Union ein Update. Dazu brauchen wir einen"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- AArbeitsmarktpolitik ist Aufgabe der einzelnen Mitgliedstaaten. Eine europäische Arbeitslosenversicherung lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- AArbeitsmarktpolitik ist Aufgabe der einzelnen Mitgliedstaaten. Eine europäische Arbeitslosenversicherung lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Pflege zukunftsfest machen",
+        "content": "Pflege darf kein Armutsrisiko sein – das ist unser Anspruch. Wir lassen uns von Solidarität\nund Generationengerechtigkeit leiten. Die Soziale Pflegeversicherung in Deutschland ist\nein Erfolgsmodell in der Sozialpolitik. Aufgrund veränderter Rahmenbedingungen braucht\nsie 30 Jahre nach ihrer Einführung durch die Union ein Update. Dazu brauchen wir einen"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Pflege zukunftsfest machen",
+        "content": "Pflege darf kein Armutsrisiko sein – das ist unser Anspruch. Wir lassen uns von Solidarität\nund Generationengerechtigkeit leiten. Die Soziale Pflegeversicherung in Deutschland ist\nein Erfolgsmodell in der Sozialpolitik. Aufgrund veränderter Rahmenbedingungen braucht\nsie 30 Jahre nach ihrer Einführung durch die Union ein Update. Dazu brauchen wir einen"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Solides Haushalten, verantwortungsvoller Umgang mit Steuergeld",
+        "content": "- SSubsidiaritätsprinzip beachten. Haushaltsmittel der EU müssen für Aufgaben eingesetzt\nwerden, die einen europäischen Mehrwert schaffen und den Bürgerinnen und Bürgern\nEuropas nutzen.\n\n- EEuropa krisenfest machen. Wir setzen uns für eine Insolvenzordnung für Mitgliedstaaten\nein, um besser für den Ernstfall vorbereitet zu sein."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Solides Haushalten, verantwortungsvoller Umgang mit Steuergeld",
+        "content": "- SSubsidiaritätsprinzip beachten. Haushaltsmittel der EU müssen für Aufgaben eingesetzt\nwerden, die einen europäischen Mehrwert schaffen und den Bürgerinnen und Bürgern\nEuropas nutzen.\n\n- EEuropa krisenfest machen. Wir setzen uns für eine Insolvenzordnung für Mitgliedstaaten\nein, um besser für den Ernstfall vorbereitet zu sein."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- AArbeitnehmerfreizügigkeit stärken. Wir machen uns dafür stark, dass insbesondere das\nVerfahren zur grenzüberschreitenden Entsendung von Erwerbstätigen in das EU-Ausland vereinfacht und digitalisiert wird (A1-Bescheinigung, Melde- und Registrierungsverfahren).\n\n- RRechtssicherheit schaffen, Scheinselbständigkeit verhindern. Wir passen das Statusfeststellungsverfahren im Sinne der Selbständigen und Unternehmen an."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- AArbeitsmarktpolitik ist Aufgabe der einzelnen Mitgliedstaaten. Eine europäische Arbeitslosenversicherung lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- AArbeitsmarktpolitik ist Aufgabe der einzelnen Mitgliedstaaten. Eine europäische Arbeitslosenversicherung lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Pflege zukunftsfest machen",
+        "content": "Pflege darf kein Armutsrisiko sein – das ist unser Anspruch. Wir lassen uns von Solidarität\nund Generationengerechtigkeit leiten. Die Soziale Pflegeversicherung in Deutschland ist\nein Erfolgsmodell in der Sozialpolitik. Aufgrund veränderter Rahmenbedingungen braucht\nsie 30 Jahre nach ihrer Einführung durch die Union ein Update. Dazu brauchen wir einen"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Pflege zukunftsfest machen",
+        "content": "Pflege darf kein Armutsrisiko sein – das ist unser Anspruch. Wir lassen uns von Solidarität\nund Generationengerechtigkeit leiten. Die Soziale Pflegeversicherung in Deutschland ist\nein Erfolgsmodell in der Sozialpolitik. Aufgrund veränderter Rahmenbedingungen braucht\nsie 30 Jahre nach ihrer Einführung durch die Union ein Update. Dazu brauchen wir einen"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Rente und Altersvorsorge langfristig sichern",
+        "content": "Mehr denn je gilt: Im Sinne eines starken und stabilen Rentensystems muss unser Land\nendlich wieder wirtschaftlich zulegen. Denn je mehr Menschen sozialversicherungspflichtig arbeiten, desto besser ist dies für stabile soziale Sicherungssysteme und die Rente. Wir\nsetzen auf Sicherheit und Verlässlichkeit bei der Rente, Generationengerechtigkeit, Anreize\nfür freiwilliges Arbeiten und eine Stärkung von ergänzender betrieblicher und privater Vorsorge."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Rente und Altersvorsorge langfristig sichern",
+        "content": "Mehr denn je gilt: Im Sinne eines starken und stabilen Rentensystems muss unser Land\nendlich wieder wirtschaftlich zulegen. Denn je mehr Menschen sozialversicherungspflichtig arbeiten, desto besser ist dies für stabile soziale Sicherungssysteme und die Rente. Wir\nsetzen auf Sicherheit und Verlässlichkeit bei der Rente, Generationengerechtigkeit, Anreize\nfür freiwilliges Arbeiten und eine Stärkung von ergänzender betrieblicher und privater Vorsorge."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Rente und Altersvorsorge langfristig sichern",
+        "content": "lich oberhalb der Grundsicherung im Alter liegen. Mit der Union wird es keine Rentenkürzungen geben. Unser Ziel: ein durch wirtschaftliches Wachstum garantiertes stabiles\nRentenniveau und weiterhin steigende Renten. Wer vorzeitig aus dem Erwerbsleben ausscheiden muss, soll sich auf eine auskömmliche Alterssicherung verlassen können."
+      }
+    ],
+    "LINKE": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "AFD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "FREIE WÄHLER": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "Volt": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "MLPD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BÜNDNIS DEUTSCHLAND": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BSW": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ]
+  },
+  "evaluation_scores": {},
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:40.415888",
+  "question_id": 16,
+  "question": "Betreiber sozialer Netzwerke sollen frei entscheiden dürfen, wie sie mit Desinformation auf ihren Plattformen umgehen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:40.452471",
+  "question_id": 17,
+  "question": "In der EU sollen mehr Flächen als Naturschutzgebiete ausgewiesen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:40.485969",
+  "question_id": 18,
+  "question": "EU-Fördermittel für Mitgliedstaaten, die Regeln und Werte der EU verletzen, sollen weiterhin zurückgehalten werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:25:40.519581",
+  "question_id": 19,
+  "question": "Die EU soll mehr Waffen für die Ukraine finanzieren.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:09.318306",
+  "question_id": 1,
+  "question": "Bei der Einwanderung von Fachkräften ohne EU-Staatsbürgerschaft sollen einige Hürden abgebaut werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.545731",
+  "question_id": 2,
+  "question": "Der gesetzliche Mindestlohn soll mindestens 12 Euro betragen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.578853",
+  "question_id": 3,
+  "question": "Schwangere, die sich zu einem Schwangerschaftsabbruch beraten lassen möchten, sollen besser vor Gehsteigbelästigung geschützt werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.610561",
+  "question_id": 4,
+  "question": "Der Konsum und Besitz von Cannabis soll in Deutschland unter bestimmten Voraussetzungen erlaubt sein.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.643059",
+  "question_id": 5,
+  "question": "Eine temporäre Impfpflicht für Beschäftigte in Alten- und Pflegeheimen soll die Corona-Pandemie eindämmen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.675653",
+  "question_id": 6,
+  "question": "Menschen sollen ohne psychologisches Gutachten ihren Geschlechtseintrag und Vornamen beim Standesamt ändern dürfen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.708680",
+  "question_id": 7,
+  "question": "Zur besseren Bekämpfung von schweren Verbrechen sollen IP-Adressen länger, nämlich für 3 Monate, gespeichert werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.741209",
+  "question_id": 8,
+  "question": "Organisationen oder Projekte, die das Existenzrecht Israels in Frage stellen, sollen in Deutschland keine staatliche finanzielle Förderung erhalten.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.772897",
+  "question_id": 9,
+  "question": "Ein Sondervermögen von 100 Milliarden Euro für die Bundeswehr soll die Verteidigung stärken.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.805018",
+  "question_id": 10,
+  "question": "Deutschland soll das weitreichende Waffensystem Taurus an die Ukraine liefern.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.837124",
+  "question_id": 11,
+  "question": "Die Bundesregierung soll sich für den Erhalt des individuellen Rechts auf Asyl in der EU aussprechen.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.895114",
+  "question_id": 12,
+  "question": "Anerkannte Schutzberechtigte sollen ihren Status verlieren, wenn sie in ihre Heimat reisen.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.932900",
+  "question_id": 13,
+  "question": "Das Deutschlandticket für den öffentlichen Nahverkehr soll deutlich weniger als 49 Euro im Monat kosten.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:10.995911",
+  "question_id": 14,
+  "question": "Die BAföG-Sätze für Schüler*innen und Studierende sollen um 5 Prozent beim Grundbedarf bzw. 20 Euro beim Wohngeld angehoben werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:11.028228",
+  "question_id": 15,
+  "question": "In nationalen Notlagen soll die im Grundgesetz verankerte Schuldenbremse ausgesetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:11.061015",
+  "question_id": 16,
+  "question": "Um gesellschaftliche Herausforderungen zu bewältigen, sollen die vermögendsten Privatpersonen und Unternehmen einmalige Sonderabgaben leisten.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:11.094742",
+  "question_id": 17,
+  "question": "Das deutsche Lieferkettengesetz zum Schutz von Menschenrechten und der Umwelt in globalen Lieferketten soll ausgesetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:11.159661",
+  "question_id": 18,
+  "question": "Für besseren Klimaschutz soll jede neu installierte Heizung in Neubaugebieten zu mindestens 65 Prozent mit erneuerbaren Energien betrieben werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T20:37:11.192179",
+  "question_id": 19,
+  "question": "Mit der Subventionierung von Agrardiesel sollen Landwirtschaftsbetriebe weiter entlastet werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:38.322584",
+  "question_id": 1,
+  "question": "Bei der Einwanderung von Fachkräften ohne EU-Staatsbürgerschaft sollen einige Hürden abgebaut werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:38.951444",
+  "question_id": 2,
+  "question": "Der gesetzliche Mindestlohn soll mindestens 12 Euro betragen.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:38.995466",
+  "question_id": 3,
+  "question": "Schwangere, die sich zu einem Schwangerschaftsabbruch beraten lassen möchten, sollen besser vor Gehsteigbelästigung geschützt werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.032033",
+  "question_id": 4,
+  "question": "Der Konsum und Besitz von Cannabis soll in Deutschland unter bestimmten Voraussetzungen erlaubt sein.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.069815",
+  "question_id": 5,
+  "question": "Eine temporäre Impfpflicht für Beschäftigte in Alten- und Pflegeheimen soll die Corona-Pandemie eindämmen.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.105745",
+  "question_id": 6,
+  "question": "Menschen sollen ohne psychologisches Gutachten ihren Geschlechtseintrag und Vornamen beim Standesamt ändern dürfen.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.140895",
+  "question_id": 7,
+  "question": "Zur besseren Bekämpfung von schweren Verbrechen sollen IP-Adressen länger, nämlich für 3 Monate, gespeichert werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.175628",
+  "question_id": 8,
+  "question": "Organisationen oder Projekte, die das Existenzrecht Israels in Frage stellen, sollen in Deutschland keine staatliche finanzielle Förderung erhalten.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.209938",
+  "question_id": 9,
+  "question": "Ein Sondervermögen von 100 Milliarden Euro für die Bundeswehr soll die Verteidigung stärken.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.243806",
+  "question_id": 10,
+  "question": "Deutschland soll das weitreichende Waffensystem Taurus an die Ukraine liefern.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.305340",
+  "question_id": 11,
+  "question": "Die Bundesregierung soll sich für den Erhalt des individuellen Rechts auf Asyl in der EU aussprechen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.338667",
+  "question_id": 12,
+  "question": "Anerkannte Schutzberechtigte sollen ihren Status verlieren, wenn sie in ihre Heimat reisen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.371331",
+  "question_id": 13,
+  "question": "Das Deutschlandticket für den öffentlichen Nahverkehr soll deutlich weniger als 49 Euro im Monat kosten.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.403443",
+  "question_id": 14,
+  "question": "Die BAföG-Sätze für Schüler*innen und Studierende sollen um 5 Prozent beim Grundbedarf bzw. 20 Euro beim Wohngeld angehoben werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.435828",
+  "question_id": 15,
+  "question": "In nationalen Notlagen soll die im Grundgesetz verankerte Schuldenbremse ausgesetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.467778",
+  "question_id": 16,
+  "question": "Um gesellschaftliche Herausforderungen zu bewältigen, sollen die vermögendsten Privatpersonen und Unternehmen einmalige Sonderabgaben leisten.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.499800",
+  "question_id": 17,
+  "question": "Das deutsche Lieferkettengesetz zum Schutz von Menschenrechten und der Umwelt in globalen Lieferketten soll ausgesetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.534703",
+  "question_id": 18,
+  "question": "Für besseren Klimaschutz soll jede neu installierte Heizung in Neubaugebieten zu mindestens 65 Prozent mit erneuerbaren Energien betrieben werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:02:39.578536",
+  "question_id": 19,
+  "question": "Mit der Subventionierung von Agrardiesel sollen Landwirtschaftsbetriebe weiter entlastet werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:45.657131",
+  "question_id": 1,
+  "question": "Bei der Einwanderung von Fachkräften ohne EU-Staatsbürgerschaft sollen einige Hürden abgebaut werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:45.820211",
+  "question_id": 2,
+  "question": "Der gesetzliche Mindestlohn soll mindestens 12 Euro betragen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:45.853735",
+  "question_id": 3,
+  "question": "Schwangere, die sich zu einem Schwangerschaftsabbruch beraten lassen möchten, sollen besser vor Gehsteigbelästigung geschützt werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:45.885120",
+  "question_id": 4,
+  "question": "Der Konsum und Besitz von Cannabis soll in Deutschland unter bestimmten Voraussetzungen erlaubt sein.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:45.916156",
+  "question_id": 5,
+  "question": "Eine temporäre Impfpflicht für Beschäftigte in Alten- und Pflegeheimen soll die Corona-Pandemie eindämmen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:45.947188",
+  "question_id": 6,
+  "question": "Menschen sollen ohne psychologisches Gutachten ihren Geschlechtseintrag und Vornamen beim Standesamt ändern dürfen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:45.978691",
+  "question_id": 7,
+  "question": "Zur besseren Bekämpfung von schweren Verbrechen sollen IP-Adressen länger, nämlich für 3 Monate, gespeichert werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.011784",
+  "question_id": 8,
+  "question": "Organisationen oder Projekte, die das Existenzrecht Israels in Frage stellen, sollen in Deutschland keine staatliche finanzielle Förderung erhalten.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.043576",
+  "question_id": 9,
+  "question": "Ein Sondervermögen von 100 Milliarden Euro für die Bundeswehr soll die Verteidigung stärken.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.074717",
+  "question_id": 10,
+  "question": "Deutschland soll das weitreichende Waffensystem Taurus an die Ukraine liefern.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.105884",
+  "question_id": 11,
+  "question": "Die Bundesregierung soll sich für den Erhalt des individuellen Rechts auf Asyl in der EU aussprechen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.137475",
+  "question_id": 12,
+  "question": "Anerkannte Schutzberechtigte sollen ihren Status verlieren, wenn sie in ihre Heimat reisen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.169089",
+  "question_id": 13,
+  "question": "Das Deutschlandticket für den öffentlichen Nahverkehr soll deutlich weniger als 49 Euro im Monat kosten.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.201021",
+  "question_id": 14,
+  "question": "Die BAföG-Sätze für Schüler*innen und Studierende sollen um 5 Prozent beim Grundbedarf bzw. 20 Euro beim Wohngeld angehoben werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.232105",
+  "question_id": 15,
+  "question": "In nationalen Notlagen soll die im Grundgesetz verankerte Schuldenbremse ausgesetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.265202",
+  "question_id": 16,
+  "question": "Um gesellschaftliche Herausforderungen zu bewältigen, sollen die vermögendsten Privatpersonen und Unternehmen einmalige Sonderabgaben leisten.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.299883",
+  "question_id": 17,
+  "question": "Das deutsche Lieferkettengesetz zum Schutz von Menschenrechten und der Umwelt in globalen Lieferketten soll ausgesetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.332248",
+  "question_id": 18,
+  "question": "Für besseren Klimaschutz soll jede neu installierte Heizung in Neubaugebieten zu mindestens 65 Prozent mit erneuerbaren Energien betrieben werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T22:12:46.363872",
+  "question_id": 19,
+  "question": "Mit der Subventionierung von Agrardiesel sollen Landwirtschaftsbetriebe weiter entlastet werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:04:48.490506",
+  "question_id": 1,
+  "question": "Recipients of citizen's income who repeatedly refuse a subsistence-level job should have their entire standard rate of citizen's income cut for two months.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:04:49.805522",
+  "question_id": 2,
+  "question": "Some hurdles should be removed for the immigration of skilled workers without EU citizenship.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:04:49.928731",
+  "question_id": 1,
+  "question": "Recipients of citizen's income who repeatedly refuse a subsistence-level job should have their entire standard rate of citizen's income cut for two months.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:04:49.981720",
+  "question_id": 2,
+  "question": "Some hurdles should be removed for the immigration of skilled workers without EU citizenship.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.124089",
+  "question_id": 3,
+  "question": "The statutory minimum wage should be at least 12 euros.",
+  "user_custom_answer": "eeeeeeeemmmemmemememmememmememme",
+  "button_answer": "0",
+  "answer_type": "custom",
+  "lookup_response": {
+    "lookupPrompts": [
+      "political parties' stance on minimum wage",
+      "views on minimum wage of 12 euros",
+      "party positions on statutory minimum wage"
+    ]
+  },
+  "party_contexts": {
+    "SPD": [
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Wir sind die Partei der Mitte. Und als solche setzen wir uns auch dafür ein, dass die arbeitende\nMitte der Gesellschaft mehr Netto vom Brutto erhalten soll. Das aktuelle Steuersystem belastet\nArbeitseinkommen relativ stark, Vermögen hingegen relativ gering. Das ist nicht gerecht und deshalb\nwollen wir das ändern. Der Einkommensteuertarif nimmt derzeit gerade mittlere Einkommen relativ\nstark in Anspruch. Wir wollen die große Mehrheit der Einkommensteuerpflichtigen entlasten (etwa"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "**Wir wollen guten Lohn für alle.**\n\nDie Höhe des gesetzlichen Mindestlohns muss sich an den Empfehlungen der europäischen Richtlinie\norientieren, also an mindestens 60 Prozent des mittleren Einkommens in Deutschland. Wir werden\ndafür sorgen, dass dieses europäische Recht von der Mindestlohnkommission künftig berücksichtigt\nwird. Dementsprechend muss der Mindestlohn spätestens ab 2026 bei 15 Euro liegen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\nDen Mindestlohn haben wir auf zunächst 12 Euro erhöht – das bedeutet mehr Einkommen und\nmehr Sicherheit für Millionen von Menschen! Familien profitieren von mehr Kindergeld und unseren\nInvestitionen in bessere Bildung und Betreuung.\n\nWir haben die irreguläre Migration begrenzt – und heißen zugleich diejenigen bei uns willkommen,\ndie hier in Deutschland arbeiten wollen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unser Versprechen: 25. Politik heißt für uns: Wir kämpfen für Dich.",
+        "content": "15 Euro Mindestlohn. Senkung der Mehrwertsteuer für Lebensmittel auf fünf Prozent. 95 Prozent\nder Steuerzahlenden sollen mehr Netto vom Brutto haben. Eine stabile Rente für alle Generationen.\n„Made in Germany“-Bonus, Einrichtung eines Deutschlandfonds, um die Wirtschaft zu stärken – um\nnur einige wichtige zu nennen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\n55 Euro in 2025 und maximal 65 Euro in 2026 gilt. Wenn ab 2027 die europäische Regelung in Kraft\ntritt, werden wir durch geeignete Maßnahmen auf europäischer und nationaler Ebene (zum Beispiel\nKlimageld) dafür Sorge tragen, dass niemand überfordert wird."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Wer jeden Tag arbeitet, muss ein selbstbestimmtes Leben mit einem guten Auskommen führen\nkönnen. Wir wollen für eine gerechtere Verteilung des erarbeiteten Wohlstands sorgen. Wir stehen\nsowohl für gerechte Bezahlung als auch für gerechte Besteuerung.\n\n**Wir wollen guten Lohn für alle.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "**Wir wollen guten Lohn für alle.**\n\nDie Höhe des gesetzlichen Mindestlohns muss sich an den Empfehlungen der europäischen Richtlinie\norientieren, also an mindestens 60 Prozent des mittleren Einkommens in Deutschland. Wir werden\ndafür sorgen, dass dieses europäische Recht von der Mindestlohnkommission künftig berücksichtigt\nwird. Dementsprechend muss der Mindestlohn spätestens ab 2026 bei 15 Euro liegen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unser Versprechen: 25. Politik heißt für uns: Wir kämpfen für Dich.",
+        "content": "15 Euro Mindestlohn. Senkung der Mehrwertsteuer für Lebensmittel auf fünf Prozent. 95 Prozent\nder Steuerzahlenden sollen mehr Netto vom Brutto haben. Eine stabile Rente für alle Generationen.\n„Made in Germany“-Bonus, Einrichtung eines Deutschlandfonds, um die Wirtschaft zu stärken – um\nnur einige wichtige zu nennen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten",
+        "content": "**gerechte Steuern und Abgaben, für sichere Arbeitsplätze und eine stabile Rente sorgen.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\nDen Mindestlohn haben wir auf zunächst 12 Euro erhöht – das bedeutet mehr Einkommen und\nmehr Sicherheit für Millionen von Menschen! Familien profitieren von mehr Kindergeld und unseren\nInvestitionen in bessere Bildung und Betreuung.\n\nWir haben die irreguläre Migration begrenzt – und heißen zugleich diejenigen bei uns willkommen,\ndie hier in Deutschland arbeiten wollen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland",
+        "content": "Gleichzeitig setzen wir auf gute Arbeit und sichere Arbeitsplätze. Mit guten Löhnen sichern wir\ndie Kaufkraft in unserem Land und kurbeln die Binnennachfrage an. Wir schaffen einen neuen\nAufschwung für Deutschland als Grundlage für mehr Gerechtigkeit."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Wer jeden Tag arbeitet, muss ein selbstbestimmtes Leben mit einem guten Auskommen führen\nkönnen. Wir wollen für eine gerechtere Verteilung des erarbeiteten Wohlstands sorgen. Wir stehen\nsowohl für gerechte Bezahlung als auch für gerechte Besteuerung.\n\n**Wir wollen guten Lohn für alle.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Inhalt",
+        "content": "6. Wir kämpfen für ein bezahlbares Zuhause.....................................................................................................20\n7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht............................................................................23\n8. Wir kämpfen für stabile Renten.........................................................................................................................24"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Wir sind die Partei der Mitte. Und als solche setzen wir uns auch dafür ein, dass die arbeitende\nMitte der Gesellschaft mehr Netto vom Brutto erhalten soll. Das aktuelle Steuersystem belastet\nArbeitseinkommen relativ stark, Vermögen hingegen relativ gering. Das ist nicht gerecht und deshalb\nwollen wir das ändern. Der Einkommensteuertarif nimmt derzeit gerade mittlere Einkommen relativ\nstark in Anspruch. Wir wollen die große Mehrheit der Einkommensteuerpflichtigen entlasten (etwa"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "**Wir wollen guten Lohn für alle.**\n\nDie Höhe des gesetzlichen Mindestlohns muss sich an den Empfehlungen der europäischen Richtlinie\norientieren, also an mindestens 60 Prozent des mittleren Einkommens in Deutschland. Wir werden\ndafür sorgen, dass dieses europäische Recht von der Mindestlohnkommission künftig berücksichtigt\nwird. Dementsprechend muss der Mindestlohn spätestens ab 2026 bei 15 Euro liegen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unser Versprechen: 25. Politik heißt für uns: Wir kämpfen für Dich.",
+        "content": "15 Euro Mindestlohn. Senkung der Mehrwertsteuer für Lebensmittel auf fünf Prozent. 95 Prozent\nder Steuerzahlenden sollen mehr Netto vom Brutto haben. Eine stabile Rente für alle Generationen.\n„Made in Germany“-Bonus, Einrichtung eines Deutschlandfonds, um die Wirtschaft zu stärken – um\nnur einige wichtige zu nennen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\nDen Mindestlohn haben wir auf zunächst 12 Euro erhöht – das bedeutet mehr Einkommen und\nmehr Sicherheit für Millionen von Menschen! Familien profitieren von mehr Kindergeld und unseren\nInvestitionen in bessere Bildung und Betreuung.\n\nWir haben die irreguläre Migration begrenzt – und heißen zugleich diejenigen bei uns willkommen,\ndie hier in Deutschland arbeiten wollen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Wer jeden Tag arbeitet, muss ein selbstbestimmtes Leben mit einem guten Auskommen führen\nkönnen. Wir wollen für eine gerechtere Verteilung des erarbeiteten Wohlstands sorgen. Wir stehen\nsowohl für gerechte Bezahlung als auch für gerechte Besteuerung.\n\n**Wir wollen guten Lohn für alle.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 3. Wir kämpfen für einen starken Arbeitsmarkt und",
+        "content": "**Gleicher Lohn für gleiche und gleichwertige Arbeit ist unsere Antwort auf den immer noch existenten**\nGender Pay Gap. Mehr Tarifbindung ist auch insoweit wichtig, denn mit Tarifvertrag erfolgen\nEinstufung und Bezahlung oft gerechter. Mini-Jobs sind vorgezeichnete Wege in die Altersarmut.\nUnser Ziel ist, alle Beschäftigungsverhältnisse in die soziale Sicherung einzubeziehen. Wir wollen\nMissbrauch bekämpfen und Beschäftigten den Weg aus Mini-Jobs in sozial gut abgesicherte Arbeit"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland",
+        "content": "Gleichzeitig setzen wir auf gute Arbeit und sichere Arbeitsplätze. Mit guten Löhnen sichern wir\ndie Kaufkraft in unserem Land und kurbeln die Binnennachfrage an. Wir schaffen einen neuen\nAufschwung für Deutschland als Grundlage für mehr Gerechtigkeit."
+      }
+    ],
+    "GRUENE": [
+      {
+        "title": "",
+        "content": "Environmental party advocating for climate action and sustainability"
+      }
+    ],
+    "FDP": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "CDU/CSU": [
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Fördern und Fordern muss immer gelten",
+        "content": "Das sogenannte „Bürgergeld“ senkt die Anreize, eine Arbeit aufzunehmen. Es fördert nur\nund fordert nicht mehr, es schadet mehr, als es nützt, und spaltet unser Land. Wir stehen\nfür eine Neue Grundsicherung, die das Prinzip „Fördern und Fordern“ wieder einführt und\nden Zusammenhalt stärkt, weil sie klarmacht: Unser Staat unterstützt Menschen, die auf\nHilfe angewiesen sind. Zugleich stellt er eine klare Forderung: Wer arbeiten kann, muss"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir halten an der bestehenden gesetzlichen Regelung zum Renteneintrittsalter fest. Rentenkürzungen wird es mit uns nicht geben.\n\n- WWir führen eine Aktivrente ein. Wer über das gesetzliche Rentenalter hinaus freiwillig\nweiterarbeitet, bekommt sein Gehalt bis zu 2.000 Euro im Monat steuerfrei."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir halten an der bestehenden gesetzlichen Regelung zum Renteneintrittsalter fest. Rentenkürzungen wird es mit uns nicht geben.\n\n- WWir führen eine Aktivrente ein. Wer über das gesetzliche Rentenalter hinaus freiwillig\nweiterarbeitet, bekommt sein Gehalt bis zu 2.000 Euro im Monat steuerfrei."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU",
+        "content": "- KURZFASSUNG"
+      }
+    ],
+    "LINKE": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "AFD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "FREIE WÄHLER": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "Volt": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "MLPD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BÜNDNIS DEUTSCHLAND": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BSW": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ]
+  },
+  "evaluation_scores": {},
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.187066",
+  "question_id": 4,
+  "question": "Pregnant women who wish to seek counseling for an abortion should be better protected from sidewalk harassment.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.225714",
+  "question_id": 5,
+  "question": "The consumption and possession of cannabis should be allowed in Germany under certain conditions.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.264228",
+  "question_id": 6,
+  "question": "A temporary vaccination requirement for employees in nursing homes should curb the Corona pandemic.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.302899",
+  "question_id": 7,
+  "question": "People should be allowed to change their gender entry and first name at the registry office without a psychological assessment.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.341943",
+  "question_id": 8,
+  "question": "To better combat serious crimes, IP addresses should be stored longer, namely for 3 months.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.380536",
+  "question_id": 9,
+  "question": "Organizations or projects that question Israel's right to exist should not receive state financial support in Germany.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.418747",
+  "question_id": 10,
+  "question": "A special fund of 100 billion euros for the Bundeswehr should strengthen defense.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.486217",
+  "question_id": 11,
+  "question": "Germany should deliver the extensive Taurus weapon system to Ukraine.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.525462",
+  "question_id": 12,
+  "question": "The federal government should advocate for the preservation of the individual right to asylum in the EU.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.563959",
+  "question_id": 13,
+  "question": "Recognized beneficiaries of protection should lose their status if they travel to their home country.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.602480",
+  "question_id": 14,
+  "question": "The Germany ticket for public transport should cost significantly less than 49 euros per month.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.642173",
+  "question_id": 15,
+  "question": "The BAföG rates for pupils and students should be increased by 5 percent for basic needs or 20 euros for housing allowance.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.680668",
+  "question_id": 16,
+  "question": "In national emergencies, the debt brake enshrined in the Basic Law should be suspended.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.719823",
+  "question_id": 17,
+  "question": "To tackle societal challenges, the wealthiest individuals and companies should make one-time special contributions.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.757891",
+  "question_id": 18,
+  "question": "The German supply chain law to protect human rights and the environment in global supply chains should be suspended.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.796875",
+  "question_id": 19,
+  "question": "For better climate protection, every newly installed heating system in new development areas should be operated with at least 65 percent renewable energy.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:06.835483",
+  "question_id": 20,
+  "question": "Agricultural diesel subsidies should continue to relieve agricultural businesses.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:08.809380",
+  "question_id": 3,
+  "question": "The statutory minimum wage should be at least 12 euros.",
+  "user_custom_answer": "eeeeeeeemmmemmemememmememmememme",
+  "button_answer": "0",
+  "answer_type": "custom",
+  "lookup_response": {
+    "lookupPrompts": [
+      "Party positions on minimum wage",
+      "Political parties' views on 12 euro minimum wage",
+      "What is the stance of political parties on the statutory minimum wage?"
+    ]
+  },
+  "party_contexts": {
+    "SPD": [
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Wir sind die Partei der Mitte. Und als solche setzen wir uns auch dafür ein, dass die arbeitende\nMitte der Gesellschaft mehr Netto vom Brutto erhalten soll. Das aktuelle Steuersystem belastet\nArbeitseinkommen relativ stark, Vermögen hingegen relativ gering. Das ist nicht gerecht und deshalb\nwollen wir das ändern. Der Einkommensteuertarif nimmt derzeit gerade mittlere Einkommen relativ\nstark in Anspruch. Wir wollen die große Mehrheit der Einkommensteuerpflichtigen entlasten (etwa"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "**Wir wollen guten Lohn für alle.**\n\nDie Höhe des gesetzlichen Mindestlohns muss sich an den Empfehlungen der europäischen Richtlinie\norientieren, also an mindestens 60 Prozent des mittleren Einkommens in Deutschland. Wir werden\ndafür sorgen, dass dieses europäische Recht von der Mindestlohnkommission künftig berücksichtigt\nwird. Dementsprechend muss der Mindestlohn spätestens ab 2026 bei 15 Euro liegen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unser Versprechen: 25. Politik heißt für uns: Wir kämpfen für Dich.",
+        "content": "15 Euro Mindestlohn. Senkung der Mehrwertsteuer für Lebensmittel auf fünf Prozent. 95 Prozent\nder Steuerzahlenden sollen mehr Netto vom Brutto haben. Eine stabile Rente für alle Generationen.\n„Made in Germany“-Bonus, Einrichtung eines Deutschlandfonds, um die Wirtschaft zu stärken – um\nnur einige wichtige zu nennen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\nDen Mindestlohn haben wir auf zunächst 12 Euro erhöht – das bedeutet mehr Einkommen und\nmehr Sicherheit für Millionen von Menschen! Familien profitieren von mehr Kindergeld und unseren\nInvestitionen in bessere Bildung und Betreuung.\n\nWir haben die irreguläre Migration begrenzt – und heißen zugleich diejenigen bei uns willkommen,\ndie hier in Deutschland arbeiten wollen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 3. Wir kämpfen für einen starken Arbeitsmarkt und",
+        "content": "**Gleicher Lohn für gleiche und gleichwertige Arbeit ist unsere Antwort auf den immer noch existenten**\nGender Pay Gap. Mehr Tarifbindung ist auch insoweit wichtig, denn mit Tarifvertrag erfolgen\nEinstufung und Bezahlung oft gerechter. Mini-Jobs sind vorgezeichnete Wege in die Altersarmut.\nUnser Ziel ist, alle Beschäftigungsverhältnisse in die soziale Sicherung einzubeziehen. Wir wollen\nMissbrauch bekämpfen und Beschäftigten den Weg aus Mini-Jobs in sozial gut abgesicherte Arbeit"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Gerade in Ostdeutschland, wo viele Regionen nach wie vor mit niedrigeren Durchschnittslöhnen\nund einer geringen Tarifbindung zu kämpfen haben, und in den Berufen, die viele Frauen ausüben,\nist wegen der oft schlechten Bezahlung der gesetzliche Mindestlohn von enormer Bedeutung.\nEntscheidend bleibt aber, die Tarifbindung zu stärken, um die Löhne in Ostdeutschland zu stärken und\nlangfristig Löhne oberhalb des Mindestlohns zu sichern."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "**Wir wollen guten Lohn für alle.**\n\nDie Höhe des gesetzlichen Mindestlohns muss sich an den Empfehlungen der europäischen Richtlinie\norientieren, also an mindestens 60 Prozent des mittleren Einkommens in Deutschland. Wir werden\ndafür sorgen, dass dieses europäische Recht von der Mindestlohnkommission künftig berücksichtigt\nwird. Dementsprechend muss der Mindestlohn spätestens ab 2026 bei 15 Euro liegen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unser Versprechen: 25. Politik heißt für uns: Wir kämpfen für Dich.",
+        "content": "15 Euro Mindestlohn. Senkung der Mehrwertsteuer für Lebensmittel auf fünf Prozent. 95 Prozent\nder Steuerzahlenden sollen mehr Netto vom Brutto haben. Eine stabile Rente für alle Generationen.\n„Made in Germany“-Bonus, Einrichtung eines Deutschlandfonds, um die Wirtschaft zu stärken – um\nnur einige wichtige zu nennen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\nDen Mindestlohn haben wir auf zunächst 12 Euro erhöht – das bedeutet mehr Einkommen und\nmehr Sicherheit für Millionen von Menschen! Familien profitieren von mehr Kindergeld und unseren\nInvestitionen in bessere Bildung und Betreuung.\n\nWir haben die irreguläre Migration begrenzt – und heißen zugleich diejenigen bei uns willkommen,\ndie hier in Deutschland arbeiten wollen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Wir sind die Partei der Mitte. Und als solche setzen wir uns auch dafür ein, dass die arbeitende\nMitte der Gesellschaft mehr Netto vom Brutto erhalten soll. Das aktuelle Steuersystem belastet\nArbeitseinkommen relativ stark, Vermögen hingegen relativ gering. Das ist nicht gerecht und deshalb\nwollen wir das ändern. Der Einkommensteuertarif nimmt derzeit gerade mittlere Einkommen relativ\nstark in Anspruch. Wir wollen die große Mehrheit der Einkommensteuerpflichtigen entlasten (etwa"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten",
+        "content": "**gerechte Steuern und Abgaben, für sichere Arbeitsplätze und eine stabile Rente sorgen.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\n55 Euro in 2025 und maximal 65 Euro in 2026 gilt. Wenn ab 2027 die europäische Regelung in Kraft\ntritt, werden wir durch geeignete Maßnahmen auf europäischer und nationaler Ebene (zum Beispiel\nKlimageld) dafür Sorge tragen, dass niemand überfordert wird."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "**Wir wollen guten Lohn für alle.**\n\nDie Höhe des gesetzlichen Mindestlohns muss sich an den Empfehlungen der europäischen Richtlinie\norientieren, also an mindestens 60 Prozent des mittleren Einkommens in Deutschland. Wir werden\ndafür sorgen, dass dieses europäische Recht von der Mindestlohnkommission künftig berücksichtigt\nwird. Dementsprechend muss der Mindestlohn spätestens ab 2026 bei 15 Euro liegen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Wir sind die Partei der Mitte. Und als solche setzen wir uns auch dafür ein, dass die arbeitende\nMitte der Gesellschaft mehr Netto vom Brutto erhalten soll. Das aktuelle Steuersystem belastet\nArbeitseinkommen relativ stark, Vermögen hingegen relativ gering. Das ist nicht gerecht und deshalb\nwollen wir das ändern. Der Einkommensteuertarif nimmt derzeit gerade mittlere Einkommen relativ\nstark in Anspruch. Wir wollen die große Mehrheit der Einkommensteuerpflichtigen entlasten (etwa"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unser Versprechen: 25. Politik heißt für uns: Wir kämpfen für Dich.",
+        "content": "15 Euro Mindestlohn. Senkung der Mehrwertsteuer für Lebensmittel auf fünf Prozent. 95 Prozent\nder Steuerzahlenden sollen mehr Netto vom Brutto haben. Eine stabile Rente für alle Generationen.\n„Made in Germany“-Bonus, Einrichtung eines Deutschlandfonds, um die Wirtschaft zu stärken – um\nnur einige wichtige zu nennen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\nDen Mindestlohn haben wir auf zunächst 12 Euro erhöht – das bedeutet mehr Einkommen und\nmehr Sicherheit für Millionen von Menschen! Familien profitieren von mehr Kindergeld und unseren\nInvestitionen in bessere Bildung und Betreuung.\n\nWir haben die irreguläre Migration begrenzt – und heißen zugleich diejenigen bei uns willkommen,\ndie hier in Deutschland arbeiten wollen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\n55 Euro in 2025 und maximal 65 Euro in 2026 gilt. Wenn ab 2027 die europäische Regelung in Kraft\ntritt, werden wir durch geeignete Maßnahmen auf europäischer und nationaler Ebene (zum Beispiel\nKlimageld) dafür Sorge tragen, dass niemand überfordert wird."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Wer jeden Tag arbeitet, muss ein selbstbestimmtes Leben mit einem guten Auskommen führen\nkönnen. Wir wollen für eine gerechtere Verteilung des erarbeiteten Wohlstands sorgen. Wir stehen\nsowohl für gerechte Bezahlung als auch für gerechte Besteuerung.\n\n**Wir wollen guten Lohn für alle.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 7. Wir kämpfen für Arbeit, die ein gutes Leben ermöglicht.",
+        "content": "Gerade in Ostdeutschland, wo viele Regionen nach wie vor mit niedrigeren Durchschnittslöhnen\nund einer geringen Tarifbindung zu kämpfen haben, und in den Berufen, die viele Frauen ausüben,\nist wegen der oft schlechten Bezahlung der gesetzliche Mindestlohn von enormer Bedeutung.\nEntscheidend bleibt aber, die Tarifbindung zu stärken, um die Löhne in Ostdeutschland zu stärken und\nlangfristig Löhne oberhalb des Mindestlohns zu sichern."
+      }
+    ],
+    "GRUENE": [
+      {
+        "title": "",
+        "content": "Environmental party advocating for climate action and sustainability"
+      }
+    ],
+    "FDP": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "CDU/CSU": [
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU",
+        "content": "- KURZFASSUNG"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- AArbeitsmarktpolitik ist Aufgabe der einzelnen Mitgliedstaaten. Eine europäische Arbeitslosenversicherung lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "Mindestlohn eingeführt. Er ist ein wichtiger Teil der Arbeitsmarktordnung. Wir stehen zum\ngesetzlichen Mindestlohn und der unabhängigen Mindestlohnkommission. Lohnfindung\nmuss weiterhin Sache der Sozialpartner sein und nicht der Politik. Einen politischen Mindestlohn lehnen wir ab. Wir unterstützen eine gute Lohnentwicklung. Denn sie zeugt von\nLeistung und Produktivität."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Tarifpartnerschaft, Mitbestimmung und Lohnuntergrenze stärken",
+        "content": "- FFür eine starke Mindestlohnkommission. Wir setzen auf eine gute Zusammenarbeit von\nArbeitgeber- und Arbeitnehmerseite und erwarten eine einvernehmliche Entscheidungsfindung in der unabhängigen Mindestlohnkommission. Wir wollen keine Mindestlohnentscheidung im Deutschen Bundestag. Das ist Ausdruck unseres Respekts gegenüber Sozialpartnerschaft und Tarifautonomie – und für uns der Schlüssel für eine gute\nund faire Lohnfindung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir stehen zum gesetzlichen Mindestlohn und einer starken, unabhängigen Mindestlohnkommission. Lohnfindung muss Sache der Sozialpartner sein – im Sinne von Fairness und wirtschaftlicher Vernunft.\n\n- WWir fördern die Vorsorge mit Eigentum und Vermögen durch höhere Freibeträge bei\nGrunderwerb- und Erbschaftsteuer sowie beim Sparen. Eine Vermögensteuer lehnen wir\nab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Fördern und Fordern muss immer gelten",
+        "content": "Das sogenannte „Bürgergeld“ senkt die Anreize, eine Arbeit aufzunehmen. Es fördert nur\nund fordert nicht mehr, es schadet mehr, als es nützt, und spaltet unser Land. Wir stehen\nfür eine Neue Grundsicherung, die das Prinzip „Fördern und Fordern“ wieder einführt und\nden Zusammenhalt stärkt, weil sie klarmacht: Unser Staat unterstützt Menschen, die auf\nHilfe angewiesen sind. Zugleich stellt er eine klare Forderung: Wer arbeiten kann, muss"
+      }
+    ],
+    "LINKE": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "AFD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "FREIE WÄHLER": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "Volt": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "MLPD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BÜNDNIS DEUTSCHLAND": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BSW": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ]
+  },
+  "evaluation_scores": {},
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:08.857500",
+  "question_id": 4,
+  "question": "Pregnant women who wish to seek counseling for an abortion should be better protected from sidewalk harassment.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:08.897913",
+  "question_id": 5,
+  "question": "The consumption and possession of cannabis should be allowed in Germany under certain conditions.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:08.939393",
+  "question_id": 6,
+  "question": "A temporary vaccination requirement for employees in nursing homes should curb the Corona pandemic.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:08.980608",
+  "question_id": 7,
+  "question": "People should be allowed to change their gender entry and first name at the registry office without a psychological assessment.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.020507",
+  "question_id": 8,
+  "question": "To better combat serious crimes, IP addresses should be stored longer, namely for 3 months.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.087546",
+  "question_id": 9,
+  "question": "Organizations or projects that question Israel's right to exist should not receive state financial support in Germany.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.127131",
+  "question_id": 10,
+  "question": "A special fund of 100 billion euros for the Bundeswehr should strengthen defense.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.166984",
+  "question_id": 11,
+  "question": "Germany should deliver the extensive Taurus weapon system to Ukraine.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.206479",
+  "question_id": 12,
+  "question": "The federal government should advocate for the preservation of the individual right to asylum in the EU.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.245620",
+  "question_id": 13,
+  "question": "Recognized beneficiaries of protection should lose their status if they travel to their home country.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.284892",
+  "question_id": 14,
+  "question": "The Germany ticket for public transport should cost significantly less than 49 euros per month.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.325695",
+  "question_id": 15,
+  "question": "The BAföG rates for pupils and students should be increased by 5 percent for basic needs or 20 euros for housing allowance.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.366371",
+  "question_id": 16,
+  "question": "In national emergencies, the debt brake enshrined in the Basic Law should be suspended.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.405908",
+  "question_id": 17,
+  "question": "To tackle societal challenges, the wealthiest individuals and companies should make one-time special contributions.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.445822",
+  "question_id": 18,
+  "question": "The German supply chain law to protect human rights and the environment in global supply chains should be suspended.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.505142",
+  "question_id": 19,
+  "question": "For better climate protection, every newly installed heating system in new development areas should be operated with at least 65 percent renewable energy.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-12T07:05:09.545045",
+  "question_id": 20,
+  "question": "Agricultural diesel subsidies should continue to relieve agricultural businesses.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}

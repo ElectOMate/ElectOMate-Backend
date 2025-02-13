@@ -1,0 +1,1479 @@
+{
+  "timestamp": "2025-02-10T22:55:36.033044",
+  "question_id": 0,
+  "question": "Die EU soll eigene Steuern erheben dürfen.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:36.135158",
+  "question_id": 1,
+  "question": "Fahrzeuge mit Verbrennungsmotoren sollen auch nach 2035 in der EU neu zugelassen werden können.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:36.165306",
+  "question_id": 2,
+  "question": "Die EU soll eine eigene Seenotrettung im Mittelmeer aufbauen.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:36.194550",
+  "question_id": 3,
+  "question": "Die Ukraine soll Mitglied der EU werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:36.223192",
+  "question_id": 4,
+  "question": "Die EU soll vorrangig ökologische Landwirtschaft fördern.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:36.250779",
+  "question_id": 5,
+  "question": "In Deutschland soll der Euro durch eine nationale Währung ersetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:36.277490",
+  "question_id": 6,
+  "question": "Die EU soll den Mitgliedstaaten empfehlen, außer \"weiblich\" und \"männlich\" auch die Eintragung einer anderen Geschlechtsidentität im Pass zu ermöglichen.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:36.305145",
+  "question_id": 7,
+  "question": "Die Jagd von Wölfen soll in Regionen erlaubt sein, in denen der Bestand dadurch nicht gefährdet ist.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:36.332263",
+  "question_id": 8,
+  "question": "Beim Bau neuer Wohngebäude in der EU soll die Errichtung von Photovoltaikanlagen verpflichtend sein.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:36.359481",
+  "question_id": 9,
+  "question": "Mehr außenpolitische Entscheidungen der EU sollen mit Mehrheit statt einstimmig getroffen werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.212695",
+  "question_id": 10,
+  "question": "Der Flugzeugtreibstoff Kerosin soll für Flüge in der EU steuerfrei sein.",
+  "user_custom_answer": "I totally agree with this statement, this is very important to me",
+  "button_answer": "1",
+  "answer_type": "custom",
+  "lookup_response": {
+    "lookupPrompts": [
+      "EU aviation fuel tax policy",
+      "political parties views on Kerosene tax exemption for flights",
+      "European Union stance on aircraft fuel taxation"
+    ]
+  },
+  "party_contexts": {
+    "SPD": [
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Regelungen an, die die Verlagerung von CO2-Emissionen (Carbon Leakage) vermeiden. Wir wollen die\n**Luftverkehrsteuer in eine EU-Klimaabgabe umwandeln, die von allen Airlines gezahlt wird, auch von**\ndenen außerhalb Europas. Wir werden die Wasserstraßeninfrastruktur ertüchtigen, die Nationale\n**Hafenstrategie zügig umsetzen und die Modernisierung der Schiffsflotten unterstützen. Forschung**\nund Markthochlauf für nachhaltige Kraftstoffe wie E-Fuels sind besonders für Luftverkehr und"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Den Weg zu einem klimaneutralen Luftverkehr wollen wir im Sinne eines fairen Wettbewerbs\n(Level-Playing-Field) für unsere Flughäfen und Airlines gestalten. Wir streben EU-weit einheitliche\n\n36"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Deutschland soll ein führendes Land für die Herstellung von Fahrzeugen bleiben. Wir setzen uns dafür\nein, dass die deutschen Automobilhersteller aktuell keine Strafzahlungen im Zusammenhang mit\nden CO2-Flottengrenzwerten an Brüssel leisten müssen. Diese Mittel werden jetzt für Investitionen in\nklimafreundliche Fahrzeuge und die Sicherung von Arbeitsplätzen gebraucht. Wir werden mit der EUKommission in Verhandlungen treten, die Ziele beizubehalten, aber den Weg dorthin pragmatischer"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Inhalt",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 5. Wir kämpfen für eine Finanzpolitik, die der Zukunft unseres Landes dient.",
+        "content": "Außerdem wollen wir Einkommen aus Kapital über den Einkommensteuertarif besteuern. Anders als\nan den Finanzplätzen Paris oder Mailand, werden Finanztransaktionen in Deutschland bisher nicht\nbesteuert. Daher wollen wir eine Finanztransaktionssteuer einführen. Dies soll möglichst im Einklang\nmit unseren europäischen Partnern geschehen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Ziele unserer Klimaschutzpolitik sind die Vermeidung von Treibhausgasemissionen durch den\nbeschleunigten Ausbau Erneuerbarer Energien, effizientes Energiemanagement, Dekarbonisierung\nder Industrie und eine umfassendere Kreislaufwirtschaft. Wir folgen deshalb dem Grundsatz „CO2**Vermeidung vor CO2-Abscheidung“.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Regelungen an, die die Verlagerung von CO2-Emissionen (Carbon Leakage) vermeiden. Wir wollen die\n**Luftverkehrsteuer in eine EU-Klimaabgabe umwandeln, die von allen Airlines gezahlt wird, auch von**\ndenen außerhalb Europas. Wir werden die Wasserstraßeninfrastruktur ertüchtigen, die Nationale\n**Hafenstrategie zügig umsetzen und die Modernisierung der Schiffsflotten unterstützen. Forschung**\nund Markthochlauf für nachhaltige Kraftstoffe wie E-Fuels sind besonders für Luftverkehr und"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "Darauf kommt es jetzt an.\n\nDarüber entscheiden die Wählerinnen und Wähler bei der Bundestagswahl am 23. Februar 2025.\n\n5"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "- Wir kappen unnötige Bürokratie, beschleunigen und digitalisieren die Verwaltung – und auch\nbeim Ausbau der Erneuerbaren Energien halten wir das Tempo hoch.\n\nZupackende Politik für die breite Mehrheit der Bürgerinnen und Bürger, die unser Land am Laufen\nhalten, und für diejenigen, die nicht auf der Sonnenseite des Lebens stehen.\n\nPolitik mit Maß und Mitte, die verbindet und nicht spaltet.\n\nDarauf kommt es jetzt an."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Den Weg zu einem klimaneutralen Luftverkehr wollen wir im Sinne eines fairen Wettbewerbs\n(Level-Playing-Field) für unsere Flughäfen und Airlines gestalten. Wir streben EU-weit einheitliche\n\n36"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Ein Großteil der Neuwagen wird gewerblich genutzt. Hier werden wir durch bessere\n**Abschreibungsbedingungen und Änderungen bei der Dienstwagenbesteuerung die Attraktivität der**\nE-Mobilität weiter verbessern. Die Kfz-Steuer-Befreiung für E-Autos werden wir bis 2035 verlängern.\n\n**Wir wollen, dass Unternehmen die besten Rahmenbedingungen haben, um in Deutschland zu**\n**investieren.**\n\nWir können etwas tun für unsere Unternehmen und für den Wirtschaftsstandort Deutschland."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\n55 Euro in 2025 und maximal 65 Euro in 2026 gilt. Wenn ab 2027 die europäische Regelung in Kraft\ntritt, werden wir durch geeignete Maßnahmen auf europäischer und nationaler Ebene (zum Beispiel\nKlimageld) dafür Sorge tragen, dass niemand überfordert wird."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Regelungen an, die die Verlagerung von CO2-Emissionen (Carbon Leakage) vermeiden. Wir wollen die\n**Luftverkehrsteuer in eine EU-Klimaabgabe umwandeln, die von allen Airlines gezahlt wird, auch von**\ndenen außerhalb Europas. Wir werden die Wasserstraßeninfrastruktur ertüchtigen, die Nationale\n**Hafenstrategie zügig umsetzen und die Modernisierung der Schiffsflotten unterstützen. Forschung**\nund Markthochlauf für nachhaltige Kraftstoffe wie E-Fuels sind besonders für Luftverkehr und"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Deutschland soll ein führendes Land für die Herstellung von Fahrzeugen bleiben. Wir setzen uns dafür\nein, dass die deutschen Automobilhersteller aktuell keine Strafzahlungen im Zusammenhang mit\nden CO2-Flottengrenzwerten an Brüssel leisten müssen. Diese Mittel werden jetzt für Investitionen in\nklimafreundliche Fahrzeuge und die Sicherung von Arbeitsplätzen gebraucht. Wir werden mit der EUKommission in Verhandlungen treten, die Ziele beizubehalten, aber den Weg dorthin pragmatischer"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Den Weg zu einem klimaneutralen Luftverkehr wollen wir im Sinne eines fairen Wettbewerbs\n(Level-Playing-Field) für unsere Flughäfen und Airlines gestalten. Wir streben EU-weit einheitliche\n\n36"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 5. Wir kämpfen für eine Finanzpolitik, die der Zukunft unseres Landes dient.",
+        "content": "Außerdem wollen wir Einkommen aus Kapital über den Einkommensteuertarif besteuern. Anders als\nan den Finanzplätzen Paris oder Mailand, werden Finanztransaktionen in Deutschland bisher nicht\nbesteuert. Daher wollen wir eine Finanztransaktionssteuer einführen. Dies soll möglichst im Einklang\nmit unseren europäischen Partnern geschehen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Inhalt",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 21. Wir kämpfen für Freiheit und Sicherheit.",
+        "content": "die europäische Luftverteidigungsinitiative Sky Shield (European Sky Shield Initiative, ESSI) zu starten,\nzeigen, dass wir bereit sind, mehr Verantwortung bei der Bündnisverteidigung zu übernehmen.\n\n57"
+      }
+    ],
+    "GRUENE": [
+      {
+        "title": "",
+        "content": "Environmental party advocating for climate action and sustainability"
+      }
+    ],
+    "FDP": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "CDU/CSU": [
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Freien Handel und Exporte unterstützen",
+        "content": "- FFair handeln statt abschotten. Bei marktverzerrenden Subventionen und Exportbeihilfen\nsetzen wir auf das EU-Antisubventionsverfahren und einen wirksamen, international anerkannten Streitschlichtungsmechanismus bei der Welthandelsorganisation. Grundsätzlich sind Zölle nicht der richtige Weg.\n\n- GGlobaler Handel funktioniert nur auf der Basis gleicher Rechte und Pflichten. Deshalb\nfolgen wir dem Grundsatz der Gegenseitigkeit (Reziprozität)."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Freien Handel und Exporte unterstützen",
+        "content": "- FFair handeln statt abschotten. Bei marktverzerrenden Subventionen und Exportbeihilfen\nsetzen wir auf das EU-Antisubventionsverfahren und einen wirksamen, international anerkannten Streitschlichtungsmechanismus bei der Welthandelsorganisation. Grundsätzlich sind Zölle nicht der richtige Weg.\n\n- GGlobaler Handel funktioniert nur auf der Basis gleicher Rechte und Pflichten. Deshalb\nfolgen wir dem Grundsatz der Gegenseitigkeit (Reziprozität)."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "- LLuftverkehrsstandort Deutschland erhalten. Die Gesamtkosten des Luftverkehrs werden\nauf ein wettbewerbsfähiges europäisches Niveau zurückgeführt."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "- LLuftverkehrsstandort Deutschland erhalten. Die Gesamtkosten des Luftverkehrs werden\nauf ein wettbewerbsfähiges europäisches Niveau zurückgeführt."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Für bezahlbare Energie sorgen",
+        "content": "- EEchte Europäische Energieunion. Ein echter europäischer Energiebinnenmarkt schafft\nResilienz und ist mit mehr Angebot gut für die Verbraucher. Für notwendige Energieimporte und -exporte mobilisieren wir europäische Potenziale und intensivieren internationale Partnerschaften.\n\n- AAbgaben auf den Prüfstand. Bei den Steuern und anderen Abgaben auf Energie nutzen\nwir Entlastungsspielräume. Wir senken die Stromsteuer für alle und reduzieren die Netzentgelte."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "- JJa zum Auto, Automobilindustrie als Leitindustrie erhalten. Wir sehen in der individuellen Mobilität den Inbegriff von Freiheit und spielen deshalb unterschiedliche Verkehrsmittel nicht gegeneinander aus. Anti-Auto-Haltung, Fahrverbote für Innenstädte, das\nUmwidmen von Parkplätzen und ein generelles Tempolimit auf deutschen Autobahnen\nlehnen wir ab. Der Führerschein muss für junge Menschen bezahlbar sein. Dafür gilt es,"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "- JJa zum Auto, Automobilindustrie als Leitindustrie erhalten. Wir sehen in der individuellen Mobilität den Inbegriff von Freiheit und spielen deshalb unterschiedliche Verkehrsmittel nicht gegeneinander aus. Anti-Auto-Haltung, Fahrverbote für Innenstädte, das\nUmwidmen von Parkplätzen und ein generelles Tempolimit auf deutschen Autobahnen\nlehnen wir ab. Der Führerschein muss für junge Menschen bezahlbar sein. Dafür gilt es,"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Emissionshandel richtig umsetzen",
+        "content": "- FFür mehr Klimaeffizienz. Investitionen in Klimatechnologien und Energieeffizienz sollen\nkünftig steuerlich deutlich schneller und besser abgesetzt werden können.\n\n- MMenschen entlasten. Um Verbraucher und Unternehmen schnell und effizient mit einem\nsozialen Ausgleich zu entlasten, schaffen wir einen Klimabonus. Wir reduzieren mit den\nCO2-Einnahmen zuerst die Stromsteuer und Netzentgelte. Höhere Belastungen durch\nsteigende CO2-Abgaben müssen auch zu höheren Entlastungen führen."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Emissionshandel richtig umsetzen",
+        "content": "- FFür mehr Klimaeffizienz. Investitionen in Klimatechnologien und Energieeffizienz sollen\nkünftig steuerlich deutlich schneller und besser abgesetzt werden können.\n\n- MMenschen entlasten. Um Verbraucher und Unternehmen schnell und effizient mit einem\nsozialen Ausgleich zu entlasten, schaffen wir einen Klimabonus. Wir reduzieren mit den\nCO2-Einnahmen zuerst die Stromsteuer und Netzentgelte. Höhere Belastungen durch\nsteigende CO2-Abgaben müssen auch zu höheren Entlastungen führen."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir wollen eine gute Versorgung mit Kinderbetreuungsplätzen. Zudem erhöhen wir die\nsteuerliche Absetzbarkeit von Betreuungskosten.\n\n- WWir schaffen das Selbstbestimmungsgesetz der Ampel wieder ab. Der Jugendschutz und\ndas Erziehungsrecht der Eltern dürfen nicht untergraben werden.\n\nFür gute Bildung\n\nKinder sind unsere Zukunft und brauchen beste Startmöglichkeiten von Anfang an – und\nzwar alle. Dreh- und Angelpunkt ist ein funktionierendes, verlässliches Bildungssystem."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Freien Handel und Exporte unterstützen",
+        "content": "- FFair handeln statt abschotten. Bei marktverzerrenden Subventionen und Exportbeihilfen\nsetzen wir auf das EU-Antisubventionsverfahren und einen wirksamen, international anerkannten Streitschlichtungsmechanismus bei der Welthandelsorganisation. Grundsätzlich sind Zölle nicht der richtige Weg.\n\n- GGlobaler Handel funktioniert nur auf der Basis gleicher Rechte und Pflichten. Deshalb\nfolgen wir dem Grundsatz der Gegenseitigkeit (Reziprozität)."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Freien Handel und Exporte unterstützen",
+        "content": "- FFair handeln statt abschotten. Bei marktverzerrenden Subventionen und Exportbeihilfen\nsetzen wir auf das EU-Antisubventionsverfahren und einen wirksamen, international anerkannten Streitschlichtungsmechanismus bei der Welthandelsorganisation. Grundsätzlich sind Zölle nicht der richtige Weg.\n\n- GGlobaler Handel funktioniert nur auf der Basis gleicher Rechte und Pflichten. Deshalb\nfolgen wir dem Grundsatz der Gegenseitigkeit (Reziprozität)."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "- LLuftverkehrsstandort Deutschland erhalten. Die Gesamtkosten des Luftverkehrs werden\nauf ein wettbewerbsfähiges europäisches Niveau zurückgeführt."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: VVerkehrsinfrastruktur erneuern, Mobilität frei wählen",
+        "content": "- LLuftverkehrsstandort Deutschland erhalten. Die Gesamtkosten des Luftverkehrs werden\nauf ein wettbewerbsfähiges europäisches Niveau zurückgeführt."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- EEU-Bürokratie kleinhalten. Mit einem Gesetz gegen Draufsatteln – „Anti-Gold-PlatingGesetz“ – nehmen wir Regelungen zurück, die über europäisches Recht hinausgehen,\nund unterbinden künftig jegliche Übererfüllung. Parallelregulierungen auf europäischer\nund nationaler Ebene lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- EEU-Bürokratie kleinhalten. Mit einem Gesetz gegen Draufsatteln – „Anti-Gold-PlatingGesetz“ – nehmen wir Regelungen zurück, die über europäisches Recht hinausgehen,\nund unterbinden künftig jegliche Übererfüllung. Parallelregulierungen auf europäischer\nund nationaler Ebene lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      }
+    ],
+    "LINKE": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "AFD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "FREIE WÄHLER": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "Volt": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "MLPD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BÜNDNIS DEUTSCHLAND": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BSW": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ]
+  },
+  "evaluation_scores": {},
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.285395",
+  "question_id": 11,
+  "question": "Die gemeinsame europäische Polizeibehörde Europol soll weitere Befugnisse erhalten.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.318667",
+  "question_id": 12,
+  "question": "Die EU soll länderübergreifende, mehrsprachige Angebote des öffentlich-rechtlichen Rundfunks stärker finanziell fördern.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.349001",
+  "question_id": 13,
+  "question": "Die EU soll das Ziel verwerfen, klimaneutral zu werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.378564",
+  "question_id": 14,
+  "question": "Bei den Wahlen zum Europäischen Parlament sollen die Parteien weiterhin frei entscheiden können, wie groß der Anteil der Geschlechter auf ihren Listen ist.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.407149",
+  "question_id": 15,
+  "question": "Die EU soll Vorgaben für die Höhe der sozialen Grundsicherung in den Mitgliedstaaten machen.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.437099",
+  "question_id": 16,
+  "question": "Betreiber sozialer Netzwerke sollen frei entscheiden dürfen, wie sie mit Desinformation auf ihren Plattformen umgehen.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.466170",
+  "question_id": 17,
+  "question": "In der EU sollen mehr Flächen als Naturschutzgebiete ausgewiesen werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.494589",
+  "question_id": 18,
+  "question": "EU-Fördermittel für Mitgliedstaaten, die Regeln und Werte der EU verletzen, sollen weiterhin zurückgehalten werden.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-10T22:55:51.522758",
+  "question_id": 19,
+  "question": "Die EU soll mehr Waffen für die Ukraine finanzieren.",
+  "user_custom_answer": "",
+  "button_answer": "1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:19:49.211676",
+  "question_id": 0,
+  "question": "Die EU soll eigene Steuern erheben dürfen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:19:49.885489",
+  "question_id": 1,
+  "question": "Fahrzeuge mit Verbrennungsmotoren sollen auch nach 2035 in der EU neu zugelassen werden können.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:19:49.917464",
+  "question_id": 2,
+  "question": "Die EU soll eine eigene Seenotrettung im Mittelmeer aufbauen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:19:49.948357",
+  "question_id": 3,
+  "question": "Die Ukraine soll Mitglied der EU werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:04.937992",
+  "question_id": 4,
+  "question": "Die EU soll vorrangig ökologische Landwirtschaft fördern.",
+  "user_custom_answer": "I totally agree with this statement, this is very important to me",
+  "button_answer": "0",
+  "answer_type": "custom",
+  "lookup_response": {
+    "lookupPrompts": [
+      "EU party positions on ecological farming",
+      "political parties' views on promoting organic agriculture",
+      "which EU parties support ecological farming practices?"
+    ]
+  },
+  "party_contexts": {
+    "SPD": [
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 22. Wir kämpfen für ein starkes und handlungsfähiges Europa.",
+        "content": "Deutschland kommt als größtem und wirtschaftlich stärkstem Mitgliedstaat innerhalb der EU eine\nbesondere Verantwortung zu. Dafür ist es wichtig, dass die Partner in der Bundesregierung auf\nEU-Ebene mit einer Stimme sprechen. Wir erwarten von allen demokratischen Parteien, dass sie\ndie Brandmauer gegen Rechtspopulismus und -extremismus, auch im Europäischen Parlament,\naufrechterhalten.\n\n59"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Wir sind sicher, dass man auch im konventionellen Bereich mit kluger Landwirtschaft gut und\nnachhaltig arbeiten kann: bodenschonend, tierwohlgerecht, klimaangepasst. Wir wollen es leichter\nmachen, das zu tun, und Planungssicherheit schaffen.\n\nAngesichts der Klima- und Biodiversitätskrise ist es unerlässlich, die gesetzlichen\nRahmenbedingungen anzupassen, um die vielfältigen Ökosystemleistungen unserer Wälder auch für\nkommende Generationen zu sichern."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "In diesem Zusammenhang unterstützen wir auch den europäischen Clean Industrial Deal.\n\nUm unsere heimische Industrie mit Rohstoffen zu versorgen, setzen wir auf den neu geschaffenen\nRohstofffonds, werden die heimische Rohstoffgewinnung voranbringen und uns für eine koordinierte\n**Rohstoffstrategie der EU einsetzen. Die Kreislaufwirtschaftsstrategie wollen wir pragmatisch**\numsetzen, zum Beispiel mit Absatzmärkten für umweltschonend recycelte Rohstoffe und\neffizienterem Materialeinsatz."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "Wir bekennen uns klar zu den Klimazielen für Deutschland und die EU. Wir müssen den Anstieg\nder globalen Durchschnittstemperatur auf deutlich unter zwei Grad Celsius begrenzen und nach\nMöglichkeit auf den 1,5-Grad-Pfad führen. Wir unterstützen den europäischen Green Deal, damit\nEuropa der erste klimaneutrale Kontinent wird. Eine Abschwächung der erreichten Errungenschaften\nist mit uns nicht zu machen. Unsere Wirtschaft braucht Planungssicherheit. Beschlossene Gesetze"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Regelungen an, die die Verlagerung von CO2-Emissionen (Carbon Leakage) vermeiden. Wir wollen die\n**Luftverkehrsteuer in eine EU-Klimaabgabe umwandeln, die von allen Airlines gezahlt wird, auch von**\ndenen außerhalb Europas. Wir werden die Wasserstraßeninfrastruktur ertüchtigen, die Nationale\n**Hafenstrategie zügig umsetzen und die Modernisierung der Schiffsflotten unterstützen. Forschung**\nund Markthochlauf für nachhaltige Kraftstoffe wie E-Fuels sind besonders für Luftverkehr und"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 24. Wir kämpfen für eine gerechte Welt.",
+        "content": "im Ministerrat der EU entschieden werden. Damit tragen wir auf europäischer Ebene zu einem\nerfolgreichen und zeitlich angemessenen Abschluss von fairen Freihandelsabkommen auf Augenhöhe\nbei."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Soziale Standards sind ein geopolitischer Standortvorteil unseres Wirtschaftsraumes. Wir\nunterstützen Industrie und Wirtschaft, nehmen sie aber auch in die Pflicht. Wirtschaftliche Stärke\nund soziale Sicherheit sind zwei Seiten derselben Medaille. Deswegen setzen wir die Europäische\n**Säule sozialer Rechte entschieden national wie europäisch um. Wir wollen eine echte Europäische**\n**Sozialunion. Wir wollen einen Binnenmarkt, der den Arbeitnehmerinnen und Arbeitnehmern dient.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Wir wollen den Landwirtinnen und Landwirten durch die Reform der Agrarförderung Rückendeckung\ngeben, denn sie stehen am Anfang der landwirtschaftlichen Wertschöpfungskette. Ziel ist eine\nstärkere Honorierung und Vergütung von Leistungen, die den Arbeitskräften in der Landwirtschaft,\nden ländlichen Regionen sowie dem Tierschutz zugutekommen. Unsere Maßnahmen zur\nStabilisierung wettbewerbsfähiger Energiepreise werden auch die Landwirtschaft entlasten.\n\n53"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen",
+        "content": "und Demokraten sowie Organisationen für eine starke Zivilgesellschaft."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Für uns ist die Zukunft der Landwirtschaft digital und bürokratiearm. Auch deshalb wollen wir\nLandwirtinnen und Landwirte dabei stärken, die Herausforderungen der Zukunft zu meistern.\nLandwirtschaftliche Tätigkeiten brauchen regionale und nachhaltige Perspektiven, um langfristig und\nverantwortungsvoll zu wirken."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Inhalt",
+        "content": "**Unser Versprechen ........................................................................................................................... 66**\n\n25. Politik heißt für uns: Wir kämpfen für Dich....................................................................................................66\n\n3"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Wir sind sicher, dass man auch im konventionellen Bereich mit kluger Landwirtschaft gut und\nnachhaltig arbeiten kann: bodenschonend, tierwohlgerecht, klimaangepasst. Wir wollen es leichter\nmachen, das zu tun, und Planungssicherheit schaffen.\n\nAngesichts der Klima- und Biodiversitätskrise ist es unerlässlich, die gesetzlichen\nRahmenbedingungen anzupassen, um die vielfältigen Ökosystemleistungen unserer Wälder auch für\nkommende Generationen zu sichern."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "- Wir kappen unnötige Bürokratie, beschleunigen und digitalisieren die Verwaltung – und auch\nbeim Ausbau der Erneuerbaren Energien halten wir das Tempo hoch.\n\nZupackende Politik für die breite Mehrheit der Bürgerinnen und Bürger, die unser Land am Laufen\nhalten, und für diejenigen, die nicht auf der Sonnenseite des Lebens stehen.\n\nPolitik mit Maß und Mitte, die verbindet und nicht spaltet.\n\nDarauf kommt es jetzt an."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Wir sind sicher, dass man auch im konventionellen Bereich mit kluger Landwirtschaft gut und\nnachhaltig arbeiten kann: bodenschonend, tierwohlgerecht, klimaangepasst. Wir wollen es leichter\nmachen, das zu tun, und Planungssicherheit schaffen.\n\nAngesichts der Klima- und Biodiversitätskrise ist es unerlässlich, die gesetzlichen\nRahmenbedingungen anzupassen, um die vielfältigen Ökosystemleistungen unserer Wälder auch für\nkommende Generationen zu sichern."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "In diesem Zusammenhang unterstützen wir auch den europäischen Clean Industrial Deal.\n\nUm unsere heimische Industrie mit Rohstoffen zu versorgen, setzen wir auf den neu geschaffenen\nRohstofffonds, werden die heimische Rohstoffgewinnung voranbringen und uns für eine koordinierte\n**Rohstoffstrategie der EU einsetzen. Die Kreislaufwirtschaftsstrategie wollen wir pragmatisch**\numsetzen, zum Beispiel mit Absatzmärkten für umweltschonend recycelte Rohstoffe und\neffizienterem Materialeinsatz."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 24. Wir kämpfen für eine gerechte Welt.",
+        "content": "im Ministerrat der EU entschieden werden. Damit tragen wir auf europäischer Ebene zu einem\nerfolgreichen und zeitlich angemessenen Abschluss von fairen Freihandelsabkommen auf Augenhöhe\nbei."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 22. Wir kämpfen für ein starkes und handlungsfähiges Europa.",
+        "content": "Deutschland kommt als größtem und wirtschaftlich stärkstem Mitgliedstaat innerhalb der EU eine\nbesondere Verantwortung zu. Dafür ist es wichtig, dass die Partner in der Bundesregierung auf\nEU-Ebene mit einer Stimme sprechen. Wir erwarten von allen demokratischen Parteien, dass sie\ndie Brandmauer gegen Rechtspopulismus und -extremismus, auch im Europäischen Parlament,\naufrechterhalten.\n\n59"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen",
+        "content": "und Demokraten sowie Organisationen für eine starke Zivilgesellschaft."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Wir wollen den Landwirtinnen und Landwirten durch die Reform der Agrarförderung Rückendeckung\ngeben, denn sie stehen am Anfang der landwirtschaftlichen Wertschöpfungskette. Ziel ist eine\nstärkere Honorierung und Vergütung von Leistungen, die den Arbeitskräften in der Landwirtschaft,\nden ländlichen Regionen sowie dem Tierschutz zugutekommen. Unsere Maßnahmen zur\nStabilisierung wettbewerbsfähiger Energiepreise werden auch die Landwirtschaft entlasten.\n\n53"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 16. Wir kämpfen für mehr Respekt, Sicherheit und Schutz vor Gewalt.",
+        "content": "Wir wollen zudem den Kampf gegen Umweltkriminalität weiter forcieren, indem wir uns dafür\neinsetzen, dass auch die Europäische Staatsanwaltschaft hierfür zuständig wird und Europol ihre\nRessourcen in diesem Bereich ausbaut."
+      }
+    ],
+    "GRUENE": [
+      {
+        "title": "",
+        "content": "Environmental party advocating for climate action and sustainability"
+      }
+    ],
+    "FDP": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "CDU/CSU": [
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- ÖÖkologische Ziele erreichen. Wir setzen auf Anreize, Vertragsnaturschutz, die Honorierung von Natur- und Umweltschutz sowie Innovationen. Das zwangsweise Stilllegen von\nFlächen lehnen wir ab. Dabei sind uns konventionelle und ökologische Landwirtschaft\ngleich wichtig. Das Bundesnaturschutzgesetz ändern wir dahingehend, dass Pflege und\nBewirtschaftung von Biotopen ausgleichsfähig sind. Die Bioökonomie stärken wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- ÖÖkologische Ziele erreichen. Wir setzen auf Anreize, Vertragsnaturschutz, die Honorierung von Natur- und Umweltschutz sowie Innovationen. Das zwangsweise Stilllegen von\nFlächen lehnen wir ab. Dabei sind uns konventionelle und ökologische Landwirtschaft\ngleich wichtig. Das Bundesnaturschutzgesetz ändern wir dahingehend, dass Pflege und\nBewirtschaftung von Biotopen ausgleichsfähig sind. Die Bioökonomie stärken wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "hinaus. Konkret wollen wir auf die Stoffstrombilanz im Düngerecht verzichten, ein EUBodengesetz dauerhaft abwenden und die EU-Taxonomie auch für die Land- und Forstwirtschaft entschärfen."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "hinaus. Konkret wollen wir auf die Stoffstrombilanz im Düngerecht verzichten, ein EUBodengesetz dauerhaft abwenden und die EU-Taxonomie auch für die Land- und Forstwirtschaft entschärfen."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- EEigenständiges EU-Agrarbudget weiter gut ausstatten; GAP drastisch vereinfachen. Wir\nmachen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt. Unser\nZiel ist zudem, die Gemeinsame Agrarpolitik für die Bäuerinnen und Bauern im Sinne\nvon Bürokratieabbau, Transparenz und Effizienz massiv zu vereinfachen und praktikabel auszugestalten, was auch viele kleinteilige Kontrollen überflüssig macht. Zudem"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- EEigenständiges EU-Agrarbudget weiter gut ausstatten; GAP drastisch vereinfachen. Wir\nmachen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt. Unser\nZiel ist zudem, die Gemeinsame Agrarpolitik für die Bäuerinnen und Bauern im Sinne\nvon Bürokratieabbau, Transparenz und Effizienz massiv zu vereinfachen und praktikabel auszugestalten, was auch viele kleinteilige Kontrollen überflüssig macht. Zudem"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir machen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt.\nGleichzeitig muss die Gemeinsame Agrarpolitik drastisch vereinfacht werden."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- ÖÖkologische Ziele erreichen. Wir setzen auf Anreize, Vertragsnaturschutz, die Honorierung von Natur- und Umweltschutz sowie Innovationen. Das zwangsweise Stilllegen von\nFlächen lehnen wir ab. Dabei sind uns konventionelle und ökologische Landwirtschaft\ngleich wichtig. Das Bundesnaturschutzgesetz ändern wir dahingehend, dass Pflege und\nBewirtschaftung von Biotopen ausgleichsfähig sind. Die Bioökonomie stärken wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- ÖÖkologische Ziele erreichen. Wir setzen auf Anreize, Vertragsnaturschutz, die Honorierung von Natur- und Umweltschutz sowie Innovationen. Das zwangsweise Stilllegen von\nFlächen lehnen wir ab. Dabei sind uns konventionelle und ökologische Landwirtschaft\ngleich wichtig. Das Bundesnaturschutzgesetz ändern wir dahingehend, dass Pflege und\nBewirtschaftung von Biotopen ausgleichsfähig sind. Die Bioökonomie stärken wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "Unsere Landwirtinnen und Landwirte wirtschaften umweltfreundlich und leisten einen\nwichtigen Beitrag zur Ernährungssicherheit und Landschaftspflege. Sie verdienen Anerkennung, Respekt und Vertrauen. Wir sorgen für Entlastungen durch bessere Rahmenbedingungen und Planungssicherheit – damit ein Landwirt wieder Landwirt sein kann."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "Unsere Landwirtinnen und Landwirte wirtschaften umweltfreundlich und leisten einen\nwichtigen Beitrag zur Ernährungssicherheit und Landschaftspflege. Sie verdienen Anerkennung, Respekt und Vertrauen. Wir sorgen für Entlastungen durch bessere Rahmenbedingungen und Planungssicherheit – damit ein Landwirt wieder Landwirt sein kann."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Landwirtschaftliche Produktion sichern",
+        "content": "- LLand und Landwirtschaft Sicherheit geben. Wir nehmen die Ernährungssicherung als\nStaatsziel in das Grundgesetz auf. Das ist vor allem für Gesetzgebung und Gerichte wichtig, damit landwirtschaftliche Anliegen angemessen berücksichtigt werden.\n\n- BBei der Ernährung auf mündige Bürger setzen. Wir setzen auf Ernährungsbildung und\ngute Information, aber nicht auf unwirksame Werbeverbote oder Lenkungssteuern. Für\nLebensmittel wollen wir eine verpflichtende, praxistaugliche Herkunftskennzeichnung."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- ÖÖkologische Ziele erreichen. Wir setzen auf Anreize, Vertragsnaturschutz, die Honorierung von Natur- und Umweltschutz sowie Innovationen. Das zwangsweise Stilllegen von\nFlächen lehnen wir ab. Dabei sind uns konventionelle und ökologische Landwirtschaft\ngleich wichtig. Das Bundesnaturschutzgesetz ändern wir dahingehend, dass Pflege und\nBewirtschaftung von Biotopen ausgleichsfähig sind. Die Bioökonomie stärken wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- ÖÖkologische Ziele erreichen. Wir setzen auf Anreize, Vertragsnaturschutz, die Honorierung von Natur- und Umweltschutz sowie Innovationen. Das zwangsweise Stilllegen von\nFlächen lehnen wir ab. Dabei sind uns konventionelle und ökologische Landwirtschaft\ngleich wichtig. Das Bundesnaturschutzgesetz ändern wir dahingehend, dass Pflege und\nBewirtschaftung von Biotopen ausgleichsfähig sind. Die Bioökonomie stärken wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "hinaus. Konkret wollen wir auf die Stoffstrombilanz im Düngerecht verzichten, ein EUBodengesetz dauerhaft abwenden und die EU-Taxonomie auch für die Land- und Forstwirtschaft entschärfen."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "hinaus. Konkret wollen wir auf die Stoffstrombilanz im Düngerecht verzichten, ein EUBodengesetz dauerhaft abwenden und die EU-Taxonomie auch für die Land- und Forstwirtschaft entschärfen."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir machen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt.\nGleichzeitig muss die Gemeinsame Agrarpolitik drastisch vereinfacht werden."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir machen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt.\nGleichzeitig muss die Gemeinsame Agrarpolitik drastisch vereinfacht werden."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- EEigenständiges EU-Agrarbudget weiter gut ausstatten; GAP drastisch vereinfachen. Wir\nmachen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt. Unser\nZiel ist zudem, die Gemeinsame Agrarpolitik für die Bäuerinnen und Bauern im Sinne\nvon Bürokratieabbau, Transparenz und Effizienz massiv zu vereinfachen und praktikabel auszugestalten, was auch viele kleinteilige Kontrollen überflüssig macht. Zudem"
+      }
+    ],
+    "LINKE": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "AFD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "FREIE WÄHLER": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "Volt": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "MLPD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BÜNDNIS DEUTSCHLAND": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BSW": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ]
+  },
+  "evaluation_scores": {},
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.151881",
+  "question_id": 5,
+  "question": "In Deutschland soll der Euro durch eine nationale Währung ersetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.212240",
+  "question_id": 6,
+  "question": "Die EU soll den Mitgliedstaaten empfehlen, außer \"weiblich\" und \"männlich\" auch die Eintragung einer anderen Geschlechtsidentität im Pass zu ermöglichen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.250630",
+  "question_id": 7,
+  "question": "Die Jagd von Wölfen soll in Regionen erlaubt sein, in denen der Bestand dadurch nicht gefährdet ist.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.286072",
+  "question_id": 8,
+  "question": "Beim Bau neuer Wohngebäude in der EU soll die Errichtung von Photovoltaikanlagen verpflichtend sein.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.346085",
+  "question_id": 9,
+  "question": "Mehr außenpolitische Entscheidungen der EU sollen mit Mehrheit statt einstimmig getroffen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.378809",
+  "question_id": 10,
+  "question": "Der Flugzeugtreibstoff Kerosin soll für Flüge in der EU steuerfrei sein.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.412444",
+  "question_id": 11,
+  "question": "Die gemeinsame europäische Polizeibehörde Europol soll weitere Befugnisse erhalten.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.444665",
+  "question_id": 12,
+  "question": "Die EU soll länderübergreifende, mehrsprachige Angebote des öffentlich-rechtlichen Rundfunks stärker finanziell fördern.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.476708",
+  "question_id": 13,
+  "question": "Die EU soll das Ziel verwerfen, klimaneutral zu werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.510304",
+  "question_id": 14,
+  "question": "Bei den Wahlen zum Europäischen Parlament sollen die Parteien weiterhin frei entscheiden können, wie groß der Anteil der Geschlechter auf ihren Listen ist.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.542659",
+  "question_id": 15,
+  "question": "Die EU soll Vorgaben für die Höhe der sozialen Grundsicherung in den Mitgliedstaaten machen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.576907",
+  "question_id": 16,
+  "question": "Betreiber sozialer Netzwerke sollen frei entscheiden dürfen, wie sie mit Desinformation auf ihren Plattformen umgehen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.608920",
+  "question_id": 17,
+  "question": "In der EU sollen mehr Flächen als Naturschutzgebiete ausgewiesen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.643219",
+  "question_id": 18,
+  "question": "EU-Fördermittel für Mitgliedstaaten, die Regeln und Werte der EU verletzen, sollen weiterhin zurückgehalten werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:05.694896",
+  "question_id": 19,
+  "question": "Die EU soll mehr Waffen für die Ukraine finanzieren.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:36.839297",
+  "question_id": 0,
+  "question": "Die EU soll eigene Steuern erheben dürfen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:36.939533",
+  "question_id": 1,
+  "question": "Fahrzeuge mit Verbrennungsmotoren sollen auch nach 2035 in der EU neu zugelassen werden können.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:37.019545",
+  "question_id": 2,
+  "question": "Die EU soll eine eigene Seenotrettung im Mittelmeer aufbauen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:37.053033",
+  "question_id": 3,
+  "question": "Die Ukraine soll Mitglied der EU werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:37.084240",
+  "question_id": 4,
+  "question": "Die EU soll vorrangig ökologische Landwirtschaft fördern.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:37.118891",
+  "question_id": 5,
+  "question": "In Deutschland soll der Euro durch eine nationale Währung ersetzt werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.313730",
+  "question_id": 6,
+  "question": "Die EU soll den Mitgliedstaaten empfehlen, außer \"weiblich\" und \"männlich\" auch die Eintragung einer anderen Geschlechtsidentität im Pass zu ermöglichen.",
+  "user_custom_answer": "I totally agree with this statement, this is very important to me",
+  "button_answer": "0",
+  "answer_type": "custom",
+  "lookup_response": {
+    "lookupPrompts": [
+      "EU member state positions on gender identity in passports",
+      "European Union policies on non-binary gender recognition",
+      "Political parties' stances on legal gender options"
+    ]
+  },
+  "party_contexts": {
+    "SPD": [
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 16. Wir kämpfen für mehr Respekt, Sicherheit und Schutz vor Gewalt.",
+        "content": "Wir wollen, dass geschlechtsspezifische Gewalt EU-weit als Straftatbestand festgeschrieben wird.\nUnser Ziel sind einheitliche Standards im Schutz und in der Strafverfolgung in allen Mitgliedstaaten."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 20. Wir kämpfen für eine moderne Einwanderungsgesellschaft.",
+        "content": "Wir haben für neue Klarheit in der Migrationspolitik gesorgt – für einen Paradigmenwechsel hin zu\neiner geordneten Migration auf den Arbeitsmarkt und eine bessere Kontrolle der Fluchtmigration. Auf\neuropäischer Ebene gilt ab 2026 das Gemeinsame Europäische Asylsystem (GEAS). Wir wollen, dass\nin ganz Europa humanitäre Standards für Geflüchtete bestehen und Migration solidarisch gesteuert\nwird. Das individuelle Menschenrecht auf Asyl und das internationale Flüchtlingsrecht sind die Basis"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 17. Wir kämpfen für Gleichstellung, für eine Gesellschaft frei von Rassismus",
+        "content": "Unser Ziel bleibt die gleichberechtigte Teilhabe von Frauen in Führungspositionen. Dazu werden wir\ndas Führungspositionen-Gesetz weiterentwickeln mit dem Ziel, bis 2030 Parität in Aufsichtsräten\nund Vorständen zu erreichen. Als nächsten Schritt streben wir ein Gleichstellungsgesetz für die\n**Privatwirtschaft an.**\n\nWir werden uns dafür einsetzen, dass eine EU-Charta der Frauenrechte verabschiedet und somit ein\neffektiver Schutz von Frauenrechten in der ganzen EU gewährt wird."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 22. Wir kämpfen für ein starkes und handlungsfähiges Europa.",
+        "content": "Deutschland kommt als größtem und wirtschaftlich stärkstem Mitgliedstaat innerhalb der EU eine\nbesondere Verantwortung zu. Dafür ist es wichtig, dass die Partner in der Bundesregierung auf\nEU-Ebene mit einer Stimme sprechen. Wir erwarten von allen demokratischen Parteien, dass sie\ndie Brandmauer gegen Rechtspopulismus und -extremismus, auch im Europäischen Parlament,\naufrechterhalten.\n\n59"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 14. Wir kämpfen für einen Staat, der besser funktioniert.",
+        "content": "Wir setzen auf die flächendeckende Nutzung der eID, der elektronischen Identität, die es\nBürgerinnen und Bürgern ermöglicht, sich sicher digital auszuweisen und digital zu signieren.\nDamit schaffen wir eine Grundlage für moderne Verwaltungsdienstleistungen und sorgen für eine\nEU-weite Kompatibilität, damit die digitale Identität auch grenzüberschreitend nutzbar ist. Um\nVerwaltungsdienste zentral und unkompliziert verfügbar zu machen, führen wir die DeutschlandID\nein."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 22. Wir kämpfen für ein starkes und handlungsfähiges Europa.",
+        "content": "Wenn grundlegende Prinzipien der EU missachtet werden, muss die EU ihren Wertekanon\nnachdrücklich auch gegenüber Mitgliedstaaten schützen. Wir wollen künftig noch konsequenter\ngegen all jene vorgehen, die unsere gemeinsamen Werte innerhalb der EU verletzen. Dafür müssen\nbestehende Schutzinstrumente bei Rechtsstaatsverstößen, von Vertragsverletzungsverfahren bis\nhin zur Entziehung der Stimmrechte, deutlich konsequenter als bisher eingesetzt und fortentwickelt"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 22. Wir kämpfen für ein starkes und handlungsfähiges Europa.",
+        "content": "Darüber hinaus sind wir für einen Beitritt der EU zur Europäischen Menschenrechtskonvention.\nWir werden den Europäischen Gerichtshof für Menschenrechte stärken sowie die konsequente\nUmsetzung seiner Gerichtsurteile einfordern. Wir schützen mit dem Europarat und seiner\nParlamentarischen Versammlung die Grundwerte der Demokratie, Menschenrechte und\nRechtsstaatlichkeit auf unserem Kontinent.\n\n**Wir stehen für eine handlungsfähige und wertebasierte EU.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 20. Wir kämpfen für eine moderne Einwanderungsgesellschaft.",
+        "content": "Wir haben für neue Klarheit in der Migrationspolitik gesorgt – für einen Paradigmenwechsel hin zu\neiner geordneten Migration auf den Arbeitsmarkt und eine bessere Kontrolle der Fluchtmigration. Auf\neuropäischer Ebene gilt ab 2026 das Gemeinsame Europäische Asylsystem (GEAS). Wir wollen, dass\nin ganz Europa humanitäre Standards für Geflüchtete bestehen und Migration solidarisch gesteuert\nwird. Das individuelle Menschenrecht auf Asyl und das internationale Flüchtlingsrecht sind die Basis"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 16. Wir kämpfen für mehr Respekt, Sicherheit und Schutz vor Gewalt.",
+        "content": "Wir wollen, dass geschlechtsspezifische Gewalt EU-weit als Straftatbestand festgeschrieben wird.\nUnser Ziel sind einheitliche Standards im Schutz und in der Strafverfolgung in allen Mitgliedstaaten."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 17. Wir kämpfen für Gleichstellung, für eine Gesellschaft frei von Rassismus",
+        "content": "Die Diskriminierung in öffentlichen und digitalen Räumen durch Rechtspopulisten, Rechtsextremisten\nund andere Kräfte hat in erschreckendem Maße zugenommen. Wir stellen uns jeder Form der\nMenschenfeindlichkeit klar entgegen.\n\n**Wir wollen Frauenrechte und Gleichstellung bis 2030 verwirklichen.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 14. Wir kämpfen für einen Staat, der besser funktioniert.",
+        "content": "Wir setzen auf die flächendeckende Nutzung der eID, der elektronischen Identität, die es\nBürgerinnen und Bürgern ermöglicht, sich sicher digital auszuweisen und digital zu signieren.\nDamit schaffen wir eine Grundlage für moderne Verwaltungsdienstleistungen und sorgen für eine\nEU-weite Kompatibilität, damit die digitale Identität auch grenzüberschreitend nutzbar ist. Um\nVerwaltungsdienste zentral und unkompliziert verfügbar zu machen, führen wir die DeutschlandID\nein."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 17. Wir kämpfen für Gleichstellung, für eine Gesellschaft frei von Rassismus",
+        "content": "Unser Ziel bleibt die gleichberechtigte Teilhabe von Frauen in Führungspositionen. Dazu werden wir\ndas Führungspositionen-Gesetz weiterentwickeln mit dem Ziel, bis 2030 Parität in Aufsichtsräten\nund Vorständen zu erreichen. Als nächsten Schritt streben wir ein Gleichstellungsgesetz für die\n**Privatwirtschaft an.**\n\nWir werden uns dafür einsetzen, dass eine EU-Charta der Frauenrechte verabschiedet und somit ein\neffektiver Schutz von Frauenrechten in der ganzen EU gewährt wird."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 2. Wir kämpfen für Made in Germany 2.0.",
+        "content": "Soziale Standards sind ein geopolitischer Standortvorteil unseres Wirtschaftsraumes. Wir\nunterstützen Industrie und Wirtschaft, nehmen sie aber auch in die Pflicht. Wirtschaftliche Stärke\nund soziale Sicherheit sind zwei Seiten derselben Medaille. Deswegen setzen wir die Europäische\n**Säule sozialer Rechte entschieden national wie europäisch um. Wir wollen eine echte Europäische**\n**Sozialunion. Wir wollen einen Binnenmarkt, der den Arbeitnehmerinnen und Arbeitnehmern dient.**"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 17. Wir kämpfen für Gleichstellung, für eine Gesellschaft frei von Rassismus",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\n**Wir wollen queere Lebensentwürfe noch besser vor Diskriminierung schützen.**\n\nWir wollen den Schutz vor Diskriminierung im Grundgesetz (GG) explizit auf sexuelle Orientierung\n**und geschlechtliche Identität erweitern. Artikel 3 Abs. 3 GG werden wir daher entsprechend**\nerweitern."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 17. Wir kämpfen für Gleichstellung, für eine Gesellschaft frei von Rassismus",
+        "content": "Die Zeit für Parität ist jetzt – es müssen mehr Frauen in die Parlamente. Dafür werden wir ein\nParitätsgesetz auf den Weg bringen, das bei Wahlen die paritätische Vertretung von Frauen und\nMännern im Deutschen Bundestag bei Listen- und Direktmandaten sicherstellt. 50/50 ist unser\nStandard in allen Parlamenten und an allen Kabinettstischen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Unsere internationale Verantwortung in der Zeitenwende: 24. Wir kämpfen für eine gerechte Welt.",
+        "content": "Möglichkeiten unabhängig vom Geschlecht und von sexueller Orientierung besitzen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "Darauf kommt es jetzt an.\n\nDarüber entscheiden die Wählerinnen und Wähler bei der Bundestagswahl am 23. Februar 2025.\n\n5"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 17. Wir kämpfen für Gleichstellung, für eine Gesellschaft frei von Rassismus",
+        "content": "Gleichstellung werden wir auch künftig – im Sinne des Gender Mainstreaming – zu einem Leitprinzip\naller Ressorts der Regierung machen. Dabei orientieren wir uns an den „drei R“ der feministischen\nAußen- und Entwicklungspolitik: Rechte, Ressourcen, Repräsentanz. Mit einer Folgenabschätzung\naller Maßnahmen, Gesetze und des Bundeshaushalts erreichen wir mehr Gleichstellung. Die\nressortübergreifende Gleichstellungsstrategie des Bundes soll weiterentwickelt und auf eine"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 17. Wir kämpfen für Gleichstellung, für eine Gesellschaft frei von Rassismus",
+        "content": "Den Aktionsplan „queer Leben“ der Bundesregierung werden wir unter Beteiligung der\nZivilgesellschaft weiterentwickeln: Der Aktionsplan wird in Zusammenarbeit mit der Zivilgesellschaft\nfortgeschrieben, um die Lebensrealität queerer Menschen besser zu berücksichtigen. Die SPD steht\nhinter dem Selbstbestimmungsgesetz und den bisherigen queerpolitischen Errungenschaften. Ein\nZurück wird es mit uns nicht geben."
+      }
+    ],
+    "GRUENE": [
+      {
+        "title": "",
+        "content": "Environmental party advocating for climate action and sustainability"
+      }
+    ],
+    "FDP": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "CDU/CSU": [
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Menschen miteinander verbinden",
+        "content": "- DDeutsch ohne Beipackzettel und Bevormundung. Wir stehen zur geschlechtergerechten\nSprache. Den Gender-Zwang aus ideologischen Gründen aber lehnen wir ab, weil er Barrieren errichtet, Menschen ausgrenzt und bevormunden will. Wir setzen uns dafür ein,\ndass im öffentlichen Raum – an Schulen und Universitäten, im Rundfunk und der Verwaltung – auf die Gendersprache verzichtet wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Menschen miteinander verbinden",
+        "content": "- DDeutsch ohne Beipackzettel und Bevormundung. Wir stehen zur geschlechtergerechten\nSprache. Den Gender-Zwang aus ideologischen Gründen aber lehnen wir ab, weil er Barrieren errichtet, Menschen ausgrenzt und bevormunden will. Wir setzen uns dafür ein,\ndass im öffentlichen Raum – an Schulen und Universitäten, im Rundfunk und der Verwaltung – auf die Gendersprache verzichtet wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Elternrechte stärken – Kinder- und Jugendschutz sichern",
+        "content": "- KKinder- und Jugendschutz statt beliebiger Identitätspolitik. Das Selbstbestimmungsgesetz der Ampel erlaubt bei Kindern und Jugendlichen, ihren Geschlechtseintrag und Vornamen auch ohne Gutachten oder Beratung und gerichtliche Entscheidung zu ändern.\nDas lehnen wir entschieden ab. Gerade in der altersbedingt volatilen Lebensphase der"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Elternrechte stärken – Kinder- und Jugendschutz sichern",
+        "content": "- KKinder- und Jugendschutz statt beliebiger Identitätspolitik. Das Selbstbestimmungsgesetz der Ampel erlaubt bei Kindern und Jugendlichen, ihren Geschlechtseintrag und Vornamen auch ohne Gutachten oder Beratung und gerichtliche Entscheidung zu ändern.\nDas lehnen wir entschieden ab. Gerade in der altersbedingt volatilen Lebensphase der"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- AArbeitnehmerfreizügigkeit stärken. Wir machen uns dafür stark, dass insbesondere das\nVerfahren zur grenzüberschreitenden Entsendung von Erwerbstätigen in das EU-Ausland vereinfacht und digitalisiert wird (A1-Bescheinigung, Melde- und Registrierungsverfahren).\n\n- RRechtssicherheit schaffen, Scheinselbständigkeit verhindern. Wir passen das Statusfeststellungsverfahren im Sinne der Selbständigen und Unternehmen an."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- AArbeitnehmerfreizügigkeit stärken. Wir machen uns dafür stark, dass insbesondere das\nVerfahren zur grenzüberschreitenden Entsendung von Erwerbstätigen in das EU-Ausland vereinfacht und digitalisiert wird (A1-Bescheinigung, Melde- und Registrierungsverfahren).\n\n- RRechtssicherheit schaffen, Scheinselbständigkeit verhindern. Wir passen das Statusfeststellungsverfahren im Sinne der Selbständigen und Unternehmen an."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Potenziale der Digitalisierung und Künstlichen Intelligenz heben",
+        "content": "- MMit dem Smartphone alles dabei. Wir setzen mit unseren europäischen Partnern die Einführung einer europaweit gültigen digitalen Ausweisfunktion per Smartphone durch,\nzum Beispiel für Personalausweis und Führerschein."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Elternrechte stärken – Kinder- und Jugendschutz sichern",
+        "content": "- KKinder- und Jugendschutz statt beliebiger Identitätspolitik. Das Selbstbestimmungsgesetz der Ampel erlaubt bei Kindern und Jugendlichen, ihren Geschlechtseintrag und Vornamen auch ohne Gutachten oder Beratung und gerichtliche Entscheidung zu ändern.\nDas lehnen wir entschieden ab. Gerade in der altersbedingt volatilen Lebensphase der"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Elternrechte stärken – Kinder- und Jugendschutz sichern",
+        "content": "- KKinder- und Jugendschutz statt beliebiger Identitätspolitik. Das Selbstbestimmungsgesetz der Ampel erlaubt bei Kindern und Jugendlichen, ihren Geschlechtseintrag und Vornamen auch ohne Gutachten oder Beratung und gerichtliche Entscheidung zu ändern.\nDas lehnen wir entschieden ab. Gerade in der altersbedingt volatilen Lebensphase der"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Menschen miteinander verbinden",
+        "content": "- DDeutsch ohne Beipackzettel und Bevormundung. Wir stehen zur geschlechtergerechten\nSprache. Den Gender-Zwang aus ideologischen Gründen aber lehnen wir ab, weil er Barrieren errichtet, Menschen ausgrenzt und bevormunden will. Wir setzen uns dafür ein,\ndass im öffentlichen Raum – an Schulen und Universitäten, im Rundfunk und der Verwaltung – auf die Gendersprache verzichtet wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Menschen miteinander verbinden",
+        "content": "- DDeutsch ohne Beipackzettel und Bevormundung. Wir stehen zur geschlechtergerechten\nSprache. Den Gender-Zwang aus ideologischen Gründen aber lehnen wir ab, weil er Barrieren errichtet, Menschen ausgrenzt und bevormunden will. Wir setzen uns dafür ein,\ndass im öffentlichen Raum – an Schulen und Universitäten, im Rundfunk und der Verwaltung – auf die Gendersprache verzichtet wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- AArbeitnehmerfreizügigkeit stärken. Wir machen uns dafür stark, dass insbesondere das\nVerfahren zur grenzüberschreitenden Entsendung von Erwerbstätigen in das EU-Ausland vereinfacht und digitalisiert wird (A1-Bescheinigung, Melde- und Registrierungsverfahren).\n\n- RRechtssicherheit schaffen, Scheinselbständigkeit verhindern. Wir passen das Statusfeststellungsverfahren im Sinne der Selbständigen und Unternehmen an."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- AArbeitnehmerfreizügigkeit stärken. Wir machen uns dafür stark, dass insbesondere das\nVerfahren zur grenzüberschreitenden Entsendung von Erwerbstätigen in das EU-Ausland vereinfacht und digitalisiert wird (A1-Bescheinigung, Melde- und Registrierungsverfahren).\n\n- RRechtssicherheit schaffen, Scheinselbständigkeit verhindern. Wir passen das Statusfeststellungsverfahren im Sinne der Selbständigen und Unternehmen an."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Bürokratie spürbar abbauen",
+        "content": "- EEU-Bürokratie kleinhalten. Mit einem Gesetz gegen Draufsatteln – „Anti-Gold-PlatingGesetz“ – nehmen wir Regelungen zurück, die über europäisches Recht hinausgehen,\nund unterbinden künftig jegliche Übererfüllung. Parallelregulierungen auf europäischer\nund nationaler Ebene lehnen wir ab."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Elternrechte stärken – Kinder- und Jugendschutz sichern",
+        "content": "- KKinder- und Jugendschutz statt beliebiger Identitätspolitik. Das Selbstbestimmungsgesetz der Ampel erlaubt bei Kindern und Jugendlichen, ihren Geschlechtseintrag und Vornamen auch ohne Gutachten oder Beratung und gerichtliche Entscheidung zu ändern.\nDas lehnen wir entschieden ab. Gerade in der altersbedingt volatilen Lebensphase der"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Elternrechte stärken – Kinder- und Jugendschutz sichern",
+        "content": "- KKinder- und Jugendschutz statt beliebiger Identitätspolitik. Das Selbstbestimmungsgesetz der Ampel erlaubt bei Kindern und Jugendlichen, ihren Geschlechtseintrag und Vornamen auch ohne Gutachten oder Beratung und gerichtliche Entscheidung zu ändern.\nDas lehnen wir entschieden ab. Gerade in der altersbedingt volatilen Lebensphase der"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Menschen miteinander verbinden",
+        "content": "- DDeutsch ohne Beipackzettel und Bevormundung. Wir stehen zur geschlechtergerechten\nSprache. Den Gender-Zwang aus ideologischen Gründen aber lehnen wir ab, weil er Barrieren errichtet, Menschen ausgrenzt und bevormunden will. Wir setzen uns dafür ein,\ndass im öffentlichen Raum – an Schulen und Universitäten, im Rundfunk und der Verwaltung – auf die Gendersprache verzichtet wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Menschen miteinander verbinden",
+        "content": "- DDeutsch ohne Beipackzettel und Bevormundung. Wir stehen zur geschlechtergerechten\nSprache. Den Gender-Zwang aus ideologischen Gründen aber lehnen wir ab, weil er Barrieren errichtet, Menschen ausgrenzt und bevormunden will. Wir setzen uns dafür ein,\ndass im öffentlichen Raum – an Schulen und Universitäten, im Rundfunk und der Verwaltung – auf die Gendersprache verzichtet wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Elternrechte stärken – Kinder- und Jugendschutz sichern",
+        "content": "- PParagraf 218 bleibt. Die geltende Rechtslage zum Schwangerschaftsabbruch bildet einen\nmühsam gefundenen gesellschaftlichen Kompromiss ab, der das Selbstbestimmungsrecht der Frau und den Schutz des ungeborenen Kindes berücksichtigt. Zu dieser Rechtslage stehen wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Elternrechte stärken – Kinder- und Jugendschutz sichern",
+        "content": "- PParagraf 218 bleibt. Die geltende Rechtslage zum Schwangerschaftsabbruch bildet einen\nmühsam gefundenen gesellschaftlichen Kompromiss ab, der das Selbstbestimmungsrecht der Frau und den Schutz des ungeborenen Kindes berücksichtigt. Zu dieser Rechtslage stehen wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir wollen eine gute Versorgung mit Kinderbetreuungsplätzen. Zudem erhöhen wir die\nsteuerliche Absetzbarkeit von Betreuungskosten.\n\n- WWir schaffen das Selbstbestimmungsgesetz der Ampel wieder ab. Der Jugendschutz und\ndas Erziehungsrecht der Eltern dürfen nicht untergraben werden.\n\nFür gute Bildung\n\nKinder sind unsere Zukunft und brauchen beste Startmöglichkeiten von Anfang an – und\nzwar alle. Dreh- und Angelpunkt ist ein funktionierendes, verlässliches Bildungssystem."
+      }
+    ],
+    "LINKE": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "AFD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "FREIE WÄHLER": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "Volt": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "MLPD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BÜNDNIS DEUTSCHLAND": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "BSW": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ]
+  },
+  "evaluation_scores": {},
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.381650",
+  "question_id": 7,
+  "question": "Die Jagd von Wölfen soll in Regionen erlaubt sein, in denen der Bestand dadurch nicht gefährdet ist.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.419158",
+  "question_id": 8,
+  "question": "Beim Bau neuer Wohngebäude in der EU soll die Errichtung von Photovoltaikanlagen verpflichtend sein.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.456856",
+  "question_id": 9,
+  "question": "Mehr außenpolitische Entscheidungen der EU sollen mit Mehrheit statt einstimmig getroffen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.490282",
+  "question_id": 10,
+  "question": "Der Flugzeugtreibstoff Kerosin soll für Flüge in der EU steuerfrei sein.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.521994",
+  "question_id": 11,
+  "question": "Die gemeinsame europäische Polizeibehörde Europol soll weitere Befugnisse erhalten.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.553157",
+  "question_id": 12,
+  "question": "Die EU soll länderübergreifende, mehrsprachige Angebote des öffentlich-rechtlichen Rundfunks stärker finanziell fördern.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.584909",
+  "question_id": 13,
+  "question": "Die EU soll das Ziel verwerfen, klimaneutral zu werden.",
+  "user_custom_answer": "",
+  "button_answer": "-1",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": false,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.649933",
+  "question_id": 14,
+  "question": "Bei den Wahlen zum Europäischen Parlament sollen die Parteien weiterhin frei entscheiden können, wie groß der Anteil der Geschlechter auf ihren Listen ist.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.714424",
+  "question_id": 15,
+  "question": "Die EU soll Vorgaben für die Höhe der sozialen Grundsicherung in den Mitgliedstaaten machen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.746431",
+  "question_id": 16,
+  "question": "Betreiber sozialer Netzwerke sollen frei entscheiden dürfen, wie sie mit Desinformation auf ihren Plattformen umgehen.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.777357",
+  "question_id": 17,
+  "question": "In der EU sollen mehr Flächen als Naturschutzgebiete ausgewiesen werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.808760",
+  "question_id": 18,
+  "question": "EU-Fördermittel für Mitgliedstaaten, die Regeln und Werte der EU verletzen, sollen weiterhin zurückgehalten werden.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
+{
+  "timestamp": "2025-02-11T00:20:49.840975",
+  "question_id": 19,
+  "question": "Die EU soll mehr Waffen für die Ukraine finanzieren.",
+  "user_custom_answer": "",
+  "button_answer": "0",
+  "answer_type": "button",
+  "lookup_response": null,
+  "party_contexts": null,
+  "evaluation_scores": null,
+  "skipped": true,
+  "wheights": "false"
+}
