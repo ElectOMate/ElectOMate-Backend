@@ -1,12 +1,74 @@
 import cohere
-from cohere import Document
+from cohere import Document, DocumentToolContent
 import weaviate
 import weaviate.classes as wvc
 
 from ..models import SupportedParties
 
 import asyncio
+import itertools
+from uuid import uuid4
 from typing import Optional
+
+
+async def get_documents(
+    search_query: str,
+    party: Optional[SupportedParties],
+    question: str,
+    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    weaviate_async_client: weaviate.WeaviateAsyncClient,
+) -> list[DocumentToolContent]:
+    search_query_embedding_response = await cohere_async_clients[
+        "embed_multilingual_async_client"
+    ].embed(
+        texts=[search_query],
+        model="embed-multilingual-v3.0",
+        input_type="search_query",
+        embedding_types=["float"],
+    )
+    
+    collection = weaviate_async_client.collections.get(name="Documents")
+    
+    if party is not None:
+        party_filter = wvc.query.Filter.by_property("filename").like(f"{party}.pdf")
+        
+        results = await collection.query.hybrid(
+            search_query,
+            vector=search_query_embedding_response.embeddings.float[0],
+            limit=30,
+            filters=party_filter,
+        )
+    else:
+        results = await collection.query.hybrid(
+            search_query,
+            vector=search_query_embedding_response.embeddings.float[0],
+            limit=30,
+        )
+    
+    rerank_response = await cohere_async_clients[
+        "rerank_multilingual_async_client"
+    ].rerank(
+        model="rerank-v3.5",
+        query=question,
+        documents=map(lambda x: x.properties["chunk_content"], results.objects),
+        top_n=5,
+    )
+    
+    documents = [
+        DocumentToolContent(
+            document=Document(
+                id=str(uuid4),
+                data={
+                    "content": results.objects[rank.index].properties["chunk_content"],
+                    "title": results.objects[rank.index].properties["title"],
+                    "filename": results.objects[rank.index].properties["filename"],
+                    "type": "manifesto-citation",
+                },
+            )
+        )
+        for rank in rerank_response.results
+    ]
+    return documents
 
 
 async def database_search(
@@ -16,72 +78,9 @@ async def database_search(
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
 ) -> list[Document]:
-    search_queries_embeddings_response = await cohere_async_clients[
-        "embed_multilingual_async_client"
-    ].embed(
-        texts=search_queries,
-        model="embed-multilingual-v3.0",
-        input_type="search_query",
-        embedding_types=["float"],
-    )
-
-    collection = weaviate_async_client.collections.get(name="Documents")
-
-    if party is not None:
-        party_filter = wvc.query.Filter.by_property("filename").like(f"{party}.pdf")
-
-        tasks = [
-            collection.query.hybrid(
-                search_queries[i],
-                vector=embedding,
-                limit=30,
-                filters=party_filter,
-            )
-            for i, embedding in enumerate(
-                search_queries_embeddings_response.embeddings.float
-            )
-        ]
-    else:
-        tasks = [
-            collection.query.hybrid(
-                search_queries[i],
-                vector=embedding,
-                limit=30,
-            )
-            for i, embedding in enumerate(
-                search_queries_embeddings_response.embeddings.float
-            )
-        ]
-    chunks_responses = await asyncio.gather(*tasks)
-
-    chunks = [
-        {
-            "title": object.properties["title"],
-            "filename": object.properties["filename"],
-            "chunk_content": object.properties["chunk_content"],
-        }
-        for chunks_response in chunks_responses
-        for object in chunks_response.objects
+    tasks = [
+        get_documents(search_queries[i], party, question, cohere_async_clients, weaviate_async_client)
+        for i in range(len(search_queries))
     ]
-
-    rerank_response = await cohere_async_clients[
-        "rerank_multilingual_async_client"
-    ].rerank(
-        model="rerank-v3.5",
-        query=question,
-        documents=map(lambda x: x["chunk_content"], chunks),
-        top_n=5,
-    )
-
-    documents = [
-        Document(
-            id=str(i),
-            data={
-                "text": chunks[result.index]["chunk_content"],
-                "title": chunks[result.index]["title"],
-                "filename": chunks[result.index]["filename"],
-            },
-        )
-        for i, result in enumerate(rerank_response.results)
-    ]
-    return documents
+    results = await asyncio.gather(*tasks)
+    return list(itertools.chain.from_iterable(results))

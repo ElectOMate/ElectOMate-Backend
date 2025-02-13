@@ -22,10 +22,12 @@ async def stream(
     return StreamingResponse(
         stream_rag(
             question.question,
+            question.selected_parties,
+            question.use_web_search,
+            question.use_database_search,
             cohere_async_clients,
             weaviate_async_client,
-            language_code,
-            question.selected_parties,
+            language_code
         ),
         media_type="text/event-stream",
     )
@@ -41,10 +43,11 @@ async def query(language_code: SupportedLanguages, question: Question) -> Answer
     # Return the full response
     response = await query_rag(
         question.question,
+        question.selected_parties,
+        question.use_web_search,
+        question.use_database_search,
         cohere_async_clients,
         weaviate_async_client,
         language_code,
-        question.selected_parties,
-        question.web_search
     )
     return JSONResponse(response)

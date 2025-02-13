@@ -6,6 +6,7 @@ langchain_core
 langchain_text_splitters
 pymupdf4llm
 asyncer
+aiostream
 prometheus_fastapi_instrumentator
 markdown
 azure-cognitiveservices-search-websearch

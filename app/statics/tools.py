@@ -57,65 +57,77 @@ realtime_session_tools = {
 }
 
 database_search_tools = {
-    SupportedLanguages.EN: ToolV2Function(
-        name="database_search",
-        description="Performs a database search through party manifestos of AFD, BSW, CDU, FDP, GRUNE, LINKE, SPD",
-        parameters={
-            "type": "object",
-            "properties": {
-                "search_queries": {
-                    "type": "array",
-                    "items": {"type": "str"},
-                    "description": "a list of queries for a text and vector similarity search in a database",
-                }
+    SupportedLanguages.EN: ToolV2(
+        type="function",
+        function=ToolV2Function(
+            name="database_search",
+            description="Performs a database search through party manifestos of AFD, BSW, CDU, FDP, GRUNE, LINKE, SPD",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "search_queries": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "a list of queries for a text and vector similarity search in a database",
+                    }
+                },
+                "required": ["search_queries"],
             },
-            "required": ["search_queries"],
-        },
+        ),
     ),
-    SupportedLanguages.DE: ToolV2Function(
-        name="database_search",
-        description="Führt eine Datenbanksuche in den Parteiprogrammen von AfD, BSW, CDU, FDP, GRÜNE, LINKE, SPD durch",
-        parameters={
-            "type": "object",
-            "properties": {
-                "search_queries": {
-                    "type": "array",
-                    "items": {"type": "str"},
-                    "description": "Eine Liste von Suchanfragen für eine Text- und Vektorsimilaritätssuche in einer Datenbank",
-                }
+    SupportedLanguages.DE: ToolV2(
+        type="function",
+        function=ToolV2Function(
+            name="database_search",
+            description="Führt eine Datenbanksuche in den Parteiprogrammen von AfD, BSW, CDU, FDP, GRÜNE, LINKE, SPD durch",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "search_queries": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Eine Liste von Suchanfragen für eine Text- und Vektorsimilaritätssuche in einer Datenbank",
+                    }
+                },
+                "required": ["search_queries"],
             },
-            "required": ["search_queries"],
-        },
+        ),
     ),
 }
 
 web_search_tools = {
-    SupportedLanguages.EN: ToolV2Function(
-        name="web_search",
-        description="Performs a web search through web pages and news articles with the specified query",
-        parameters={
-            "type": "object",
-            "properties": {
-                "search_query": {
-                    "type": "str",
-                    "description": "The search query to pass to the search engine",
-                }
+    SupportedLanguages.EN: ToolV2(
+        type="function",
+        function=ToolV2Function(
+            name="web_search",
+            description="Performs a web search through web pages and news articles with the specified query",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "search_query": {
+                        "type": "string",
+                        "description": "The search query to pass to the search engine",
+                    }
+                },
+                "required": ["search_query"],
             },
-            "required": ["search_query"],
-        },
+        ),
     ),
-    SupportedLanguages.DE: ToolV2Function(
-        name="web_search",
-        description="Führt eine Websuche durch Webseiten und Nachrichtenartikel mit der angegebenen Suchanfrage durch",
-        parameters={
-            "type": "object",
-            "properties": {
-                "search_query": {
-                    "type": "str",
-                    "description": "Die Suchanfrage, die an die Suchmaschine übergeben wird",
-                }
+    SupportedLanguages.DE: ToolV2(
+        type="function",
+        function=ToolV2Function(
+            name="web_search",
+            description="Führt eine Websuche durch Webseiten und Nachrichtenartikel mit der angegebenen Suchanfrage durch",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "search_query": {
+                        "type": "string",
+                        "description": "Die Suchanfrage, die an die Suchmaschine übergeben wird",
+                    }
+                },
+                "required": ["search_query"],
             },
-            "required": ["search_query"],
-        },
+        ),
     ),
 }

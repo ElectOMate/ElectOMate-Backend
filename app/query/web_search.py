@@ -1,6 +1,7 @@
 from azure.cognitiveservices.search.websearch.models import AnswerType
 import cohere
-from cohere import Document, ToolV2Function
+from cohere import Document, DocumentToolContent
+from uuid import uuid4
 
 from ..config import bing_client
 from ..models import SupportedLanguages
@@ -54,14 +55,17 @@ async def web_search(
     )
 
     documents = [
-        Document(
-            id=str(i),
-            data={
-                "text": chunks[result.index]["chunk_content"],
-                "title": chunks[result.index]["title"],
-                "url": chunks[result.index]["url"],
-            },
+        DocumentToolContent(
+            document=Document(
+                id=str(uuid4),
+                data={
+                    "content": chunks[result.index]["chunk_content"],
+                    "title": chunks[result.index]["title"],
+                    "url": chunks[result.index]["url"],
+                    "type": "web-citation",
+                },
+            )
         )
-        for i, result in enumerate(rerank_response.results)
+        for result in rerank_response.results
     ]
     return documents

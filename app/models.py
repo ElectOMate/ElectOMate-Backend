@@ -23,8 +23,11 @@ class Question(BaseModel):
     question: str = Field(
         max_length=500, description="The question asked to the RAG pipeline."
     )
-    web_search: bool = Field(
+    use_web_search: bool = Field(
         description="Wether the AI is allowed to do a web search", default=False
+    )
+    use_database_search: bool = Field(
+        description="Wether the AI is allowed to do a manifesto search", default=True
     )
     selected_parties: list[SupportedParties] = Field(
         description="The parties selected to answer"
@@ -32,7 +35,11 @@ class Question(BaseModel):
 
     @model_validator(mode="after")
     def check_model(self) -> Self:
-        if self.web_search is True and len(self.selected_parties) > 1:
+        if self.use_web_search is False and self.use_database_search is False:
+            return ValueError(
+                "Model Validation Error. You have to at least use one of web search or database search."
+            )
+        if self.use_web_search is True and len(self.selected_parties) > 1:
             return ValueError(
                 "Model Validation Error. Web search cannot be activated when parties are selected."
             )
@@ -47,25 +54,37 @@ class ChatFunctionCallRequest(BaseModel):
 
 
 class ManifestoCitation(BaseModel):
+    type: Literal["manifesto-citation"]
     title: str = Field(description="The title of the paragraph citation")
     content: str = Field(description="The content of the paragraph citation")
     manifesto: SupportedParties = Field(
         description="The party whose manifesto is cited"
     )
-    text: str = Field(description="The part of the answer this citation corresponds to")
+    citation_start: int = Field(
+        description="The start index of the citation in the answer"
+    )
+    citation_end: int = Field(description="The end index of the citation in the answer")
 
 
 class WebCitation(BaseModel):
+    type: Literal["web-citation"]
     title: str = Field(description="The title of the web page")
     content: str = Field(description="The content of web page")
     url: HttpUrl = Field(description="The url of the web page")
-    text: str = Field(description="The part of the answer this citation corresponds to")
+    citation_start: int = Field(
+        description="The start index of the citation in the answer"
+    )
+    citation_end: int = Field(description="The end index of the citation in the answer")
+
+
+class Citation(BaseModel):
+    citation: Union[ManifestoCitation, WebCitation] = Field(discriminator="type")
 
 
 class StandardAnswer(BaseModel):
     type: Literal["standard-answer"]
     answer: str = Field(description="The answer returned by the LLM")
-    citations: list[ManifestoCitation]
+    citations: list[Citation]
 
 
 class SinglePartyAnswer(BaseModel):
@@ -73,7 +92,7 @@ class SinglePartyAnswer(BaseModel):
         description="The answer returned by the LLM for that specific party"
     )
     party: SupportedParties = Field(description="The party the LLM answer is based on")
-    citations: list[ManifestoCitation]
+    citations: list[Citation]
 
 
 class MultiPartyAnswer(BaseModel):
@@ -81,21 +100,15 @@ class MultiPartyAnswer(BaseModel):
     answers: list[SinglePartyAnswer]
 
 
-class WebSearchAnswer(BaseModel):
-    type: Literal["web-search-answer"]
-    answer: str = Field(description="The answer returned by the LLM")
-    citations: list[WebCitation]
-
-
 class Answer(BaseModel):
-    answer: Union[StandardAnswer, MultiPartyAnswer, WebSearchAnswer] = Field(
+    answer: Union[StandardAnswer, MultiPartyAnswer] = Field(
         discriminator="type"
     )
 
 
 class AnswerTypeChunk(BaseModel):
     type: Literal["answer-type-chunk"]
-    answer_type: Literal["standard-answer", "multi-party-answer", "web-search-answer"]
+    answer_type: Literal["standard-answer", "multi-party-answer"]
 
 
 class StandardAnswerChunk(BaseModel):
@@ -111,19 +124,9 @@ class MultiPartyAnswerChunk(BaseModel):
     party: SupportedParties = Field(description="The party the LLM answer is based on")
 
 
-class WebSearchAnswerChunk(BaseModel):
-    type: Literal["web-search-answer-chunk"]
-    answer_delta: str = Field(description="the sub-part of the LLM answer")
-
-
-class ManifestoCitationChunk(BaseModel):
+class CitationChunk(BaseModel):
     type: Literal["manifesto-citation-chunk"]
-    citation: ManifestoCitation
-
-
-class WebCitationChunk(BaseModel):
-    type: Literal["web-citation-chunk"]
-    citation: WebCitation
+    citation: Citation
 
 
 class AnswerChunk(BaseModel):
@@ -131,9 +134,7 @@ class AnswerChunk(BaseModel):
         AnswerTypeChunk,
         StandardAnswerChunk,
         MultiPartyAnswerChunk,
-        WebSearchAnswerChunk,
-        ManifestoCitationChunk,
-        WebCitationChunk,
+        CitationChunk
     ] = Field(discriminator="type")
 
 
@@ -141,21 +142,3 @@ class RealtimeToken(BaseModel):
     client_secret: str = Field(
         description="A realtime session token to be used in the browser directly."
     )
-
-
-class PartyResponse(BaseModel):
-    party: str
-    policies: list[str]
-
-
-class AskAllPartiesResponse(BaseModel):
-    responses: list[PartyResponse]
-
-
-class AskAllPartiesRequest(BaseModel):
-    question_body: Question
-    selected_parties: Dict[str, bool]
-
-
-class SearchQuery(BaseModel):
-    query: str
