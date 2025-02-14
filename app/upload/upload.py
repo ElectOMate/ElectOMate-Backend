@@ -51,9 +51,9 @@ async def process_file(
         # Create the embeddings
         # We use the english model, in case the document set also contains other languages the multilingual model should be used
         logging.info("Getting embeddings...")
-        response = await cohere_async_clients["embed_english_async_client"].embed(
+        response = await cohere_async_clients["embed_multilingual_async_client"].embed(
             texts=[split.page_content for split in splits],
-            model="embed-english-v3.0",
+            model="embed-multilingual-v3.0",
             input_type="search_document",
             embedding_types=["float"],
         )

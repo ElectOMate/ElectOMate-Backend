@@ -2,6 +2,8 @@ import openai
 import cohere
 import weaviate
 import weaviate.classes as wvc
+from azure.cognitiveservices.search.websearch import WebSearchClient
+from msrest.authentication import CognitiveServicesCredentials
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -35,6 +37,9 @@ class Settings(BaseSettings):
 
     # Open AI API keys
     openai_api_key: str
+
+    # Bing API keys
+    bing_api_key: str
 
     # Deployement config
     allow_origins: str = "*"
@@ -77,7 +82,16 @@ weaviate_async_client = weaviate.use_async_with_custom(
     grpc_port=settings.wv_grpc_port,
     grpc_secure=False,
     auth_credentials=wvc.init.Auth.api_key(settings.wv_api_key),
-    additional_config=wvc.init.AdditionalConfig(timeout=wvc.init.Timeout(init=30, query=60, insert=120)),
+    additional_config=wvc.init.AdditionalConfig(
+        timeout=wvc.init.Timeout(init=30, query=60, insert=120)
+    ),
 )
 
 openai_async_client = openai.AsyncClient(api_key=settings.openai_api_key)
+
+
+# Instantiate Bing client
+bing_client = WebSearchClient(
+    endpoint="https://api.bing.microsoft.com/",
+    credentials=CognitiveServicesCredentials(subscription_key=settings.bing_api_key),
+)

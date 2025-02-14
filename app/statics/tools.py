@@ -1,84 +1,133 @@
 from cohere import ToolV2, ToolV2Function
 from ..models import SupportedLanguages
 
-query_generation_tools = {
-    SupportedLanguages.EN: ToolV2(
-        function=ToolV2Function(
-            name="database_search",
-            parameters={
-                "type": "object",
-                "properties": {
-                    "queries": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "a list of queries for a text and similarity search in a database.",
-                    }
-                },
-                "required": ["queries"],
-            },
-        )
-    ),
-    SupportedLanguages.DE: ToolV2(
-        function=ToolV2Function(
-            name="database_search",
-            parameters={
-                "type": "object",
-                "properties": {
-                    "queries": {
-                        "type": "array",
-                        "items": {"type": "string"},
-                        "description": "eine Liste von Anfragen für eine Text- und Ähnlichkeitssuche in einer Datenbank.",
-                    }
-                },
-                "required": ["queries"],
-            },
-        )
-    ),
-}
-
 realtime_session_tools = {
-    SupportedLanguages.EN: {
-        "type": "function",
-        "name": "fetchRagData",
-        "description": "Retrieves verified political information from ourdatabase.",
-        "strict": True,
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "country_code": {
-                    "type": "string",
-                    "description": "The country code corresponding to the language of the conversation",
-                    "enum": ["DE", "EN"],
-                },
-                "question": {
-                    "type": "string",
-                    "description": "A question related to the 2025 German Federal Elections that will be answered in a fact-based manner",
-                },
-            },
-            "required": ["country_code", "question"],
-            "additionalProperties": False,
-        },
-    },
     SupportedLanguages.DE: {
         "type": "function",
         "name": "fetchRagData",
-        "description": "Ruft verifizierte politische Informationen aus unserer Datenbank ab.",
-        "strict": True,
+        "description": "Ruft verifizierte politische Informationen aus unserem RAG-System ab.",
         "parameters": {
             "type": "object",
             "properties": {
                 "country_code": {
                     "type": "string",
-                    "description": "Der Ländercode, der der Sprache des Gesprächs entspricht.",
-                    "enum": ["DE", "EN"],
+                    "description": "Der Ländercode (z.B. 'de' für Deutschland)",
+                    "enum": ["DE"],  # Nur deutsche Anfragen zulassen
                 },
-                "question": {
-                    "type": "string",
-                    "description": "Eine Frage zu den Bundestagswahlen 2025, die faktenbasiert beantwortet wird.",
+                "question_body": {
+                    "type": "object",
+                    "properties": {
+                        "question": {
+                            "type": "string",
+                            "description": "Die politische Frage, die nachgeschlagen werden soll",
+                        }
+                    },
+                    "required": ["question"],
                 },
             },
-            "required": ["country_code", "question"],
-            "additionalProperties": False,
+            "required": ["country_code", "question_body"],
         },
     },
+    SupportedLanguages.EN: {
+        "type": "function",
+        "name": "fetchRagData",
+        "description": "Retrieves verified political information from our RAG system",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "country_code": {
+                    "type": "string",
+                    "description": "The country code (e.g., 'de' for Germany)",
+                    "enum": ["EN"],  # Only allow German queries for now
+                },
+                "question_body": {
+                    "type": "object",
+                    "properties": {
+                        "question": {
+                            "type": "string",
+                            "description": "The political question to look up",
+                        }
+                    },
+                    "required": ["question"],
+                },
+            },
+            "required": ["country_code", "question_body"],
+        },
+    },
+}
+
+database_search_tools = {
+    SupportedLanguages.EN: ToolV2(
+        type="function",
+        function=ToolV2Function(
+            name="database_search",
+            description="Performs a database search through party manifestos of AFD, BSW, CDU, FDP, GRUNE, LINKE, SPD",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "search_queries": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "a list of queries for a text and vector similarity search in a database",
+                    }
+                },
+                "required": ["search_queries"],
+            },
+        ),
+    ),
+    SupportedLanguages.DE: ToolV2(
+        type="function",
+        function=ToolV2Function(
+            name="database_search",
+            description="Führt eine Datenbanksuche in den Parteiprogrammen von AfD, BSW, CDU, FDP, GRÜNE, LINKE, SPD durch",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "search_queries": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Eine Liste von Suchanfragen für eine Text- und Vektorsimilaritätssuche in einer Datenbank",
+                    }
+                },
+                "required": ["search_queries"],
+            },
+        ),
+    ),
+}
+
+web_search_tools = {
+    SupportedLanguages.EN: ToolV2(
+        type="function",
+        function=ToolV2Function(
+            name="web_search",
+            description="Performs a web search through web pages and news articles with the specified query",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "search_query": {
+                        "type": "string",
+                        "description": "The search query to pass to the search engine",
+                    }
+                },
+                "required": ["search_query"],
+            },
+        ),
+    ),
+    SupportedLanguages.DE: ToolV2(
+        type="function",
+        function=ToolV2Function(
+            name="web_search",
+            description="Führt eine Websuche durch Webseiten und Nachrichtenartikel mit der angegebenen Suchanfrage durch",
+            parameters={
+                "type": "object",
+                "properties": {
+                    "search_query": {
+                        "type": "string",
+                        "description": "Die Suchanfrage, die an die Suchmaschine übergeben wird",
+                    }
+                },
+                "required": ["search_query"],
+            },
+        ),
+    ),
 }

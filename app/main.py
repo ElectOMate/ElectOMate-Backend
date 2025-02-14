@@ -9,6 +9,8 @@ from .config import weaviate_async_client, settings
 from .query import query_router
 from .realtime import realtime_router
 from .upload import upload_router
+from .transcription import transcription_router
+
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -22,7 +24,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(query_router.router)
 app.include_router(realtime_router.router)
 app.include_router(upload_router.router)
-
+app.include_router(transcription_router.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,3 +40,5 @@ Instrumentator().instrument(app).expose(app)
 async def read_root():
     logging.debug("GET request received at root...")
     return {"health": "Ok"}
+
+
