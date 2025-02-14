@@ -33,7 +33,7 @@ from ..models import (
 import json
 import asyncio
 import warnings
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Union
 
 
 async def single_pary_stream(
@@ -94,12 +94,10 @@ async def single_pary_stream(
                     )
                     tool_calls_ids[func_name] = event.delta.message.tool_calls.id
                 if event.type == "tool-call-delta":
-                    # This assumes that 'tool-call-start'was received but doesn't check for performance optimization
-                    tool_calls_arguments[
-                        func_name
-                    ] += event.delta.message.tool_calls.function.arguments
+                    # This assumes that 'tool-call-start' was received but doesn't check for performance optimization
+                    tool_calls_arguments[func_name] += event.delta.message.tool_calls.function.arguments
                 if event.type == "tool-call-end":
-                    # This assumes that 'tool-call-start'was received but doesn't check for performance optimization
+                    # This assumes that 'tool-call-start' was received but doesn't check for performance optimization
                     func_name = None
                 if event.type == "message-end":
                     if event.delta.finish_reason == "TOOL_CALL":
@@ -170,9 +168,7 @@ async def single_pary_stream(
                                 "type": "manifesto-citation",
                                 "title": citation.sources[0].tool_output["title"],
                                 "content": citation.sources[0].tool_output["content"],
-                                "manifesto": citation.sources[0].tool_output[
-                                    "filename"
-                                ][:-4],
+                                "manifesto": citation.sources[0].tool_output["filename"][:-4],
                                 "citation_start": citation.start,
                                 "citation_end": citation.end,
                             }
@@ -195,7 +191,7 @@ async def single_pary_stream(
             else:
                 break
         except httpx.ReadError:
-            pass
+            break  # End the loop gracefully when a ReadError occurs
 
 
 async def stream_rag(
@@ -287,7 +283,7 @@ async def single_party_search(
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
-) -> StandardAnswer | SinglePartyAnswer:
+) -> Union[StandardAnswer, SinglePartyAnswer]:
     messages = list()
     if party is None:
         messages.append(
