@@ -12,6 +12,7 @@ from app.config import cohere_async_clients, weaviate_async_client
 from weaviate.collections.classes.filters import Filter
 from cohere import UserChatMessageV2
 from .score_calculator import calculate_standard_scores, combine_results
+import weaviate.classes as wvc
 
 # Import party answers and default info
 from . import questionnaire_party_answers
@@ -168,7 +169,7 @@ async def get_party_contexts(party_name: str, lookup_prompts: List[str], max_con
                 vector=embedding,
                 query_properties=["title", "chunk_content"],
                 limit=max_contexts,
-                filters=Filter.by_property("title").like(f"*{party_name}*")
+                party_filter = wvc.query.Filter.by_property("filename").like(f"{party_name.lower()}.pdf")
             )
             for obj in result.objects:
                 # filters=Filter.by_property("title").like(f"*{party_name}*")
