@@ -20,8 +20,10 @@ from .questionnaire_party_answers import default_party_info
 
 # New imports for logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 import subprocess
+
+from app.query.query import database_search
 
 # Set the log file path (JSON Lines format)
 CURRENT_DIR = os.path.dirname(__file__)
@@ -146,9 +148,7 @@ async def compare_user_response_to_party(
         return None
 
 async def get_party_contexts(party_name: str, lookup_prompts: List[str], max_contexts=7) -> (List[str], List[dict]):
-    """Retrieve relevant party program contexts using Cohere embeddings + Weaviate.
-       Returns a tuple of (list of context strings, list of detail dictionaries with title and content).
-    """
+    """Retrieve relevant party program contexts using Cohere embeddings + Weaviate."""
     try:
         # Generate embeddings for lookup prompts
         embed_response = await cohere_async_clients["embed_multilingual_async_client"].embed(
@@ -165,32 +165,24 @@ async def get_party_contexts(party_name: str, lookup_prompts: List[str], max_con
     
         for embedding in embed_response.embeddings.float:
             result = await collection.query.hybrid(
-                query=party_name,
+                query=" ".join(lookup_prompts),  # Combine prompts for hybrid search
                 vector=embedding,
-                query_properties=["title", "chunk_content"],
                 limit=max_contexts,
-                party_filter = wvc.query.Filter.by_property("filename").like(f"{party_name.lower()}.pdf")
+                filters=wvc.query.Filter.by_property("filename").like(f"{party_name.lower()}.pdf")
             )
+            
             for obj in result.objects:
-                # filters=Filter.by_property("title").like(f"*{party_name}*")
                 title = obj.properties.get("title", "No title available")
                 chunk_content = obj.properties.get("chunk_content", "No content available")
-                print("\n\n\n")
-                print(f"Title: {title}")
-                print("\n")
-                print(f"Content: {chunk_content}")
-                print("\n\n\n")
                 details.append({"title": title, "content": chunk_content})
                 contexts.append(chunk_content)
     
-        # Remove duplicates from contexts while preserving order
+        # Remove duplicates while preserving order
         unique_contexts = list(dict.fromkeys(contexts))
         return unique_contexts, details
     
     except Exception as e:
-        print("\n\n\n")
-        print(f"Context retrieval error for {party_name}: {str(e)}")
-        print("\n\n\n")
+        print(f"Context retrieval error: {str(e)}")
         default_value = default_party_info.get(party_name, "No context available")
         return [default_value], [{"title": "", "content": default_value}]
 
@@ -246,52 +238,37 @@ async def get_custom_answers_evaluation(
             print("\n\n\n")
             continue
 
-        # Replace the LangChain prompt invocation with direct formatting
-        lookup_prompt = f"""
-        Given the question: {question.q}
-        And user's response: {answer.custom_answer}
-        Generate relevant search queries to find party positions on this topic.
-        Return ONLY a JSON array in this format: {{"lookupPrompts": ["query1", "query2"]}}
-        """
-        print("\n\n\n")
-        print(lookup_prompt)
-        print("\n\n\n")
-
-        lookup_response = await cohere_async_clients["command_r_async_client"].chat(
-            model="command-r-08-2024",
-            messages=[UserChatMessageV2(content=lookup_prompt)]
-        )
-      
-        # Process lookup prompts and capture the lookup response for logging
-        try:
-            lookup_content = lookup_response.message.content[0].text
-            lookup_data = json.loads(lookup_content)
-            lookup_prompts = lookup_data.get("lookupPrompts", [])
-            lookup_log = lookup_data  # for logging purposes
-            print("\n\n\n")
-            print(lookup_prompts)
-            print("\n\n\n")
-        except Exception as e:
-            lookup_prompts = [question.q, answer.custom_answer]
-            try:
-                raw_lookup = lookup_response.message.content[0].text
-            except Exception as err:
-                raw_lookup = "No raw lookup content available"
-            lookup_log = {"error": "Failed to parse lookup response", "raw_content": raw_lookup}
-
         # Retrieve contexts for all parties
         party_contexts = {}
         party_contexts_log = {}
         for party in main_parties:
+            # Generate search queries from question/answer
+            lookup_prompt = f"""
+            Given the question: {question.q}
+            And user's response: {answer.custom_answer}
+            Generate relevant search queries to find party positions on this topic.
+            Return ONLY a JSON array in this format: {{"lookupPrompts": ["query1", "query2"]}}
+            """
+            
+            # Get lookup prompts
+            lookup_response = await cohere_async_clients["command_r_async_client"].chat(
+                model="command-r-08-2024",
+                messages=[UserChatMessageV2(content=lookup_prompt)]
+            )
+            lookup_data = json.loads(lookup_response.message.content[0].text)
+            lookup_prompts = lookup_data.get("lookupPrompts", [question.q, answer.custom_answer])
+            
+            # Perform filtered search
             contexts, details = await get_party_contexts(party, lookup_prompts)
-            party_contexts[party] = contexts if contexts else [default_party_info.get(party, "")]
-            party_contexts_log[party] = details if details else [{"title": "", "content": default_party_info.get(party, "")}]
+            
+            party_contexts[party] = contexts
+            party_contexts_log[party] = details
 
         # Split contexts
         main_contexts = {k: v for k, v in party_contexts.items() if k in main_parties}
 
         # Get Cohere evaluation
-        evaluation = await compare_user_response_to_party(
+        processed_eval, raw_eval = await compare_user_response_to_party(
             question_id=idx,
             question=question.q,
             main_parties=main_parties,
@@ -300,9 +277,9 @@ async def get_custom_answers_evaluation(
             main_contexts=main_contexts,
         )
 
-        if evaluation and not answer.skipped:
+        if processed_eval and not answer.skipped:
             non_skipped_count += 1
-            score_log = update_scores(party_scores, evaluation, answer)
+            score_log = update_scores(party_scores, processed_eval, answer)
         else:
             score_log = {}
 
@@ -314,9 +291,10 @@ async def get_custom_answers_evaluation(
             "user_custom_answer": answer.custom_answer,
             "button_answer": answer.users_answer,
             "answer_type": "custom",
-            "lookup_response": lookup_log,
+            "lookup_response": lookup_data,
             "party_contexts": party_contexts_log,  # Detailed contexts with title and content for each party
             "evaluation_scores": score_log,
+            "llm_raw_scores": raw_eval,
             "skipped": answer.skipped,
             "wheights": answer.wheights
         }
@@ -558,3 +536,27 @@ async def evaluate_custom_answers(request: EvaluationRequest):
     except Exception as e:
         logger.error(f"Error during evaluation: {str(e)}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+def calculate_evaluation_scores(raw_scores: dict, weight_input: str) -> dict:
+    """Convert raw LLM scores to weighted evaluation scores"""
+    try:
+        # Handle 'false' string from frontend
+        if weight_input.lower() == 'false':
+            weight = 1.0
+        else:
+            weight = float(weight_input)
+    except (ValueError, AttributeError):
+        weight = 1.0  # Default to neutral weight
+    
+    evaluation_scores = {}
+    
+    for party, data in raw_scores.items():
+        raw_score = data.get('agreement_score', 50)
+        # Convert 0-100 score to -1 to +1 range with weight
+        normalized = ((raw_score / 100) * 2 - 1) * weight
+        evaluation_scores[party] = {
+            'normalized_score': normalized,
+            'raw_score': raw_score,
+            'weight': weight
+        }
+    return evaluation_scores
