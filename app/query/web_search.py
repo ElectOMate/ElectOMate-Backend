@@ -11,7 +11,7 @@ async def web_search(
     search_query: str,
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     language: SupportedLanguages,
-) -> list[dict]:
+) -> list[DocumentToolContent]:
     """
     Perform a Bing web search via Azure.
     Returns a list of dicts, each containing 'title', 'url', and 'snippet'.
@@ -51,7 +51,7 @@ async def web_search(
         model="rerank-v3.5",
         query=search_query,
         documents=map(lambda x: x["chunk_content"], chunks),
-        top_n=5,
+        top_n=10,
     )
 
     documents = [

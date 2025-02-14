@@ -53,7 +53,7 @@ async def get_documents(
         model="rerank-v3.5",
         query=question,
         documents=map(lambda x: x.properties["chunk_content"], results.objects),
-        top_n=5,
+        top_n=10,
     )
     
     documents = [

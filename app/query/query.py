@@ -350,6 +350,8 @@ async def single_party_search(
                     ToolChatMessageV2(tool_call_id=tc.id, content=tool_results)
                 )
 
+            for results in tool_results:
+                print(results.document.data['content'])
             res = await cohere_async_clients["command_r_async_client"].chat(
                 model="command-r-08-2024", messages=messages, tools=tools
             )
@@ -409,25 +411,26 @@ async def query_rag(
     language: SupportedLanguages,
 ) -> Answer:
 
-    if len(parties) > 1:
-        # Model to decide if a single party is refered to in multiparty scenario
-        res = await cohere_async_clients["command_r_async_client"].chat(
-            model="command-r-08-2024",
-            messages=[
-                SystemChatMessageV2(
-                    content=multiparty_detection_instructions[language]
-                ),
-                UserChatMessageV2(content=question),
-            ],
-            response_format=multiparty_detection_response_format,
-        )
-        parties = json.loads(res.message.content[0].text)["parties"]
+    # Model to decide if a single party is refered to in multiparty scenario
+    res = await cohere_async_clients["command_r_async_client"].chat(
+        model="command-r-08-2024",
+        messages=[
+            SystemChatMessageV2(
+                content=multiparty_detection_instructions[language]
+            ),
+            UserChatMessageV2(content=question),
+        ],
+        response_format=multiparty_detection_response_format,
+    )
+    parties = json.loads(res.message.content[0].text)["parties"]
 
-        if "all" in parties:
-            parties = list(SupportedParties)
+    if "all" in parties:
+        parties = list(SupportedParties)
 
-        if "unspecified" in parties:
-            parties = []
+    if "unspecified" in parties:
+        parties = []
+    
+    print(parties)
 
     if len(parties) == 0:
         result = await single_party_search(

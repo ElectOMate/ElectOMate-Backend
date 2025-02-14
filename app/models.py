@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, model_validator, HttpUrl
-from typing import Literal, Optional, Dict, Union
+from typing import Literal, Union
 from typing_extensions import Self
 from enum import Enum
 
@@ -12,11 +12,15 @@ class SupportedLanguages(str, Enum):
 class SupportedParties(str, Enum):
     AFD = "afd"
     BSW = "bsw"
+    BUENDNIS = "buendnis"
     CDU = "cdu"
     FDP = "fdp"
+    FREIE = "freie"
     GRUNE = "grune"
     LINKE = "linke"
+    MLPD = "mlpd"
     SPD = "spd"
+    VOLT = "volt"
 
 
 class Question(BaseModel):
