@@ -1,0 +1,412 @@
+{
+  "timestamp": "2025-02-14T10:19:06.589088",
+  "question_id": 20,
+  "question": "Mit der Subventionierung von Agrardiesel sollen Landwirtschaftsbetriebe weiter entlastet werden.",
+  "user_custom_answer": "i totally agree with this statetement",
+  "button_answer": "-1",
+  "answer_type": "custom",
+  "lookup_response": {
+    "lookupPrompts": [
+      "Which political parties support the subsidization of agricultural diesel?",
+      "Party positions on agricultural diesel subsidies",
+      "Political party stances on relieving agricultural businesses with subsidized diesel"
+    ]
+  },
+  "party_contexts": {
+    "SPD": [
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Wir wollen den Landwirtinnen und Landwirten durch die Reform der Agrarförderung Rückendeckung\ngeben, denn sie stehen am Anfang der landwirtschaftlichen Wertschöpfungskette. Ziel ist eine\nstärkere Honorierung und Vergütung von Leistungen, die den Arbeitskräften in der Landwirtschaft,\nden ländlichen Regionen sowie dem Tierschutz zugutekommen. Unsere Maßnahmen zur\nStabilisierung wettbewerbsfähiger Energiepreise werden auch die Landwirtschaft entlasten.\n\n53"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen",
+        "content": "und Demokraten sowie Organisationen für eine starke Zivilgesellschaft."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\n55 Euro in 2025 und maximal 65 Euro in 2026 gilt. Wenn ab 2027 die europäische Regelung in Kraft\ntritt, werden wir durch geeignete Maßnahmen auf europäischer und nationaler Ebene (zum Beispiel\nKlimageld) dafür Sorge tragen, dass niemand überfordert wird."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "Sozialdemokratische Klimapolitik heißt, dass alle Menschen eine realistische Chance haben,\nauf klimaneutrale Lösungen umzusteigen. Dabei gilt: Geld vom Staat bekommen vor allem\ndiejenigen, die sich den Umstieg auf klimafreundliche Technologien wie eine Wärmepumpe oder\nein E-Auto ansonsten nicht leisten können. Dann aber auch so viel, wie gebraucht wird. Denn unser\nParadigmenwechsel heißt: Klimaneutralität ist auch Aufgabe der öffentlichen Daseinsvorsorge. Dafür"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\nMit der neuen GAP-Förderperiode ab 2028 wollen wir all jene stärker unterstützen, die die\n**Ressourcen Wasser, Boden und Luft schonen, zum Erhalt der Artenvielfalt beitragen und Maßnahmen**\nzum Klimaschutz und zur Klimaanpassung durchführen. Den Übergang wollen wir schrittweise\nvollziehen. Die Regularien der GAP sind grundlegend zu vereinfachen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "Darauf kommt es jetzt an.\n\nDarüber entscheiden die Wählerinnen und Wähler bei der Bundestagswahl am 23. Februar 2025.\n\n5"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Wir wollen den Landwirtinnen und Landwirten durch die Reform der Agrarförderung Rückendeckung\ngeben, denn sie stehen am Anfang der landwirtschaftlichen Wertschöpfungskette. Ziel ist eine\nstärkere Honorierung und Vergütung von Leistungen, die den Arbeitskräften in der Landwirtschaft,\nden ländlichen Regionen sowie dem Tierschutz zugutekommen. Unsere Maßnahmen zur\nStabilisierung wettbewerbsfähiger Energiepreise werden auch die Landwirtschaft entlasten.\n\n53"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\n55 Euro in 2025 und maximal 65 Euro in 2026 gilt. Wenn ab 2027 die europäische Regelung in Kraft\ntritt, werden wir durch geeignete Maßnahmen auf europäischer und nationaler Ebene (zum Beispiel\nKlimageld) dafür Sorge tragen, dass niemand überfordert wird."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\nMit der neuen GAP-Förderperiode ab 2028 wollen wir all jene stärker unterstützen, die die\n**Ressourcen Wasser, Boden und Luft schonen, zum Erhalt der Artenvielfalt beitragen und Maßnahmen**\nzum Klimaschutz und zur Klimaanpassung durchführen. Den Übergang wollen wir schrittweise\nvollziehen. Die Regularien der GAP sind grundlegend zu vereinfachen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 13. Wir kämpfen für eine pünktliche Bahn und gute Mobilität für alle.",
+        "content": "Regelungen an, die die Verlagerung von CO2-Emissionen (Carbon Leakage) vermeiden. Wir wollen die\n**Luftverkehrsteuer in eine EU-Klimaabgabe umwandeln, die von allen Airlines gezahlt wird, auch von**\ndenen außerhalb Europas. Wir werden die Wasserstraßeninfrastruktur ertüchtigen, die Nationale\n**Hafenstrategie zügig umsetzen und die Modernisierung der Schiffsflotten unterstützen. Forschung**\nund Markthochlauf für nachhaltige Kraftstoffe wie E-Fuels sind besonders für Luftverkehr und"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen",
+        "content": "und Demokraten sowie Organisationen für eine starke Zivilgesellschaft."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "Sozialdemokratische Klimapolitik heißt, dass alle Menschen eine realistische Chance haben,\nauf klimaneutrale Lösungen umzusteigen. Dabei gilt: Geld vom Staat bekommen vor allem\ndiejenigen, die sich den Umstieg auf klimafreundliche Technologien wie eine Wärmepumpe oder\nein E-Auto ansonsten nicht leisten können. Dann aber auch so viel, wie gebraucht wird. Denn unser\nParadigmenwechsel heißt: Klimaneutralität ist auch Aufgabe der öffentlichen Daseinsvorsorge. Dafür"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "Wir wollen den Landwirtinnen und Landwirten durch die Reform der Agrarförderung Rückendeckung\ngeben, denn sie stehen am Anfang der landwirtschaftlichen Wertschöpfungskette. Ziel ist eine\nstärkere Honorierung und Vergütung von Leistungen, die den Arbeitskräften in der Landwirtschaft,\nden ländlichen Regionen sowie dem Tierschutz zugutekommen. Unsere Maßnahmen zur\nStabilisierung wettbewerbsfähiger Energiepreise werden auch die Landwirtschaft entlasten.\n\n53"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD",
+        "content": "für die Bundestagswahl 2025"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen",
+        "content": "und Demokraten sowie Organisationen für eine starke Zivilgesellschaft."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Ein neuer Aufschwung für Deutschland: 1. Wir kämpfen für neues Wachstum und sichere Arbeitsplätze.",
+        "content": "Damit soll die derzeitige Belastung für Haushalte und Unternehmen im Durchschnitt halbiert und\ndauerhaft Planungssicherheit geschaffen werden – für industrielle Investitionen, aber auch für den\nUmstieg auf klimafreundliche Technologien wie das Elektroauto oder die Wärmepumpe."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Beschäftigte und ihre Familien entlasten: 12. Wir kämpfen für Klimaschutz, den sich jeder leisten kann.",
+        "content": "Sozialdemokratische Klimapolitik heißt, dass alle Menschen eine realistische Chance haben,\nauf klimaneutrale Lösungen umzusteigen. Dabei gilt: Geld vom Staat bekommen vor allem\ndiejenigen, die sich den Umstieg auf klimafreundliche Technologien wie eine Wärmepumpe oder\nein E-Auto ansonsten nicht leisten können. Dann aber auch so viel, wie gebraucht wird. Denn unser\nParadigmenwechsel heißt: Klimaneutralität ist auch Aufgabe der öffentlichen Daseinsvorsorge. Dafür"
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Sich in Deutschland sicher und zu Hause fühlen: 19. Wir kämpfen für starke Kommunen, gleiche Chancen in Land und Stadt und eine zukunftsfähige Landwirtschaft.",
+        "content": "**Mehr für Dich. Besser für Deutschland.**\nRegierungsprogramm der SPD für die Bundestagswahl 2025\n\nMit der neuen GAP-Förderperiode ab 2028 wollen wir all jene stärker unterstützen, die die\n**Ressourcen Wasser, Boden und Luft schonen, zum Erhalt der Artenvielfalt beitragen und Maßnahmen**\nzum Klimaschutz und zur Klimaanpassung durchführen. Den Übergang wollen wir schrittweise\nvollziehen. Die Regularien der GAP sind grundlegend zu vereinfachen."
+      },
+      {
+        "title": "Mehr für Dich.: Regierungsprogramm der SPD: Worauf es jetzt ankommt",
+        "content": "Darauf kommt es jetzt an.\n\nDarüber entscheiden die Wählerinnen und Wähler bei der Bundestagswahl am 23. Februar 2025.\n\n5"
+      }
+    ],
+    "GRUENE": [
+      {
+        "title": "",
+        "content": "Environmental party advocating for climate action and sustainability"
+      }
+    ],
+    "FDP": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "CDU/CSU": [
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir machen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt.\nGleichzeitig muss die Gemeinsame Agrarpolitik drastisch vereinfacht werden."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Klimaziele einhalten",
+        "content": "Die Ampel hat in drei Jahren mit ihrem ideologischen und planwirtschaftlichen Ansatz gezeigt, wie es nicht geht. Deutschland erlebt eine tiefgreifende De-Industrialisierung. Wir\nmüssen endlich verstehen: Klimaschutz braucht eine starke Wirtschaft. Klimaschutz geht\nnur global und gemeinsam mit den Menschen. Wir sehen uns in der Verantwortung, die\nSchöpfung zu bewahren. Wir verstehen Nachhaltigkeit umfassend."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- EEigenständiges EU-Agrarbudget weiter gut ausstatten; GAP drastisch vereinfachen. Wir\nmachen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt. Unser\nZiel ist zudem, die Gemeinsame Agrarpolitik für die Bäuerinnen und Bauern im Sinne\nvon Bürokratieabbau, Transparenz und Effizienz massiv zu vereinfachen und praktikabel auszugestalten, was auch viele kleinteilige Kontrollen überflüssig macht. Zudem"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "Unserer Landwirtschaft den Rücken stärken\n\nLandwirte verdienen Anerkennung, Respekt und Vertrauen. Wir sorgen für Entlastungen\ndurch bessere Rahmenbedingungen und Planungssicherheit.\n\nWir handeln. Worauf es jetzt vor allem ankommt:\n\n- WWir führen die Agrardieselrückvergütung wieder vollständig ein. So entlasten wir landwirtschaftliche Betriebe."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Landwirtschaftliche Produktion sichern",
+        "content": "- LLandwirtschaftliche Tierhalter unterstützen. Wir unterstützen unsere Landwirte bei der\nartgerechten Tierhaltung für mehr Tierwohl. Wir sind für Tierhaltung, insbesondere\nauch für den Fortbestand der Kombihaltung und gegen eine Reduktion oder Quoten. Wir\nsorgen für eine verlässliche Finanzierung tierwohlgerechter Ställe und schaffen genehmigungsrechtliche Hürden ab. Verbraucher müssen klar und verbindlich über Tierwohl\nund Herkunft tierischer Produkte informiert sein."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- ÖÖkologische Ziele erreichen. Wir setzen auf Anreize, Vertragsnaturschutz, die Honorierung von Natur- und Umweltschutz sowie Innovationen. Das zwangsweise Stilllegen von\nFlächen lehnen wir ab. Dabei sind uns konventionelle und ökologische Landwirtschaft\ngleich wichtig. Das Bundesnaturschutzgesetz ändern wir dahingehend, dass Pflege und\nBewirtschaftung von Biotopen ausgleichsfähig sind. Die Bioökonomie stärken wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir machen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt.\nGleichzeitig muss die Gemeinsame Agrarpolitik drastisch vereinfacht werden."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Klimaziele einhalten",
+        "content": "Die Ampel hat in drei Jahren mit ihrem ideologischen und planwirtschaftlichen Ansatz gezeigt, wie es nicht geht. Deutschland erlebt eine tiefgreifende De-Industrialisierung. Wir\nmüssen endlich verstehen: Klimaschutz braucht eine starke Wirtschaft. Klimaschutz geht\nnur global und gemeinsam mit den Menschen. Wir sehen uns in der Verantwortung, die\nSchöpfung zu bewahren. Wir verstehen Nachhaltigkeit umfassend."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- ÖÖkologische Ziele erreichen. Wir setzen auf Anreize, Vertragsnaturschutz, die Honorierung von Natur- und Umweltschutz sowie Innovationen. Das zwangsweise Stilllegen von\nFlächen lehnen wir ab. Dabei sind uns konventionelle und ökologische Landwirtschaft\ngleich wichtig. Das Bundesnaturschutzgesetz ändern wir dahingehend, dass Pflege und\nBewirtschaftung von Biotopen ausgleichsfähig sind. Die Bioökonomie stärken wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- EEigenständiges EU-Agrarbudget weiter gut ausstatten; GAP drastisch vereinfachen. Wir\nmachen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt. Unser\nZiel ist zudem, die Gemeinsame Agrarpolitik für die Bäuerinnen und Bauern im Sinne\nvon Bürokratieabbau, Transparenz und Effizienz massiv zu vereinfachen und praktikabel auszugestalten, was auch viele kleinteilige Kontrollen überflüssig macht. Zudem"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "Unserer Landwirtschaft den Rücken stärken\n\nLandwirte verdienen Anerkennung, Respekt und Vertrauen. Wir sorgen für Entlastungen\ndurch bessere Rahmenbedingungen und Planungssicherheit.\n\nWir handeln. Worauf es jetzt vor allem ankommt:\n\n- WWir führen die Agrardieselrückvergütung wieder vollständig ein. So entlasten wir landwirtschaftliche Betriebe."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- GGenerationenwechsel sicherstellen. Dafür müssen junge Landwirtinnen und Landwirte\nflächendeckend besser gefördert werden. Wir sorgen für Planungs- und Finanzierungssicherheit, damit unsere Betriebe eine Zukunft haben."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- LLandwirtschaftliche Betriebe entlasten. Wir führen die Agrardieselrückvergütung wieder\nvollständig ein. Alternative Kraftstoffe wie Biokraftstoffe und synthetische Kraftstoffe in\nder Land- und Forstwirtschaft befreien wir von der Energiesteuer.\n\n- PPlanungssicherheit geben. Wir sorgen dafür, dass die Finanzierung der „Gemeinschaftsaufgabe Verbesserung der Agrarstruktur und des Küstenschutzes“ sichergestellt wird."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Klimaziele einhalten",
+        "content": "Die Ampel hat in drei Jahren mit ihrem ideologischen und planwirtschaftlichen Ansatz gezeigt, wie es nicht geht. Deutschland erlebt eine tiefgreifende De-Industrialisierung. Wir\nmüssen endlich verstehen: Klimaschutz braucht eine starke Wirtschaft. Klimaschutz geht\nnur global und gemeinsam mit den Menschen. Wir sehen uns in der Verantwortung, die\nSchöpfung zu bewahren. Wir verstehen Nachhaltigkeit umfassend."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "Unserer Landwirtschaft den Rücken stärken\n\nLandwirte verdienen Anerkennung, Respekt und Vertrauen. Wir sorgen für Entlastungen\ndurch bessere Rahmenbedingungen und Planungssicherheit.\n\nWir handeln. Worauf es jetzt vor allem ankommt:\n\n- WWir führen die Agrardieselrückvergütung wieder vollständig ein. So entlasten wir landwirtschaftliche Betriebe."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- ÖÖkologische Ziele erreichen. Wir setzen auf Anreize, Vertragsnaturschutz, die Honorierung von Natur- und Umweltschutz sowie Innovationen. Das zwangsweise Stilllegen von\nFlächen lehnen wir ab. Dabei sind uns konventionelle und ökologische Landwirtschaft\ngleich wichtig. Das Bundesnaturschutzgesetz ändern wir dahingehend, dass Pflege und\nBewirtschaftung von Biotopen ausgleichsfähig sind. Die Bioökonomie stärken wir."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "- EEigenständiges EU-Agrarbudget weiter gut ausstatten; GAP drastisch vereinfachen. Wir\nmachen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt. Unser\nZiel ist zudem, die Gemeinsame Agrarpolitik für die Bäuerinnen und Bauern im Sinne\nvon Bürokratieabbau, Transparenz und Effizienz massiv zu vereinfachen und praktikabel auszugestalten, was auch viele kleinteilige Kontrollen überflüssig macht. Zudem"
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: LLandwirtschaft entlasten",
+        "content": "Unsere Landwirtinnen und Landwirte wirtschaften umweltfreundlich und leisten einen\nwichtigen Beitrag zur Ernährungssicherheit und Landschaftspflege. Sie verdienen Anerkennung, Respekt und Vertrauen. Wir sorgen für Entlastungen durch bessere Rahmenbedingungen und Planungssicherheit – damit ein Landwirt wieder Landwirt sein kann."
+      },
+      {
+        "title": "Politikwechsel: für Deutschland: ������: Wahlprogramm von CDU und CSU: Politikwechsel für Deutschland: I. Für ein Deutschland, auf das wir wieder stolz sein können ......... 10",
+        "content": "- WWir machen uns in Brüssel dafür stark, dass das Agrarbudget gut ausgestattet bleibt.\nGleichzeitig muss die Gemeinsame Agrarpolitik drastisch vereinfacht werden."
+      }
+    ],
+    "LINKE": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "AFD": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "FREIE WÄHLER": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "Volt": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ],
+    "MLPD": [
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Agrarbetriebe missbraucht. Haben die ihre Ziele erreicht, sollen die Bauern ihre Transparente einrollen und mit ihren Traktoren heim-fahren. Rechte,\n\nvölkische und faschistische Kräfte versuchten, den berechtigten Unmut der Bauern auf ihre Mühlen zu lenken. Die AfD stimmte zuerst im Bundestag den\n\nKürzungen für die Agrardieselbeihilfe zu, machte dann eine Kehrwendung, um als Trittbrettfahrer die Bauernproteste zu vereinnahmen. Die Masse der"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Hinter den scheinbar einheitlichen Traktorkolonnen in den Bauernprotesten Anfang 2024 verbargen sich ganz unterschiedliche Zielsetzungen. Die MLPD\n\nsteht auf der Seite der kleinen und mittleren bäuerlichen Betriebe, denen es um die Existenz ging, und die durch ruinöse Erzeuger- und Dumpingpreise\n\ngefährdet wird. Die Abschaffung des Agrardiesels brachte für sie das Fass zum Überlaufen. Großbauern und die Großagrarbetriebe stehen hingegen auf"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Monopolisierung. In den östlichen Bundesländern gehören 30 Prozent des Bodens bereits Konzernen wie Aldi und Red Bull, die darauf anbauen lassen.\n\nDie herrschende Agrarpolitik wälzt die Kosten für notwendige Umweltstandards zugleich auf Klein- und Mittelbetriebe sowie die Verbraucherinnen und\n\nVerbraucher ab. Die wohlklingende Tierwohlabgabe ist nur eine verkappte Massensteuer.\n\n**Erzeugerpreise rauf, Verbraucherpreise runter auf Kosten der Profite von Agrar- und Handeslkonzernen!**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "ohnehin nur halbherzigen – landwirtschaftlichen Umweltmaßnahmen durch die EU unter dem Vorwand des Bürokratieabbaus (Die Halbierung der\n\nPestizidanwendungen wurde gestrichen, zeitweise fiel die sogenannte Flächenstilllegung weg, usw.) Das nutzte vor allem den größten Betrieben und den\n\nChemiemonopolen. Kleine, bäuerliche Betriebe mussten erneut feststellen, dass der Bauernverband sie nur als Druckmittel für den Reibach der großen"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Erhöhung der Erzeugerpreise und Senkung der Verbraucherpreise auf Kosten der Agrar- und Handelskonzerne, Schuldenerlass für kleine und\n\nmittlere Bauern.\n\n**Forschungsschwerpunkte: Ökologische und industriell-produktive Landwirtschaft, Züchtung von weniger Wasser verbrauchenden, hitzeresistenten**\n\nPflanzen. Entwicklung von Anbaumethoden und Sorten mit verringerter Freisetzung von Methan. Renaturierung und Bekämpfung der Wüstenbildung.\n\n**Für das Recht auf Flucht und freiwillige Umsiedlungen**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!",
+        "content": "**ALLES ZUR WAHL**\n**[(HTTPS://WWW.MLPD.DE/BUNDESTAGSWAHL)](https://www.mlpd.de/bundestagswahl)**\n\n\n**WAHLSPOT**\n**[(HTTPS://YOUTU.BE/C3IWTV7J0XA)](https://youtu.be/C3IwtV7j0XA)**\n\n\n**.**\n\n**Liebe Wählerinnen und Wähler,**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Grünen ihre sozialen Versprechungen ernst gemeint, hätten sie umgekehrt die Erhöhung der CO -Steuer blockieren müssen. Auch das sogenannte2\n\nHeizungsgesetz wälzte die Kosten für sinnvolle Maßnahmen auf die Verbraucher bzw. kleinen Hausbesitzer ab. So wird auch noch der Letzte gegen\n\ndringend notwendige Umweltmaßnahmen aufgebracht. Und was bringt’s für’s Klima? Pendler müssen weiter, nur eben mit noch teurerem Sprit, mit dem"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Hinter den scheinbar einheitlichen Traktorkolonnen in den Bauernprotesten Anfang 2024 verbargen sich ganz unterschiedliche Zielsetzungen. Die MLPD\n\nsteht auf der Seite der kleinen und mittleren bäuerlichen Betriebe, denen es um die Existenz ging, und die durch ruinöse Erzeuger- und Dumpingpreise\n\ngefährdet wird. Die Abschaffung des Agrardiesels brachte für sie das Fass zum Überlaufen. Großbauern und die Großagrarbetriebe stehen hingegen auf"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Agrarbetriebe missbraucht. Haben die ihre Ziele erreicht, sollen die Bauern ihre Transparente einrollen und mit ihren Traktoren heim-fahren. Rechte,\n\nvölkische und faschistische Kräfte versuchten, den berechtigten Unmut der Bauern auf ihre Mühlen zu lenken. Die AfD stimmte zuerst im Bundestag den\n\nKürzungen für die Agrardieselbeihilfe zu, machte dann eine Kehrwendung, um als Trittbrettfahrer die Bauernproteste zu vereinnahmen. Die Masse der"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Erhöhung der Erzeugerpreise und Senkung der Verbraucherpreise auf Kosten der Agrar- und Handelskonzerne, Schuldenerlass für kleine und\n\nmittlere Bauern.\n\n**Forschungsschwerpunkte: Ökologische und industriell-produktive Landwirtschaft, Züchtung von weniger Wasser verbrauchenden, hitzeresistenten**\n\nPflanzen. Entwicklung von Anbaumethoden und Sorten mit verringerter Freisetzung von Methan. Renaturierung und Bekämpfung der Wüstenbildung.\n\n**Für das Recht auf Flucht und freiwillige Umsiedlungen**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Monopolisierung. In den östlichen Bundesländern gehören 30 Prozent des Bodens bereits Konzernen wie Aldi und Red Bull, die darauf anbauen lassen.\n\nDie herrschende Agrarpolitik wälzt die Kosten für notwendige Umweltstandards zugleich auf Klein- und Mittelbetriebe sowie die Verbraucherinnen und\n\nVerbraucher ab. Die wohlklingende Tierwohlabgabe ist nur eine verkappte Massensteuer.\n\n**Erzeugerpreise rauf, Verbraucherpreise runter auf Kosten der Profite von Agrar- und Handeslkonzernen!**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!",
+        "content": "**ALLES ZUR WAHL**\n**[(HTTPS://WWW.MLPD.DE/BUNDESTAGSWAHL)](https://www.mlpd.de/bundestagswahl)**\n\n\n**WAHLSPOT**\n**[(HTTPS://YOUTU.BE/C3IWTV7J0XA)](https://youtu.be/C3IwtV7j0XA)**\n\n\n**.**\n\n**Liebe Wählerinnen und Wähler,**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "_die Jugend keine Zukunft mehr. Wenn sie für 15 Euro Stundenlohn 70-80 Stunden die Woche arbeiten und keine Perspektive sehen, übernehmen sie auch keinen_\n\n_Hof. Die Bauern kämpfen um eine starke Interessenvertretung, die über die europäische Monitoringstelle wirklich eingreifen kann.“_\n\n**Quellen & Links**\n\n1 Agrarheute 19.12.2020\n\n**28 - Die Einheitsfrontpolitik der MLPD**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Höhere Löhne für Landarbeiter und -arbeiterinnen in der Erntehilfe und in Schlachtbetrieben, strengste Kontrolle der Einhaltung der Arbeits- und\n\nErholzeiten, von Hygienebedingungen und Unterbringung!\n\nHöhere Erzeugerpreise auf Kosten der Agrar- und Handelsmonopole! Preisaufschläge für wirksame Umweltmaßnahmen!\n\n**Zu den Forderungen der MLPD für den Agrarbereich siehe bei dem Kampfprogramm unter Abschnitt 11 f) dieses Wahlprogramms!**\n\n**Statement eines Milchviehhalters aus dem Sauerland**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Hinter den scheinbar einheitlichen Traktorkolonnen in den Bauernprotesten Anfang 2024 verbargen sich ganz unterschiedliche Zielsetzungen. Die MLPD\n\nsteht auf der Seite der kleinen und mittleren bäuerlichen Betriebe, denen es um die Existenz ging, und die durch ruinöse Erzeuger- und Dumpingpreise\n\ngefährdet wird. Die Abschaffung des Agrardiesels brachte für sie das Fass zum Überlaufen. Großbauern und die Großagrarbetriebe stehen hingegen auf"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Agrarbetriebe missbraucht. Haben die ihre Ziele erreicht, sollen die Bauern ihre Transparente einrollen und mit ihren Traktoren heim-fahren. Rechte,\n\nvölkische und faschistische Kräfte versuchten, den berechtigten Unmut der Bauern auf ihre Mühlen zu lenken. Die AfD stimmte zuerst im Bundestag den\n\nKürzungen für die Agrardieselbeihilfe zu, machte dann eine Kehrwendung, um als Trittbrettfahrer die Bauernproteste zu vereinnahmen. Die Masse der"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Monopolisierung. In den östlichen Bundesländern gehören 30 Prozent des Bodens bereits Konzernen wie Aldi und Red Bull, die darauf anbauen lassen.\n\nDie herrschende Agrarpolitik wälzt die Kosten für notwendige Umweltstandards zugleich auf Klein- und Mittelbetriebe sowie die Verbraucherinnen und\n\nVerbraucher ab. Die wohlklingende Tierwohlabgabe ist nur eine verkappte Massensteuer.\n\n**Erzeugerpreise rauf, Verbraucherpreise runter auf Kosten der Profite von Agrar- und Handeslkonzernen!**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!",
+        "content": "**ALLES ZUR WAHL**\n**[(HTTPS://WWW.MLPD.DE/BUNDESTAGSWAHL)](https://www.mlpd.de/bundestagswahl)**\n\n\n**WAHLSPOT**\n**[(HTTPS://YOUTU.BE/C3IWTV7J0XA)](https://youtu.be/C3IwtV7j0XA)**\n\n\n**.**\n\n**Liebe Wählerinnen und Wähler,**"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "ohnehin nur halbherzigen – landwirtschaftlichen Umweltmaßnahmen durch die EU unter dem Vorwand des Bürokratieabbaus (Die Halbierung der\n\nPestizidanwendungen wurde gestrichen, zeitweise fiel die sogenannte Flächenstilllegung weg, usw.) Das nutzte vor allem den größten Betrieben und den\n\nChemiemonopolen. Kleine, bäuerliche Betriebe mussten erneut feststellen, dass der Bauernverband sie nur als Druckmittel für den Reibach der großen"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "manche Parteien Sorge um die Umwelt vor, versprechen angebliche „Klimaneutralität“. Doch nur damit deutsche Konzerne mit der\n\nTechnologieführerschaft bei erneuerbaren Energien und einem ganzen Strauß an neuen „Geschäftsfeldern“ maximale Profite einstreichen können.\n\nGinge es nach der FDP würde das Bundesumweltamt gestrichen und es bliebe nur noch der Handel mit Zertifikaten, den die Regierung als neue"
+      },
+      {
+        "title": "23. Februar 2025: MLPD wählen!: ",
+        "content": "Erhöhung der Erzeugerpreise und Senkung der Verbraucherpreise auf Kosten der Agrar- und Handelskonzerne, Schuldenerlass für kleine und\n\nmittlere Bauern.\n\n**Forschungsschwerpunkte: Ökologische und industriell-produktive Landwirtschaft, Züchtung von weniger Wasser verbrauchenden, hitzeresistenten**\n\nPflanzen. Entwicklung von Anbaumethoden und Sorten mit verringerter Freisetzung von Methan. Renaturierung und Bekämpfung der Wüstenbildung.\n\n**Für das Recht auf Flucht und freiwillige Umsiedlungen**"
+      }
+    ],
+    "BÜNDNIS DEUTSCHLAND": [
+      {
+        "title": "Freiheit wählen, Zukunft gestalten!: BÜNDNIS DEUTSCHLAND",
+        "content": "Knesebeckstraße 62/63 | 10719 Berlin\n\n kontakt@buendnis-deutschland.de\n\n www.buendnis-deutschland.de"
+      },
+      {
+        "title": "Freiheit wählen, Zukunft gestalten!: BÜNDNIS DEUTSCHLAND",
+        "content": "Knesebeckstraße 62/63 | 10719 Berlin\n\n kontakt@buendnis-deutschland.de\n\n www.buendnis-deutschland.de"
+      },
+      {
+        "title": "Freiheit wählen, Zukunft gestalten!: BÜNDNIS DEUTSCHLAND",
+        "content": "Knesebeckstraße 62/63 | 10719 Berlin\n\n kontakt@buendnis-deutschland.de\n\n www.buendnis-deutschland.de"
+      }
+    ],
+    "BSW": [
+      {
+        "title": "",
+        "content": ""
+      }
+    ]
+  },
+  "evaluation_scores": {
+    "SPD": {
+      "raw_score": 80,
+      "normalized": 0.6000000000000001,
+      "weight": 1,
+      "mapped_score": 0.6000000000000001,
+      "reasoning": "The SPD's response focuses on supporting farmers and reducing energy prices, which aligns with the user's agreement with the statement about subsidizing agricultural diesel to relieve agricultural businesses."
+    },
+    "GRUENE": {
+      "raw_score": 40,
+      "normalized": -0.19999999999999996,
+      "weight": 1,
+      "mapped_score": -0.19999999999999996,
+      "reasoning": "The GRUENE's context is about environmental advocacy and sustainability, which is not directly related to the question about subsidizing agricultural diesel."
+    },
+    "FDP": {
+      "raw_score": 50,
+      "normalized": 0,
+      "weight": 1,
+      "mapped_score": 0,
+      "reasoning": "There is no context provided for the FDP, so it is difficult to determine their agreement with the user's response."
+    },
+    "CDU/CSU": {
+      "raw_score": 80,
+      "normalized": 0.6000000000000001,
+      "weight": 1,
+      "mapped_score": 0.6000000000000001,
+      "reasoning": "The CDU/CSU's response mentions introducing the agricultural diesel rebate again to relieve agricultural businesses, which aligns with the user's agreement with the statement."
+    },
+    "LINKE": {
+      "raw_score": 50,
+      "normalized": 0,
+      "weight": 1,
+      "mapped_score": 0,
+      "reasoning": "There is no context provided for the LINKE, so it is challenging to assess their agreement with the user's response."
+    },
+    "AFD": {
+      "raw_score": 50,
+      "normalized": 0,
+      "weight": 1,
+      "mapped_score": 0,
+      "reasoning": "The AFD's context is not available, making it difficult to determine their agreement with the user's response."
+    },
+    "FREIE WÄHLER": {
+      "raw_score": 50,
+      "normalized": 0,
+      "weight": 1,
+      "mapped_score": 0,
+      "reasoning": "There is no context for the FREIE WÄHLER, so their agreement with the user's response cannot be accurately assessed."
+    },
+    "Volt": {
+      "raw_score": 50,
+      "normalized": 0,
+      "weight": 1,
+      "mapped_score": 0,
+      "reasoning": "The Volt's context is not provided, making it challenging to determine their agreement with the user's response."
+    },
+    "MLPD": {
+      "raw_score": 40,
+      "normalized": -0.19999999999999996,
+      "weight": 1,
+      "mapped_score": -0.19999999999999996,
+      "reasoning": "The MLPD's context is about rejecting arms financing and advocating for international solidarity, which is not directly related to the question about subsidizing agricultural diesel."
+    },
+    "BÜNDNIS DEUTSCHLAND": {
+      "raw_score": 50,
+      "normalized": 0,
+      "weight": 1,
+      "mapped_score": 0,
+      "reasoning": "The BÜNDNIS DEUTSCHLAND's context is not available, so it is difficult to assess their agreement with the user's response."
+    },
+    "BSW": {
+      "raw_score": 50,
+      "normalized": 0,
+      "weight": 1,
+      "mapped_score": 0,
+      "reasoning": "There is no context for the BSW, making it challenging to determine their agreement with the user's response."
+    }
+  },
+  "skipped": false,
+  "wheights": "false"
+}

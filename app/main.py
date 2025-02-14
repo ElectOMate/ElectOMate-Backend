@@ -10,6 +10,7 @@ from .query import query_router
 from .realtime import realtime_router
 from .upload import upload_router
 from .transcription import transcription_router
+from .custom_answer_evaluation import custom_answer_evaluation
 
 
 @asynccontextmanager
@@ -25,6 +26,8 @@ app.include_router(query_router.router)
 app.include_router(realtime_router.router)
 app.include_router(upload_router.router)
 app.include_router(transcription_router.router)
+app.include_router(custom_answer_evaluation.router)
+
 
 app.add_middleware(
     CORSMiddleware,
