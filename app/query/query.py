@@ -41,6 +41,7 @@ async def single_pary_stream(
     party: SupportedParties,
     use_web_search: bool,
     use_database_search: bool,
+    multiparty: bool,
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
@@ -151,7 +152,7 @@ async def single_pary_stream(
                             citation_options=CitationOptions(mode="ACCURATE"),
                         )
                 if event.type == "content-delta":
-                    if party is not None:
+                    if multiparty is True:
                         yield {
                             "type": "multi-party-answer-chunk",
                             "answer_delta": event.delta.message.content.text,
@@ -236,6 +237,7 @@ async def stream_rag(
             party=None,
             use_web_search=use_web_search,
             use_database_search=use_database_search,
+            multiparty=False,
             cohere_async_clients=cohere_async_clients,
             weaviate_async_client=weaviate_async_client,
             language=language,
@@ -251,6 +253,7 @@ async def stream_rag(
             party=parties[0],
             use_web_search=use_web_search,
             use_database_search=use_database_search,
+            multiparty=False,
             cohere_async_clients=cohere_async_clients,
             weaviate_async_client=weaviate_async_client,
             language=language,
@@ -267,6 +270,7 @@ async def stream_rag(
                 party,
                 use_web_search=False,
                 use_database_search=use_database_search,
+                multiparty=True,
                 cohere_async_clients=cohere_async_clients,
                 weaviate_async_client=weaviate_async_client,
                 language=language,
@@ -284,6 +288,7 @@ async def single_party_search(
     party: SupportedParties,
     use_web_search: bool,
     use_database_search: bool,
+    multiparty: bool,
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
@@ -383,7 +388,7 @@ async def single_party_search(
         else:
             warnings.warn("Unrecognized citation type.")
 
-    if party is not None:
+    if multiparty is True:
         return {
             "answer": res.message.content[0].text,
             "citations": citations,
@@ -432,6 +437,7 @@ async def query_rag(
             party=None,
             use_web_search=use_web_search,
             use_database_search=use_database_search,
+            multiparty=False,
             cohere_async_clients=cohere_async_clients,
             weaviate_async_client=weaviate_async_client,
             language=language,
@@ -443,6 +449,7 @@ async def query_rag(
             party=parties[0],
             use_web_search=use_web_search,
             use_database_search=use_database_search,
+            multiparty=False,
             cohere_async_clients=cohere_async_clients,
             weaviate_async_client=weaviate_async_client,
             language=language,
@@ -455,6 +462,7 @@ async def query_rag(
                 party,
                 use_web_search=False,
                 use_database_search=use_database_search,
+                multiparty=True,
                 cohere_async_clients=cohere_async_clients,
                 weaviate_async_client=weaviate_async_client,
                 language=language,
