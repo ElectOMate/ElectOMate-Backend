@@ -325,7 +325,6 @@ async def single_party_search(
                 tool_calls=res.message.tool_calls, tool_plan=res.message.tool_plan
             )
         )
-        print(res.message.tool_plan)
 
         for tc in res.message.tool_calls:
 
@@ -344,14 +343,11 @@ async def single_party_search(
                 tool_results = await web_search(
                     **json.loads(tc.function.arguments),
                     cohere_async_clients=cohere_async_clients,
-                    language=language,
                 )
                 messages.append(
                     ToolChatMessageV2(tool_call_id=tc.id, content=tool_results)
                 )
 
-            for results in tool_results:
-                print(results.document.data['content'])
             res = await cohere_async_clients["command_r_async_client"].chat(
                 model="command-r-08-2024", messages=messages, tools=tools
             )
@@ -430,7 +426,6 @@ async def query_rag(
     if "unspecified" in parties:
         parties = []
     
-    print(parties)
 
     if len(parties) == 0:
         result = await single_party_search(

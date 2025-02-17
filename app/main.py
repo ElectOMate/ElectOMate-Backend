@@ -10,10 +10,13 @@ from .query import query_router
 from .realtime import realtime_router
 from .upload import upload_router
 from .transcription import transcription_router
+from .custom_answers import custom_answers_router
+from .statics.party_answers import load_party_answers
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    load_party_answers()
     await weaviate_async_client.connect()
     yield
     await weaviate_async_client.close()
@@ -25,6 +28,7 @@ app.include_router(query_router.router)
 app.include_router(realtime_router.router)
 app.include_router(upload_router.router)
 app.include_router(transcription_router.router)
+app.include_router(custom_answers_router.router)
 
 app.add_middleware(
     CORSMiddleware,

@@ -18,7 +18,6 @@ async def get_documents(
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
 ) -> list[DocumentToolContent]:
-    print(f"DB search with party {party}")
     
     search_query_embedding_response = await cohere_async_clients[
         "embed_multilingual_async_client"

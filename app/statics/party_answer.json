@@ -1,0 +1,641 @@
+{
+    "parties": {
+      "CDU/CSU": {
+        "full_name": "Christlich Demokratische Union Deutschlands / Christlich-Soziale Union in Bayern e.V.",
+        "partyInfo": "Placeholder info for CDU/CSU",
+        "logo": "CDULogo.png"
+      },
+      "SPD": {
+        "full_name": "Sozialdemokratische Partei Deutschlands",
+        "partyInfo": "Placeholder info for SPD",
+        "logo": "Flag_of_the_Social_Democratic_Party_of_Germany.svg.png"
+      },
+      "GRUENE": {
+        "full_name": "BÜNDNIS 90/DIE GRÜNEN",
+        "partyInfo": "Placeholder info for DIE GRÜNEN",
+        "logo": "B90Gruene_RGB_aufTanne.svg.png"
+      },
+      "FDP": {
+        "full_name": "Freie Demokratische Partei",
+        "partyInfo": "Placeholder info for FDP",
+        "logo": "Flag_of_the_Free_Democratic_Party_of_Germany_(main_variant).svg.png"
+      },
+      "AfD": {
+        "full_name": "Alternative für Deutschland",
+        "partyInfo": "Placeholder info for AfD",
+        "logo": "AfD_Logo_2021.svg.png"
+      },
+      "DIE LINKE": {
+        "full_name": "DIE LINKE",
+        "partyInfo": "Placeholder info for DIE LINKE",
+        "logo": "Flag_of_Die_Linke.svg.png"
+      },
+      "FREIE WÄHLER": {
+        "full_name": "FREIE WÄHLER",
+        "partyInfo": "Placeholder info for FREIE WÄHLER",
+        "logo": "Logo_of_the_Free_Voters.svg.png"
+      },
+      "Volt": {
+        "full_name": "Volt Deutschland",
+        "partyInfo": "Placeholder info for Volt",
+        "logo": "Logo_of_Volt.svg.png"
+      },
+      "MLPD": {
+        "full_name": "Marxistisch-Leninistische Partei Deutschlands",
+        "partyInfo": "Placeholder info for MLPD",
+        "logo": "MLPDLogo.png"
+      },
+      "BÜNDNIS DEUTSCHLAND": {
+        "full_name": "BÜNDNIS DEUTSCHLAND",
+        "partyInfo": "Placeholder info for BÜNDNIS DEUTSCHLAND",
+        "logo": "Bündnis_Deutschland_Logo_(2023).svg.png"
+      },
+      "BSW": {
+        "full_name": "Bündnis Sahra Wagenknecht - Vernunft und Gerechtigkeit",
+        "partyInfo": "Placeholder info for BSW",
+        "logo": "BSWLogo.png"
+      }
+    },
+    "questions": [
+      {
+        "id": 1,
+        "q": "Die EU soll eigene Steuern erheben dürfen.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "GRUENE": "**Die GRÜNEN** sind der Ansicht, dass die Erhebung eigener Steuern durch die EU ein entscheidender Schritt zur Stärkung der europäischen Integration und zur Förderung einer nachhaltigen und gerechten Wirtschaft ist. Ihre Hauptargumente sind:\n1. **Förderung der europäischen Integration** durch finanzielle Unabhängigkeit.\n2. **Bereitstellung von Mitteln** für Klimaschutz und soziale Gerechtigkeit.\n3. **Reduzierung der Abhängigkeit** von nationalen Beiträgen.\n4. **Einführung von Transparenz- und Rechenschaftsmechanismen** zur Stärkung des Bürgervertrauens. \n \n  Sie argumentieren, dass dies der EU die notwendigen finanziellen Mittel verschaffen würde, um wichtige Projekte im Bereich des Klimaschutzes, der sozialen Gerechtigkeit und der technologischen Innovation zu finanzieren. Darüber hinaus sehen sie in der Steuererhebung eine Möglichkeit, die Abhängigkeit von nationalen Beiträgen zu verringern und die EU unabhängiger und handlungsfähiger zu machen. Die GRÜNEN betonen, dass eine solche Maßnahme mit strengen Transparenz- und Rechenschaftsmechanismen einhergehen muss, um das Vertrauen der Bürger in die EU zu stärken und sicherzustellen, dass die Mittel effektiv und effizient eingesetzt werden. ",
+              "DIE LINKE": "Placeholder stance text",
+              "FREIE WÄHLER": "Placeholder stance text",
+              "Volt": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "MLPD": "Placeholder stance text",
+              "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "q": "Fahrzeuge mit Verbrennungsmotoren sollen auch nach 2035 in der EU neu zugelassen werden können.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "FREIE WÄHLER": "Placeholder stance text",
+              "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "q": "Die EU soll eine eigene Seenotrettung im Mittelmeer aufbauen.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "FREIE WÄHLER": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "q": "Die Ukraine soll Mitglied der EU werden.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "FREIE WÄHLER": "Placeholder stance text",
+              "Volt": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "AfD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "MLPD": "Placeholder stance text",
+              "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "q": "Die EU soll vorrangig ökologische Landwirtschaft fördern.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {
+              "FREIE WÄHLER": "Placeholder stance text"
+            }
+          },
+          "contra": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 6,
+        "q": "In Deutschland soll der Euro durch eine nationale Währung ersetzt werden.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "AfD": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {
+              "MLPD": "Placeholder stance text"
+            }
+          },
+          "contra": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "FREIE WÄHLER": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "BÜNDNIS DEUTSCHLAND": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 7,
+        "q": "Die EU soll den Mitgliedstaaten empfehlen, außer \"weiblich\" und \"männlich\" auch die Eintragung einer anderen Geschlechtsidentität im Pass zu ermöglichen.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 8,
+        "q": "Die Jagd von Wölfen soll in Regionen erlaubt sein, in denen der Bestand dadurch nicht gefährdet ist.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {
+              "SPD": "Placeholder stance text"
+            }
+          },
+          "contra": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "q": "Beim Bau neuer Wohngebäude in der EU soll die Errichtung von Photovoltaikanlagen verpflichtend sein.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 10,
+        "q": "Mehr außenpolitische Entscheidungen der EU sollen mit Mehrheit statt einstimmig getroffen werden.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "Volt": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "AfD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "MLPD": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 11,
+        "q": "Der Flugzeugtreibstoff Kerosin soll für Flüge in der EU steuerfrei sein.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "FDP": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 12,
+        "q": "Die gemeinsame europäische Polizeibehörde Europol soll weitere Befugnisse erhalten.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "Volt": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "contra": {
+            "parties": {
+              "AfD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "MLPD": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 13,
+        "q": "Die EU soll länderübergreifende, mehrsprachige Angebote des öffentlich-rechtlichen Rundfunks stärker finanziell fördern.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "FDP": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 14,
+        "q": "Die EU soll das Ziel verwerfen, klimaneutral zu werden.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "AfD": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 15,
+        "q": "Bei den Wahlen zum Europäischen Parlament sollen die Parteien weiterhin frei entscheiden können, wie groß der Anteil der Geschlechter auf ihren Listen ist.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {
+              "MLPD": "Placeholder stance text"
+            }
+          },
+          "contra": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "Volt": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 16,
+        "q": "Die EU soll Vorgaben für die Höhe der sozialen Grundsicherung in den Mitgliedstaaten machen.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "AfD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 17,
+        "q": "Betreiber sozialer Netzwerke sollen frei entscheiden dürfen, wie sie mit Desinformation auf ihren Plattformen umgehen.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "AfD": "Placeholder stance text",
+              "CDU/CSU": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 18,
+        "q": "In der EU sollen mehr Flächen als Naturschutzgebiete ausgewiesen werden.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "MLPD": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {
+              "SPD": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "contra": {
+            "parties": {
+              "AfD": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 19,
+        "q": "EU-Fördermittel für Mitgliedstaaten, die Regeln und Werte der EU verletzen, sollen weiterhin zurückgehalten werden.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "Volt": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "AfD": "Placeholder stance text",
+              "MLPD": "Placeholder stance text"
+            }
+          }
+        }
+      },
+      {
+        "id": 20,
+        "q": "Die EU soll mehr Waffen für die Ukraine finanzieren.",
+        "t": "Placeholder topic",
+        "fact": "Placeholder fact",
+        "positions": {
+          "pro": {
+            "parties": {
+              "CDU/CSU": "Placeholder stance text",
+              "GRUENE": "Placeholder stance text",
+              "SPD": "Placeholder stance text",
+              "FDP": "Placeholder stance text",
+              "Volt": "Placeholder stance text"
+            }
+          },
+          "neutral": {
+            "parties": {}
+          },
+          "contra": {
+            "parties": {
+              "AfD": "Placeholder stance text",
+              "DIE LINKE": "Placeholder stance text",
+              "MLPD": "Placeholder stance text",
+              "BSW": "Placeholder stance text"
+            }
+          }
+        }
+      }
+    ]
+  }

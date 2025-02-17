@@ -2,8 +2,7 @@ import openai
 import cohere
 import weaviate
 import weaviate.classes as wvc
-from azure.cognitiveservices.search.websearch import WebSearchClient
-from msrest.authentication import CognitiveServicesCredentials
+from tavily import AsyncTavilyClient
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -39,7 +38,7 @@ class Settings(BaseSettings):
     openai_api_key: str
 
     # Bing API keys
-    bing_api_key: str
+    tavily_api_key: str
 
     # Deployement config
     allow_origins: str = "*"
@@ -91,7 +90,4 @@ openai_async_client = openai.AsyncClient(api_key=settings.openai_api_key)
 
 
 # Instantiate Bing client
-bing_client = WebSearchClient(
-    endpoint="https://api.bing.microsoft.com/",
-    credentials=CognitiveServicesCredentials(subscription_key=settings.bing_api_key),
-)
+tavily_client = AsyncTavilyClient(settings.tavily_api_key)
