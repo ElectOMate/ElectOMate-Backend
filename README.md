@@ -60,25 +60,42 @@ To set up the project locally, follow these steps:
 
 ## Deploy the new container
 
+You will need to have the kubectl and helm cli tools installed.
+
 1. **Log into the azure cli:**
 
     ```bash
     az login
     ```
 
-2. **Deploy the ew container:**
+2. **Get the acr logins:**
+
+    ```bash
+    ACR_NAME=em-backend
+    USER_NAME="00000000-0000-0000-0000-000000000000"
+    PASSWORD=$(az acr login --name $ACR_NAME --expose-token --output tsv --query accessToken)
+    helm registry login $ACR_NAME.azurecr.io \
+      --username $USER_NAME \
+      --password $PASSWORD
+    ```
+
+3. **Build the container:**
 
     ```bash
     az acr build \
-        --resource-group em-backend-rg \
-        --registry embackendacr \
-        --image em-backend:latest .
+        -f Dockerfile.prod \
+        -r embackendacr \
+        -t docker/backend:v6 .
     ```
 
-3. **Upgrade the webapp:**
+4. **Get the kubernetes logins:**
+   ```bash
+   az aks get-credentials --resource-group em-backend-rg --name em-backend-aks
+   ```
 
-    ```bash
-    az webapp update \
-        --resource-group em-backend-rg \
-        --name em-backend
-    ```
+5. **Deploy the helm charts:**
+   ```bash
+   helm ugrade --install \
+       em-backend . \
+       -n em-backend
+   ```
