@@ -71,7 +71,7 @@ You will need to have the kubectl and helm cli tools installed.
 2. **Get the acr logins:**
 
     ```bash
-    ACR_NAME=em-backend
+    ACR_NAME=embackendacr
     USER_NAME="00000000-0000-0000-0000-000000000000"
     PASSWORD=$(az acr login --name $ACR_NAME --expose-token --output tsv --query accessToken)
     helm registry login $ACR_NAME.azurecr.io \
