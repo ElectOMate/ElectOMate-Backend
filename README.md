@@ -85,7 +85,7 @@ You will need to have the kubectl and helm cli tools installed.
     az acr build \
         -f Dockerfile.prod \
         -r embackendacr \
-        -t docker/backend:v6 .
+        -t docker/backend:v5 .
     ```
 
 4. **Get the kubernetes logins:**
