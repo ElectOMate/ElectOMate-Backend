@@ -411,21 +411,20 @@ async def query_rag(
     res = await cohere_async_clients["command_r_async_client"].chat(
         model="command-r-08-2024",
         messages=[
-            SystemChatMessageV2(
-                content=multiparty_detection_instructions[language]
-            ),
+            SystemChatMessageV2(content=multiparty_detection_instructions[language]),
             UserChatMessageV2(content=question),
         ],
         response_format=multiparty_detection_response_format,
     )
-    parties = json.loads(res.message.content[0].text)["parties"]
+    new_parties = json.loads(res.message.content[0].text)["parties"]
 
     if "all" in parties:
-        parties = list(SupportedParties)
+        new_parties = list(SupportedParties)
 
     if "unspecified" in parties:
-        parties = []
-    
+        new_parties = []
+
+    parties = list(set(new_parties) & set(parties))
 
     if len(parties) == 0:
         result = await single_party_search(
