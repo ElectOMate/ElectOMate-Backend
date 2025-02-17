@@ -9,4 +9,4 @@ asyncer
 aiostream
 prometheus_fastapi_instrumentator
 markdown
-azure-cognitiveservices-search-websearch
+tavily-python

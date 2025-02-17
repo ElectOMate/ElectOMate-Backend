@@ -8,14 +8,12 @@ metadata:
     prometheus.io/scrape: "true"
     prometheus.io/path: "/metrics"
     prometheus.io/port: "80"
-    service.beta.kubernetes.io/azure-dns-label-name: electomate-backend
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: 80
       protocol: TCP
-      name: http
   selector:
     app: em-backend
     {{- include "..selectorLabels" . | nindent 4 }}

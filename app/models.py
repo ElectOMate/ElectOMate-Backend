@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, model_validator, HttpUrl
 from typing import Literal, Union
 from typing_extensions import Self
 from enum import Enum
+from typing import Optional
 
 
 class SupportedLanguages(str, Enum):
@@ -105,9 +106,7 @@ class MultiPartyAnswer(BaseModel):
 
 
 class Answer(BaseModel):
-    answer: Union[StandardAnswer, MultiPartyAnswer] = Field(
-        discriminator="type"
-    )
+    answer: Union[StandardAnswer, MultiPartyAnswer] = Field(discriminator="type")
 
 
 class AnswerTypeChunk(BaseModel):
@@ -135,10 +134,7 @@ class CitationChunk(BaseModel):
 
 class AnswerChunk(BaseModel):
     chunk: Union[
-        AnswerTypeChunk,
-        StandardAnswerChunk,
-        MultiPartyAnswerChunk,
-        CitationChunk
+        AnswerTypeChunk, StandardAnswerChunk, MultiPartyAnswerChunk, CitationChunk
     ] = Field(discriminator="type")
 
 
@@ -146,3 +142,29 @@ class RealtimeToken(BaseModel):
     client_secret: str = Field(
         description="A realtime session token to be used in the browser directly."
     )
+
+
+class CustomAnswer(BaseModel):
+    question: str
+    question_id: int
+    users_answer: int
+    wheights: str
+    Skipped: str
+    custom_answer: str
+
+
+class EvaluationRequest(BaseModel):
+    custom_answers: list[CustomAnswer]
+
+
+class QuestionnaireQuestion(BaseModel):
+    q: str
+    id: int
+    context: Optional[str] = Field(default=None)
+
+
+class UserAnswer(BaseModel):
+    custom_answer: str
+    users_answer: str
+    wheights: str
+    skipped: bool
