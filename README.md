@@ -95,7 +95,7 @@ You will need to have the kubectl and helm cli tools installed.
 
 5. **Deploy the helm charts:**
    ```bash
-   helm ugrade --install \
+   helm upgrade --install \
        em-backend . \
        -n em-backend
    ```
