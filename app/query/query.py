@@ -208,25 +208,19 @@ async def stream_rag(
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
 ) -> AsyncGenerator[AnswerChunk, None]:
-    if len(parties) > 1:
-        # Model to decide if a single party is refered to in multiparty scenario
-        res = await cohere_async_clients["command_r_async_client"].chat(
-            model="command-r-08-2024",
-            messages=[
-                SystemChatMessageV2(
-                    content=multiparty_detection_instructions[language]
-                ),
-                UserChatMessageV2(content=question),
-            ],
-            response_format=multiparty_detection_response_format,
-        )
-        parties = json.loads(res.message.content[0].text)["parties"]
+    # Model to decide if a single party is refered to in multiparty scenario
+    res = await cohere_async_clients["command_r_async_client"].chat(
+        model="command-r-08-2024",
+        messages=[
+            SystemChatMessageV2(content=multiparty_detection_instructions[language]),
+            UserChatMessageV2(content=question),
+        ],
+        response_format=multiparty_detection_response_format,
+    )
+    new_parties = json.loads(res.message.content[0].text)["parties"]
 
-        if "all" in parties:
-            parties = list(SupportedParties)
-
-        if "unspecified" in parties:
-            parties = []
+    if "all" in new_parties:
+        new_parties = list(SupportedParties)
 
     if len(parties) == 0:
         yield json.dumps(
@@ -352,6 +346,8 @@ async def single_party_search(
                 messages.append(
                     ToolChatMessageV2(tool_call_id=tc.id, content=tool_results)
                 )
+                
+            print(tool_results)
 
             res = await cohere_async_clients["command_r_async_client"].chat(
                 model="command-r-08-2024", messages=messages, tools=tools
@@ -422,12 +418,9 @@ async def query_rag(
         response_format=multiparty_detection_response_format,
     )
     new_parties = json.loads(res.message.content[0].text)["parties"]
-
-    if "all" in parties:
+    
+    if "all" in new_parties:
         new_parties = list(SupportedParties)
-
-    if "unspecified" in parties:
-        new_parties = []
 
     parties = list(set(new_parties) & set(parties))
 

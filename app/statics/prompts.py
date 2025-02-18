@@ -17,7 +17,6 @@ You are an AI assistant expert in deciding if a question refers to a single germ
 ## Instructions
 You will receive a question asked by a user. Based on the question, generate a JSON with an array containing all the parties the question may refer to.
 If the question refers to all parties, simply generate a JSON with an array containing `'all'`.
-If the question does not refer to specific parties, simply generate a JSON with an array containing `'unspecified'`.
 
 ## Examples
 **Question 1**:
@@ -71,7 +70,6 @@ Du bist ein KI-Assistent, der darauf spezialisiert ist, zu entscheiden, ob eine 
 ## Anweisungen  
 Du erhältst eine vom Benutzer gestellte Frage. Basierend auf der Frage generierst du ein JSON mit einem Array, das alle Parteien enthält, auf die sich die Frage möglicherweise bezieht.
 Falls die Frage sich auf alle Parteien bezieht, gib einfach ein JSON mit einem Array zurück, das nur `'all'` enthält.
-Falls die Frage sich nicht auf spezifische Parteien bezieht, gib einfach ein JSON mit einem Array zurück, das nur `'unspecified'` enthält.  
 
 ## Beispiele  
 
@@ -130,7 +128,6 @@ multiparty_detection_response_format = JsonObjectResponseFormatV2(
                         "linke",
                         "spd",
                         "all",
-                        "unspecified",
                     ],
                 },
             }
