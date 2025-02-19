@@ -132,8 +132,7 @@ async def single_pary_stream(
                             if func == "web_search":
                                 tool_results = await web_search(
                                     **json.loads(tool_calls_arguments[func]),
-                                    cohere_async_clients=cohere_async_clients,
-                                    language=language,
+                                    cohere_async_clients=cohere_async_clients     
                                 )
                             messages.append(
                                 ToolChatMessageV2(
