@@ -7,6 +7,7 @@ from cohere import (
     ToolCallV2,
     ToolCallV2Function,
     CitationOptions,
+    DocumentToolContent,
 )
 import weaviate
 import httpx
@@ -82,6 +83,7 @@ async def single_pary_stream(
     tool_plan = ""
     tool_calls_arguments = dict()
     tool_calls_ids = dict()
+    citations: dict[str, list[DocumentToolContent]] = {"database": [], "web": []}
 
     while True:
         try:
@@ -129,11 +131,13 @@ async def single_pary_stream(
                                     cohere_async_clients=cohere_async_clients,
                                     weaviate_async_client=weaviate_async_client,
                                 )
+                                citations["database"].extend(tool_results)
                             if func == "web_search":
                                 tool_results = await web_search(
                                     **json.loads(tool_calls_arguments[func]),
-                                    cohere_async_clients=cohere_async_clients     
+                                    cohere_async_clients=cohere_async_clients,
                                 )
+                                citations["web"].extend(tool_results)
                             messages.append(
                                 ToolChatMessageV2(
                                     tool_call_id=tool_calls_ids[func],
@@ -163,33 +167,24 @@ async def single_pary_stream(
                             "answer-delta": event.delta.message.content.text,
                         }
                 if event.type == "citation-start":
-                    citation = event.delta.message.citations
-                    if citation.sources[0].tool_output["type"] == "manifesto-citation":
+                    for citation in citations["database"]:
                         yield {
                             "citation": {
                                 "type": "manifesto-citation",
-                                "title": citation.sources[0].tool_output["title"],
-                                "content": citation.sources[0].tool_output["content"],
-                                "manifesto": citation.sources[0].tool_output[
-                                    "filename"
-                                ][:-4],
-                                "citation_start": citation.start,
-                                "citation_end": citation.end,
+                                "title": citation.document.data["title"],
+                                "content": citation.document.data["content"],
+                                "manifesto": citation.document.data["filename"][:-4],
                             }
                         }
-                    elif citation.sources[0].tool_output["type"] == "web-citation":
+                    for citation in citations["web"]:
                         yield {
                             "citation": {
                                 "type": "web-citation",
-                                "title": citation.sources[0].tool_output["title"],
-                                "content": citation.sources[0].tool_output["content"],
-                                "url": citation.sources[0].tool_output["url"],
-                                "citation_start": citation.start,
-                                "citation_end": citation.end,
+                                "title": citation.document.data["title"],
+                                "content": citation.document.data["content"],
+                                "url": citation.document.data["url"],
                             }
                         }
-                    else:
-                        warnings.warn("Unrecognized citation type.")
                 if event.type == "message-end":
                     break
             else:
@@ -317,6 +312,7 @@ async def single_party_search(
         tools=tools,
     )
 
+    citations: dict[str, list[DocumentToolContent]] = {"database": [], "web": []}
     while res.message.tool_calls:
         messages.append(
             AssistantChatMessageV2(
@@ -325,7 +321,6 @@ async def single_party_search(
         )
 
         for tc in res.message.tool_calls:
-
             if tc.function.name == "database_search":
                 tool_results = await database_search(
                     **json.loads(tc.function.arguments),
@@ -334,64 +329,55 @@ async def single_party_search(
                     cohere_async_clients=cohere_async_clients,
                     weaviate_async_client=weaviate_async_client,
                 )
-                messages.append(
-                    ToolChatMessageV2(tool_call_id=tc.id, content=tool_results)
-                )
+                citations["database"].extend(tool_results)
             elif tc.function.name == "web_search":
                 tool_results = await web_search(
                     **json.loads(tc.function.arguments),
                     cohere_async_clients=cohere_async_clients,
                 )
-                messages.append(
-                    ToolChatMessageV2(tool_call_id=tc.id, content=tool_results)
-                )
-            
+                citations["web"].extend(tool_results)
+
+            messages.append(ToolChatMessageV2(tool_call_id=tc.id, content=tool_results))
+
             res = await cohere_async_clients["command_r_async_client"].chat(
                 model="command-r-08-2024", messages=messages, tools=tools
             )
 
-    citations = list()
-    for citation in res.message.citations:
-        if citation.sources[0].tool_output["type"] == "manifesto-citation":
-            citations.append(
-                {
-                    "citation": {
-                        "type": "manifesto-citation",
-                        "title": citation.sources[0].tool_output["title"],
-                        "content": citation.sources[0].tool_output["content"],
-                        "manifesto": citation.sources[0].tool_output["filename"][:-4],
-                        "citation_start": citation.start,
-                        "citation_end": citation.end,
-                    }
+    citations_res = list()
+    for citation in citations["database"]:
+        citations_res.append(
+            {
+                "citation": {
+                    "type": "manifesto-citation",
+                    "title": citation.document.data["title"],
+                    "content": citation.document.data["content"],
+                    "manifesto": citation.document.data["filename"][:-4],
                 }
-            )
-        elif citation.sources[0].tool_output["type"] == "web-citation":
-            citations.append(
-                {
-                    "citation": {
-                        "type": "web-citation",
-                        "title": citation.sources[0].tool_output["title"],
-                        "content": citation.sources[0].tool_output["content"],
-                        "url": citation.sources[0].tool_output["url"],
-                        "citation_start": citation.start,
-                        "citation_end": citation.end,
-                    }
+            }
+        )
+    for citation in citations["web"]:
+        citations_res.append(
+            {
+                "citation": {
+                    "type": "web-citation",
+                    "title": citation.document.data["title"],
+                    "content": citation.document.data["content"],
+                    "url": citation.document.data["url"],
                 }
-            )
-        else:
-            warnings.warn("Unrecognized citation type.")
+            }
+        )
 
     if multiparty is True:
         return {
             "answer": res.message.content[0].text,
-            "citations": citations,
+            "citations": citations_res,
             "party": party,
         }
     else:
         return {
             "type": "standard-answer",
             "answer": res.message.content[0].text,
-            "citations": citations,
+            "citations": citations_res,
         }
 
 
@@ -415,7 +401,7 @@ async def query_rag(
         response_format=multiparty_detection_response_format,
     )
     new_parties = json.loads(res.message.content[0].text)["parties"]
-    
+
     if "all" in new_parties:
         new_parties = list(SupportedParties)
 

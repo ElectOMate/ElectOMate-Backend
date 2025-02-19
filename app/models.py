@@ -65,10 +65,6 @@ class ManifestoCitation(BaseModel):
     manifesto: SupportedParties = Field(
         description="The party whose manifesto is cited"
     )
-    citation_start: int = Field(
-        description="The start index of the citation in the answer"
-    )
-    citation_end: int = Field(description="The end index of the citation in the answer")
 
 
 class WebCitation(BaseModel):
@@ -76,10 +72,6 @@ class WebCitation(BaseModel):
     title: str = Field(description="The title of the web page")
     content: str = Field(description="The content of web page")
     url: HttpUrl = Field(description="The url of the web page")
-    citation_start: int = Field(
-        description="The start index of the citation in the answer"
-    )
-    citation_end: int = Field(description="The end index of the citation in the answer")
 
 
 class Citation(BaseModel):
