@@ -133,7 +133,6 @@ async def single_pary_stream(
                                 tool_results = await web_search(
                                     **json.loads(tool_calls_arguments[func]),
                                     cohere_async_clients=cohere_async_clients,
-                                    language=language,
                                 )
                             messages.append(
                                 ToolChatMessageV2(
@@ -346,9 +345,7 @@ async def single_party_search(
                 messages.append(
                     ToolChatMessageV2(tool_call_id=tc.id, content=tool_results)
                 )
-                
-            print(tool_results)
-
+            
             res = await cohere_async_clients["command_r_async_client"].chat(
                 model="command-r-08-2024", messages=messages, tools=tools
             )
