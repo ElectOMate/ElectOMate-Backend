@@ -5,13 +5,13 @@ from contextlib import asynccontextmanager
 import json
 import logging
 
-from .config import weaviate_async_client, settings
-from .query import query_router
-from .realtime import realtime_router
-from .upload import upload_router
-from .transcription import transcription_router
-from .custom_answers import custom_answers_router
-from .statics.party_answers import load_party_answers
+from em_backend.config import weaviate_async_client, settings
+from em_backend.query import query_router
+from em_backend.realtime import realtime_router
+from em_backend.upload import upload_router
+from em_backend.transcription import transcription_router
+from em_backend.custom_answers import custom_answers_router
+from em_backend.statics.party_answers import load_party_answers
 
 
 @asynccontextmanager
@@ -32,7 +32,7 @@ app.include_router(custom_answers_router.router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=json.loads(settings.allow_origins),
+    allow_origins=settings.allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, HTTPException
 
-from ..config import weaviate_async_client, cohere_async_clients
-from .upload import upload_documents
+from em_backend.config import weaviate_async_client, cohere_async_clients
+from em_backend.upload.upload import upload_documents
 
 import logging
 
