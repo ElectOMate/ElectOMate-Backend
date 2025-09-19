@@ -7,9 +7,9 @@ from langchain_text_splitters import (
     ExperimentalMarkdownSyntaxTextSplitter,
     RecursiveCharacterTextSplitter,
 )
-import cohere
 import weaviate
 import weaviate.classes as wvc
+from typing import Any
 
 from ..config import CHUNK_SIZE, CHUNK_OVERLAP
 
@@ -21,7 +21,7 @@ async def process_file(
     file: UploadFile,
     markdown_text_splitter: ExperimentalMarkdownSyntaxTextSplitter,
     text_splitter: RecursiveCharacterTextSplitter,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
 ):
     logging.info('Extracting markdown...')
@@ -49,9 +49,10 @@ async def process_file(
 
     async def upload_splits(splits: list[Document]):
         # Create the embeddings
-        # We use the english model, in case the document set also contains other languages the multilingual model should be used
+        # We use the multilingual model for embedding generation
         logging.info("Getting embeddings...")
-        response = await cohere_async_clients["embed_multilingual_async_client"].embed(
+        # TO REMOVE: outdated calls -- migrating to third-party service
+        response = await langchain_async_clients["embed_client"].embed(
             texts=[split.page_content for split in splits],
             model="embed-multilingual-v3.0",
             input_type="search_document",
@@ -86,7 +87,7 @@ async def process_file(
 
 async def upload_documents(
     files: list[UploadFile],
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
 ):
 
@@ -94,8 +95,8 @@ async def upload_documents(
     # We use the experimental version because is retains whitespaces better for tables extracted by pymupdf4llm
     markdown_text_splitter = ExperimentalMarkdownSyntaxTextSplitter()
 
-    # Extra splitter in case the header chunks are too large for the cohere embedder
-    # We choose the default sensible settings for the english language (they fit cohere embeddings)
+    # Extra splitter in case the header chunks are too large for the embedder
+    # We choose the default sensible settings for the english language
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
     )
@@ -105,7 +106,7 @@ async def upload_documents(
             file,
             markdown_text_splitter,
             text_splitter,
-            cohere_async_clients,
+            langchain_async_clients,
             weaviate_async_client,
         )
         for file in files

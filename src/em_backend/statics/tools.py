@@ -1,4 +1,4 @@
-from cohere import ToolV2, ToolV2Function
+from ..langchain_citation_client import ToolV2, ToolV2Function
 from em_backend.models import SupportedLanguages
 
 realtime_session_tools = {
