@@ -11,6 +11,7 @@ dependencies = [
     "aiostream>=0.7.0",
     "asyncer>=0.0.8",
     "cohere>=5.18.0",
+    "docling>=2.53.0",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.116.2",
     "langchain-core>=0.3.76",
     "langchain-text-splitters>=0.3.11",
