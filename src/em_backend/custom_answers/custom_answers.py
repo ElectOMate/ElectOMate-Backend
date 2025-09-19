@@ -1,15 +1,15 @@
 from cohere import UserChatMessageV2
 import weaviate.classes as wvc
 
-from ..models import QuestionnaireQuestion, UserAnswer
-from ..config import cohere_async_clients, weaviate_async_client
-from ..statics.questionaire_party_answers import (
+from em_backend.models import QuestionnaireQuestion, UserAnswer
+from em_backend.config import cohere_async_clients, weaviate_async_client
+from em_backend.statics.questionaire_party_answers import (
     questionnaire_party_answers,
     default_party_info,
 )
-from ..statics.evaluation_prompts import EVALUATION_PROMPT2
-from ..statics.party_answers import party_answers
-from .score_calculator import calculate_standard_scores, combine_results
+from em_backend.statics.evaluation_prompts import EVALUATION_PROMPT2
+from em_backend.statics.party_answers import party_answers
+from em_backend.custom_answers.score_calculator import calculate_standard_scores, combine_results
 
 import json
 import logging

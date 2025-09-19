@@ -1,10 +1,10 @@
 from httpx import AsyncClient
 import httpx
 
-from ..models import SupportedLanguages
-from ..config import settings
-from ..statics.prompts import realtime_session_instructions
-from ..statics.tools import realtime_session_tools
+from em_backend.models import SupportedLanguages
+from em_backend.config import settings
+from em_backend.statics.prompts import realtime_session_instructions
+from em_backend.statics.tools import realtime_session_tools
 
 async def get_session(language: SupportedLanguages):
    async with AsyncClient() as client:
