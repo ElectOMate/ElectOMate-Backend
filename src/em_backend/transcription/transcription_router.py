@@ -1,7 +1,7 @@
 from fastapi import UploadFile, HTTPException, APIRouter
 from fastapi.responses import JSONResponse
 
-from .transcription import transcribe
+from em_backend.transcription.transcription import transcribe
 
 
 router = APIRouter()

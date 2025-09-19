@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
-from ..models import EvaluationRequest, QuestionnaireQuestion, UserAnswer
-from .custom_answers import get_custom_answers_evaluation
+from em_backend.models import EvaluationRequest, QuestionnaireQuestion, UserAnswer
+from em_backend.custom_answers.custom_answers import get_custom_answers_evaluation
 
 
 import logging

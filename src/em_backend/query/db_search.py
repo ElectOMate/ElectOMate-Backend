@@ -3,7 +3,7 @@ from cohere import Document, DocumentToolContent
 import weaviate
 import weaviate.classes as wvc
 
-from ..models import SupportedParties
+from em_backend.models import SupportedParties
 
 import asyncio
 import itertools
