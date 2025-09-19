@@ -1,5 +1,5 @@
 from cohere import ToolV2, ToolV2Function
-from ..models import SupportedLanguages
+from em_backend.models import SupportedLanguages
 
 realtime_session_tools = {
     SupportedLanguages.DE: {

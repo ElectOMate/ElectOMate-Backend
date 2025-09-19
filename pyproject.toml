@@ -1,0 +1,31 @@
+[project]
+name = "em-backend"
+version = "0.1.0"
+description = "The Backend for Electomate"
+readme = "README.md"
+authors = [
+    { name = "BrokenDuck", email = "jonathan.maillefaud@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "aiostream>=0.7.0",
+    "asyncer>=0.0.8",
+    "cohere>=5.18.0",
+    "fastapi[standard-no-fastapi-cloud-cli]>=0.116.2",
+    "langchain-core>=0.3.76",
+    "langchain-text-splitters>=0.3.11",
+    "markdown>=3.9",
+    "openai>=1.108.0",
+    "prometheus-fastapi-instrumentator>=7.1.0",
+    "pydantic-settings>=2.10.1",
+    "pymupdf4llm>=0.0.27",
+    "tavily-python>=0.7.12",
+    "weaviate-client>=4.16.10",
+]
+
+[project.scripts]
+em-backend = "em_backend:main"
+
+[build-system]
+requires = ["uv_build>=0.8.14,<0.9.0"]
+build-backend = "uv_build"
