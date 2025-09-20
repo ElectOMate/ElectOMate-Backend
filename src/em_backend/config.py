@@ -1,10 +1,9 @@
-import openai
 import cohere
+import openai
 import weaviate
 import weaviate.classes as wvc
-from tavily import AsyncTavilyClient
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from tavily import AsyncTavilyClient
 
 FILE_CHUNK_SIZE = 1024 * 1024
 
@@ -14,6 +13,7 @@ CHUNK_OVERLAP = 50
 
 class Settings(BaseSettings):
     # Weaviate API keys
+    wv_url: str
     wv_http_host: str
     wv_http_port: int
     wv_grpc_host: str
@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
 
 
-settings = Settings()
+settings = Settings()  # type: ignore
 
 cohere_async_clients = {
     "command_r_async_client": cohere.AsyncClientV2(
