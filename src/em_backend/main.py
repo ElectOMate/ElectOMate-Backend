@@ -1,16 +1,16 @@
+import logging
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-import json
-import logging
 
-from em_backend.config import weaviate_async_client, settings
+from em_backend.config import settings, weaviate_async_client
+from em_backend.custom_answers import custom_answers_router
 from em_backend.query import query_router
 from em_backend.realtime import realtime_router
-from em_backend.upload import upload_router
-from em_backend.transcription import transcription_router
-from em_backend.custom_answers import custom_answers_router
 from em_backend.statics.party_answers import load_party_answers
+from em_backend.transcription import transcription_router
+from em_backend.upload import upload_router
 
 
 @asynccontextmanager
@@ -42,5 +42,3 @@ app.add_middleware(
 async def read_root():
     logging.debug("GET request received at root...")
     return {"health": "Ok"}
-
-

@@ -1,6 +1,7 @@
+from uuid import uuid4
+
 import cohere
 from cohere import Document, DocumentToolContent
-from uuid import uuid4
 
 from ..config import tavily_client
 
@@ -16,15 +17,15 @@ async def web_search(
     response = await tavily_client.search(query=search_query)
 
     chunks = []
-    for result in response['results']:
+    for result in response["results"]:
         chunks.append(
             {
-                "title": result['title'],
-                "url": result['url'],
-                "chunk_content": result['content'],
+                "title": result["title"],
+                "url": result["url"],
+                "chunk_content": result["content"],
             }
         )
-    
+
     rerank_response = await cohere_async_clients[
         "rerank_multilingual_async_client"
     ].rerank(

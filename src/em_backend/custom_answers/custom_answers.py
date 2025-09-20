@@ -1,18 +1,21 @@
-from cohere import UserChatMessageV2
-import weaviate.classes as wvc
-
-from em_backend.models import QuestionnaireQuestion, UserAnswer
-from em_backend.config import cohere_async_clients, weaviate_async_client
-from em_backend.statics.questionaire_party_answers import (
-    questionnaire_party_answers,
-    default_party_info,
-)
-from em_backend.statics.evaluation_prompts import EVALUATION_PROMPT2
-from em_backend.statics.party_answers import party_answers
-from em_backend.custom_answers.score_calculator import calculate_standard_scores, combine_results
-
 import json
 import logging
+
+import weaviate.classes as wvc
+from cohere import UserChatMessageV2
+
+from em_backend.config import cohere_async_clients, weaviate_async_client
+from em_backend.custom_answers.score_calculator import (
+    calculate_standard_scores,
+    combine_results,
+)
+from em_backend.models import QuestionnaireQuestion, UserAnswer
+from em_backend.statics.evaluation_prompts import EVALUATION_PROMPT2
+from em_backend.statics.party_answers import party_answers
+from em_backend.statics.questionaire_party_answers import (
+    default_party_info,
+    questionnaire_party_answers,
+)
 
 
 async def get_party_contexts(
@@ -57,7 +60,7 @@ async def get_party_contexts(
         unique_contexts = list(dict.fromkeys(contexts))
         return unique_contexts, details
 
-    except Exception as e:
+    except Exception:
         default_value = default_party_info.get(party_name, "No context available")
         return [default_value], [{"title": "", "content": default_value}]
 
@@ -101,7 +104,7 @@ async def compare_user_response_to_party(
         evaluation_dict = json.loads(evaluation_content)
         return process_evaluation(evaluation_dict)
 
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -146,7 +149,7 @@ async def get_custom_answers_evaluation(
 
     non_skipped_count = 0
     for idx, (question, answer) in enumerate(
-        zip(questionnaire_questions, custom_answers)
+        zip(questionnaire_questions, custom_answers, strict=False)
     ):
         if answer.custom_answer:
             answer_type = "custom"
