@@ -1,40 +1,39 @@
+import asyncio
+import json
+from collections.abc import AsyncGenerator
+
+import aiostream
 import cohere
+import httpx
+import weaviate
 from cohere import (
     AssistantChatMessageV2,
-    UserChatMessageV2,
-    SystemChatMessageV2,
-    ToolChatMessageV2,
-    ToolCallV2,
-    ToolCallV2Function,
     CitationOptions,
     DocumentToolContent,
+    SystemChatMessageV2,
+    ToolCallV2,
+    ToolCallV2Function,
+    ToolChatMessageV2,
+    UserChatMessageV2,
 )
-import weaviate
-import httpx
-import aiostream
 
-from .db_search import database_search
-from .web_search import web_search
-from ..statics.prompts import (
-    query_rag_system_instructions,
-    query_rag_system_multi_instructions,
-    multiparty_detection_instructions,
-    multiparty_detection_response_format,
-)
-from ..statics.tools import database_search_tools, web_search_tools
 from ..models import (
-    AnswerChunk,
     Answer,
-    SupportedLanguages,
-    SupportedParties,
+    AnswerChunk,
     SinglePartyAnswer,
     StandardAnswer,
+    SupportedLanguages,
+    SupportedParties,
 )
-
-import json
-import asyncio
-import warnings
-from typing import AsyncGenerator
+from ..statics.prompts import (
+    multiparty_detection_instructions,
+    multiparty_detection_response_format,
+    query_rag_system_instructions,
+    query_rag_system_multi_instructions,
+)
+from ..statics.tools import database_search_tools, web_search_tools
+from .db_search import database_search
+from .web_search import web_search
 
 
 async def single_pary_stream(
@@ -98,9 +97,9 @@ async def single_pary_stream(
                     tool_calls_ids[func_name] = event.delta.message.tool_calls.id
                 if event.type == "tool-call-delta":
                     # This assumes that 'tool-call-start'was received but doesn't check for performance optimization
-                    tool_calls_arguments[
-                        func_name
-                    ] += event.delta.message.tool_calls.function.arguments
+                    tool_calls_arguments[func_name] += (
+                        event.delta.message.tool_calls.function.arguments
+                    )
                 if event.type == "tool-call-end":
                     # This assumes that 'tool-call-start'was received but doesn't check for performance optimization
                     func_name = None
@@ -117,12 +116,12 @@ async def single_pary_stream(
                                             arguments=tool_calls_arguments[func],
                                         ),
                                     )
-                                    for func in tool_calls_ids.keys()
+                                    for func in tool_calls_ids
                                 ],
                                 tool_plan=tool_plan,
                             )
                         )
-                        for func in tool_calls_arguments.keys():
+                        for func in tool_calls_arguments:
                             if func == "database_search":
                                 tool_results = await database_search(
                                     **json.loads(tool_calls_arguments[func]),
@@ -201,7 +200,7 @@ async def stream_rag(
     cohere_async_clients: dict[str, cohere.AsyncClientV2],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
-) -> AsyncGenerator[AnswerChunk, None]:
+) -> AsyncGenerator[AnswerChunk]:
     # Model to decide if a single party is refered to in multiparty scenario
     res = await cohere_async_clients["command_r_async_client"].chat(
         model="command-r-08-2024",
@@ -390,7 +389,6 @@ async def query_rag(
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
 ) -> Answer:
-
     # Model to decide if a single party is refered to in multiparty scenario
     res = await cohere_async_clients["command_r_async_client"].chat(
         model="command-r-08-2024",

@@ -1,11 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 
-from em_backend.models import SupportedLanguages
-from em_backend.realtime.reatime import get_session
-from em_backend.models import ChatFunctionCallRequest
-from em_backend.config import weaviate_async_client, cohere_async_clients
+from em_backend.config import cohere_async_clients, weaviate_async_client
+from em_backend.models import ChatFunctionCallRequest, SupportedLanguages
 from em_backend.query.query import query_rag
+from em_backend.realtime.reatime import get_session
 
 router = APIRouter()
 
@@ -39,7 +38,6 @@ async def fetch_rag_data(
     question_obj = payload.question_body
     if not question_obj.question:
         raise HTTPException(status_code=400, detail="No question provided.")
-
 
     if not await weaviate_async_client.is_ready():
         raise HTTPException(status_code=503, detail="Weaviate is not ready.")

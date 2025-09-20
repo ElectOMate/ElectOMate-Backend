@@ -54,7 +54,7 @@ However we first need to know if it is even possible to draw parralels between t
 
 If the texts can be compared, answer with a "1", else with a "0".
 """
- 
+
 GENERATE_LOOKUP_PROMPT_TEXT = """
 Given is a political question ({question}) and the user was tasked to input his custom answer: {user_response}.
 Based on the information content in this response generate UP TO 5 PROMPTS (but can be less if the information content is small)

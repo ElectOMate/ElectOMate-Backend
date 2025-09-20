@@ -1,6 +1,6 @@
-from ..models import SupportedLanguages
-
 from cohere import JsonObjectResponseFormatV2
+
+from ..models import SupportedLanguages
 
 multiparty_detection_instructions = {
     SupportedLanguages.EN: """
@@ -381,7 +381,9 @@ ANTWORTE I MARKDOWN FORMAT mit kurzen texten, und wo nützlich Stichpunkten, num
         }
 
 
-def query_rag_system_multi_instructions(use_web_search: bool, use_database_search: bool):
+def query_rag_system_multi_instructions(
+    use_web_search: bool, use_database_search: bool
+):
     if use_web_search is True and use_database_search is True:
         return {
             SupportedLanguages.EN: """
@@ -419,7 +421,7 @@ Perform the following tasks:
 - DO NOT GIVE ANY ADVICE ON WHO TO VOTE FOR
 - YOU ARE POLITICALLY NEUTRAL
 """,
-           SupportedLanguages.DE: """
+            SupportedLanguages.DE: """
 ## Kontext
 Du bist ein erfahrener Assistent für die anstehende Bundestagswahl 2025 in Deutschland.
 
@@ -445,7 +447,8 @@ Wenn der Nutzer etwas fragt, das du bereits aus deinen Systeminfos kennst (z.B. 
 - BLEIBE POLITISCH NEUTRAL.
 - KEINE WEBSUCHE FÜR NICHT-POLITISCHE FRAGEN.
 - ANTWORTE Im MARKDOWN FORMAT mit kurzen texten, und wo nützlich Stichpunkten, numerierten Listen und Überschriften. Beschränke die länge deiner Antwort auf maximal 10 Sätze und weniger wenn es nicht nötig ist.
-   """     }
+   """,
+        }
     if use_database_search is True:
         return {
             SupportedLanguages.EN: """

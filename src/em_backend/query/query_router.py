@@ -1,19 +1,17 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.responses import StreamingResponse, JSONResponse
-
-from em_backend.models import Question, Answer, AnswerChunk, SupportedLanguages
-from em_backend.config import weaviate_async_client, cohere_async_clients
-from em_backend.query.query import stream_rag, query_rag
-
 import logging
+
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse, StreamingResponse
+
+from em_backend.config import cohere_async_clients, weaviate_async_client
+from em_backend.models import Answer, AnswerChunk, Question, SupportedLanguages
+from em_backend.query.query import query_rag, stream_rag
 
 router = APIRouter()
 
 
 @router.post("/stream/{language_code}")
-async def stream(
-    language_code: SupportedLanguages, question: Question
-) -> AnswerChunk:
+async def stream(language_code: SupportedLanguages, question: Question) -> AnswerChunk:
     logging.debug(f"POST request received at /stream/{language_code}...")
 
     if not await weaviate_async_client.is_ready():
@@ -27,7 +25,7 @@ async def stream(
             question.use_database_search,
             cohere_async_clients,
             weaviate_async_client,
-            language_code
+            language_code,
         ),
         media_type="text/event-stream",
     )
