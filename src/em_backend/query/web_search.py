@@ -1,13 +1,13 @@
-import cohere
-from cohere import Document, DocumentToolContent
+from ..langchain_citation_client import Document, DocumentToolContent
 from uuid import uuid4
+from typing import Any
 
 from ..config import tavily_client
 
 
 async def web_search(
     search_query: str,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
 ) -> list[DocumentToolContent]:
     """
     Perform a Bing web search via Azure.
@@ -25,8 +25,9 @@ async def web_search(
             }
         )
     
-    rerank_response = await cohere_async_clients[
-        "rerank_multilingual_async_client"
+    # TO REMOVE: outdated calls -- migrating to third-party service
+    rerank_response = await langchain_async_clients[
+        "rerank_client"
     ].rerank(
         model="rerank-v3.5",
         query=search_query,

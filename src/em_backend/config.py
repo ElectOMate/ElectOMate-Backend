@@ -1,10 +1,10 @@
 import openai
-import cohere
 import weaviate
 import weaviate.classes as wvc
 from tavily import AsyncTavilyClient
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from .langchain_citation_client import LangChainAsyncCitationClient
 
 FILE_CHUNK_SIZE = 1024 * 1024
 
@@ -20,20 +20,6 @@ class Settings(BaseSettings):
     wv_grpc_port: int
     wv_api_key: str
 
-    # Cohere API keys
-    command_r_url: str
-    command_r_api_key: str
-    command_r_plus_url: str = ""
-    command_r_plus_api_key: str = ""
-    embed_english_url: str = ""
-    embed_english_api_key: str = ""
-    embed_multilingual_url: str
-    embed_multilingual_api_key: str
-    rerank_english_url: str = ""
-    rerank_english_api_key: str = ""
-    rerank_multilingual_url: str
-    rerank_multilingual_api_key: str
-
     # Open AI API keys
     openai_api_key: str
 
@@ -48,30 +34,6 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-cohere_async_clients = {
-    "command_r_async_client": cohere.AsyncClientV2(
-        api_key=settings.command_r_api_key, base_url=settings.command_r_url
-    ),
-    "command_r_plus_async_client": cohere.AsyncClientV2(
-        api_key=settings.command_r_plus_api_key,
-        base_url=settings.command_r_plus_url,
-    ),
-    "embed_english_async_client": cohere.AsyncClientV2(
-        api_key=settings.embed_english_api_key, base_url=settings.embed_english_url
-    ),
-    "embed_multilingual_async_client": cohere.AsyncClientV2(
-        api_key=settings.embed_multilingual_api_key,
-        base_url=settings.embed_multilingual_url,
-    ),
-    "rerank_english_async_client": cohere.AsyncClientV2(
-        api_key=settings.rerank_english_api_key,
-        base_url=settings.rerank_english_url,
-    ),
-    "rerank_multilingual_async_client": cohere.AsyncClientV2(
-        api_key=settings.rerank_multilingual_api_key,
-        base_url=settings.rerank_multilingual_url,
-    ),
-}
 
 weaviate_async_client = weaviate.use_async_with_custom(
     http_host=settings.wv_http_host,
@@ -88,6 +50,25 @@ weaviate_async_client = weaviate.use_async_with_custom(
 
 openai_async_client = openai.AsyncClient(api_key=settings.openai_api_key)
 
+# LangChain Citation Client wrapper
+langchain_citation_client = LangChainAsyncCitationClient(api_key=settings.openai_api_key)
+
+# LangChain async clients dictionary
+langchain_async_clients = {
+    "langchain_chat_client": langchain_citation_client,
+    "embed_client": None,  # Will be handled by third-party service
+    "rerank_client": None,  # Will be handled by third-party service
+}
 
 # Instantiate Bing client
 tavily_client = AsyncTavilyClient(settings.tavily_api_key)
+
+# Export clients
+__all__ = [
+    "settings",
+    "weaviate_async_client", 
+    "openai_async_client",
+    "langchain_citation_client",
+    "langchain_async_clients",
+    "tavily_client"
+]

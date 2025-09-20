@@ -1,8 +1,8 @@
-from cohere import UserChatMessageV2
+from ..langchain_citation_client import HumanMessage
 import weaviate.classes as wvc
 
 from em_backend.models import QuestionnaireQuestion, UserAnswer
-from em_backend.config import cohere_async_clients, weaviate_async_client
+from em_backend.config import langchain_async_clients, weaviate_async_client
 from em_backend.statics.questionaire_party_answers import (
     questionnaire_party_answers,
     default_party_info,
@@ -18,11 +18,12 @@ import logging
 async def get_party_contexts(
     party_name: str, lookup_prompts: list[str], max_contexts=7
 ) -> tuple[list[str], list[dict]]:
-    """Retrieve relevant party program contexts using Cohere embeddings + Weaviate."""
+    """Retrieve relevant party program contexts using OpenAI embeddings + Weaviate."""
     try:
         # Generate embeddings for lookup prompts
-        embed_response = await cohere_async_clients[
-            "embed_multilingual_async_client"
+        # TO REMOVE: outdated calls -- migrating to third-party service
+        embed_response = await langchain_async_clients[
+            "embed_client"
         ].embed(
             texts=lookup_prompts,
             model="embed-multilingual-v3.0",
@@ -71,7 +72,7 @@ async def compare_user_response_to_party(
     main_contexts: dict,
 ):
     """
-    Compares user response to party positions using Cohere with RAG contexts
+    Compares user response to party positions using OpenAI with RAG contexts
     """
     try:
         # Prepare evaluation prompt with contexts
@@ -93,9 +94,9 @@ async def compare_user_response_to_party(
             prompt_value.text if hasattr(prompt_value, "text") else str(prompt_value)
         )
 
-        messages = [UserChatMessageV2(content=prompt_str)]
-        evaluation_response = await cohere_async_clients["command_r_async_client"].chat(
-            model="command-r-08-2024", messages=messages
+        messages = [HumanMessage(content=prompt_str)]
+        evaluation_response = await langchain_async_clients["langchain_chat_client"].chat(
+            model="gpt-4o", messages=messages
         )
         evaluation_content = evaluation_response.message.content[0].text
         evaluation_dict = json.loads(evaluation_content)
@@ -106,7 +107,7 @@ async def compare_user_response_to_party(
 
 
 def process_evaluation(evaluation_dict):
-    """Process Cohere evaluation response"""
+    """Process OpenAI evaluation response"""
     agreement_scores = {}
     reasonings = {}
     for party, items in evaluation_dict.items():
@@ -121,7 +122,7 @@ async def get_custom_answers_evaluation(
     custom_answers: list[UserAnswer],
 ):
     """
-    Main evaluation flow using Cohere RAG and party program analysis
+    Main evaluation flow using OpenAI RAG and party program analysis
     """
     # Define all possible parties first
     main_parties = [
@@ -181,9 +182,9 @@ async def get_custom_answers_evaluation(
             """
 
             # Get lookup prompts
-            lookup_response = await cohere_async_clients["command_r_async_client"].chat(
-                model="command-r-08-2024",
-                messages=[UserChatMessageV2(content=lookup_prompt)],
+            lookup_response = await langchain_async_clients["langchain_chat_client"].chat(
+                model="gpt-4o",
+                messages=[HumanMessage(content=lookup_prompt)],
             )
             lookup_data = json.loads(lookup_response.message.content[0].text)
             lookup_prompts = lookup_data.get(
@@ -199,7 +200,7 @@ async def get_custom_answers_evaluation(
         # Split contexts
         main_contexts = {k: v for k, v in party_contexts.items() if k in main_parties}
 
-        # Get Cohere evaluation
+        # Get OpenAI evaluation
         processed_eval, _ = await compare_user_response_to_party(
             question_id=idx,
             question=question.q,

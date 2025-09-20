@@ -1,7 +1,7 @@
-import cohere
-from cohere import Document, DocumentToolContent
+from ..langchain_citation_client import Document, DocumentToolContent
 import weaviate
 import weaviate.classes as wvc
+from typing import Any
 
 from em_backend.models import SupportedParties
 
@@ -15,12 +15,13 @@ async def get_documents(
     search_query: str,
     party: Optional[SupportedParties],
     question: str,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
 ) -> list[DocumentToolContent]:
     
-    search_query_embedding_response = await cohere_async_clients[
-        "embed_multilingual_async_client"
+    # TO REMOVE: outdated calls -- migrating to third-party service
+    search_query_embedding_response = await langchain_async_clients[
+        "embed_client"
     ].embed(
         texts=[search_query],
         model="embed-multilingual-v3.0",
@@ -46,8 +47,9 @@ async def get_documents(
             limit=30,
         )
     
-    rerank_response = await cohere_async_clients[
-        "rerank_multilingual_async_client"
+    # TO REMOVE: outdated calls -- migrating to third-party service
+    rerank_response = await langchain_async_clients[
+        "rerank_client"
     ].rerank(
         model="rerank-v3.5",
         query=question,
@@ -76,11 +78,11 @@ async def database_search(
     search_queries: list[str],
     party: Optional[SupportedParties],
     question: str,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
 ) -> list[Document]:
     tasks = [
-        get_documents(search_queries[i], party, question, cohere_async_clients, weaviate_async_client)
+        get_documents(search_queries[i], party, question, langchain_async_clients, weaviate_async_client)
         for i in range(len(search_queries))
     ]
     results = await asyncio.gather(*tasks)

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, HTTPException
 
-from em_backend.config import weaviate_async_client, cohere_async_clients
+from em_backend.config import weaviate_async_client, langchain_async_clients
 from em_backend.upload.upload import upload_documents
 
 import logging
@@ -15,7 +15,7 @@ async def uploadfiles(files: list[UploadFile]):
         raise HTTPException(status_code=503, detail="Weaviate is not ready.")
 
     errored_files = await upload_documents(
-        files, cohere_async_clients, weaviate_async_client
+        files, langchain_async_clients, weaviate_async_client
     )
 
     if len(errored_files) != 0:

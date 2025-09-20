@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from em_backend.models import SupportedLanguages
 from em_backend.realtime.reatime import get_session
 from em_backend.models import ChatFunctionCallRequest
-from em_backend.config import weaviate_async_client, cohere_async_clients
+from em_backend.config import weaviate_async_client, langchain_async_clients
 from em_backend.query.query import query_rag
 
 router = APIRouter()
@@ -48,7 +48,7 @@ async def fetch_rag_data(
     response = await query_rag(
         question_obj.question,
         question_obj.rerank,
-        cohere_async_clients,
+        langchain_async_clients,
         weaviate_async_client,
         country_code,
     )
