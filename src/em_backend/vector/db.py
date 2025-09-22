@@ -1,13 +1,13 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any, Self, TypedDict
+from uuid import UUID
 
 import weaviate
 from weaviate.classes.config import Configure, DataType, Property
 from weaviate.classes.init import Auth
-from weaviate.classes.query import MetadataQuery
+from weaviate.classes.query import Filter, MetadataQuery
 from weaviate.collections.classes.batch import ErrorObject
-from weaviate.collections.collection.async_ import CollectionAsync
 
 from em_backend.config import settings
 
@@ -55,10 +55,10 @@ class VectorDatabase:
         client.close()
         await async_client.close()
 
-    async def create_country_pdf_collection(self, country_code: str) -> CollectionAsync:
+    async def create_election_document_collection(self, election_id: UUID) -> str:
         async with self.async_client:
-            return await self.async_client.collections.create(
-                name=self.collection_prefix + country_code,
+            collection = await self.async_client.collections.create(
+                name=self.collection_prefix + str(election_id),
                 vector_config=Configure.Vectors.text2vec_openai(),
                 generative_config=Configure.Generative.openai(),
                 properties=[
@@ -66,33 +66,39 @@ class VectorDatabase:
                     Property(
                         name="title", data_type=DataType.TEXT, skip_vectorization=True
                     ),
+                    Property(
+                        name="party", data_type=DataType.UUID, skip_vectorization=True
+                    ),
                 ],
             )
+            return collection.name
 
     def insert_chunk(
-        self, country_code: str, chunks: list[tuple[str, str]]
+        self, election_id: UUID, party_id: UUID, chunks: list[tuple[str, str]]
     ) -> list[ErrorObject]:
         country_docs = self.sync_client.collections.use(
-            self.collection_prefix + country_code
+            self.collection_prefix + str(election_id)
         )
         with country_docs.batch.dynamic() as batch:
             for title, text in chunks:
-                batch.add_object({"text": text, "title": title})
+                batch.add_object({"text": text, "title": title, "party": party_id})
                 if batch.number_errors > 10:
                     break
         return country_docs.batch.failed_objects
 
     async def retrieve_chunks(
-        self, country_code: str, query: str, *, limit=10
+        self, election_id: UUID, party_id: UUID, query: str, *, limit=10, offset=0
     ) -> list[DocumentChunk]:
         country_docs = self.async_client.collections.use(
-            self.collection_prefix + country_code
+            self.collection_prefix + str(election_id)
         )
         async with self.async_client:
             response = await country_docs.query.hybrid(
                 query,
-                limit=limit,
+                filters=Filter.by_property("party").equal(party_id),
                 return_metadata=MetadataQuery(score=True),
+                limit=limit,
+                offset=offset,
             )
         return [
             DocumentChunk(
