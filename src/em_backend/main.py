@@ -39,6 +39,6 @@ app.add_middleware(
 
 
 @app.get("/health")
-async def read_root():
+async def read_root() -> dict[str, str]:
     logging.debug("GET request received at root...")
     return {"health": "Ok"}
