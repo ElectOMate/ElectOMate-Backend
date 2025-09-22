@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from em_backend.config import cohere_async_clients, weaviate_async_client
+from em_backend.config import langchain_async_clients, weaviate_async_client
 from em_backend.models import Answer, AnswerChunk, Question, SupportedLanguages
 from em_backend.query.query import query_rag, stream_rag
 
@@ -23,7 +23,7 @@ async def stream(language_code: SupportedLanguages, question: Question) -> Answe
             question.selected_parties,
             question.use_web_search,
             question.use_database_search,
-            cohere_async_clients,
+            langchain_async_clients,
             weaviate_async_client,
             language_code,
         ),
@@ -44,7 +44,7 @@ async def query(language_code: SupportedLanguages, question: Question) -> Answer
         question.selected_parties,
         question.use_web_search,
         question.use_database_search,
-        cohere_async_clients,
+        langchain_async_clients,
         weaviate_async_client,
         language_code,
     )

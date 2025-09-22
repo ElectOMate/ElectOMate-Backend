@@ -2,21 +2,21 @@ import logging
 
 from fastapi import APIRouter, HTTPException, UploadFile
 
-from em_backend.config import cohere_async_clients, weaviate_async_client
+from em_backend.config import langchain_async_clients, weaviate_async_client
 from em_backend.upload.upload import upload_documents
 
 router = APIRouter()
 
 
 @router.post("/uploadfiles")
-async def uploadfiles(files: list[UploadFile]):
+async def uploadfiles(files: list[UploadFile]) -> HTTPException | None:
     logging.debug("POST request received at /uploadfiles...")
 
     if not await weaviate_async_client.is_ready():
         raise HTTPException(status_code=503, detail="Weaviate is not ready.")
 
     errored_files = await upload_documents(
-        files, cohere_async_clients, weaviate_async_client
+        files, langchain_async_clients, weaviate_async_client
     )
 
     if len(errored_files) != 0:

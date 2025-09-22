@@ -1,12 +1,11 @@
 import asyncio
 import itertools
-from uuid import uuid4
+from typing import Any
 
-import cohere
 import weaviate
 import weaviate.classes as wvc
-from cohere import Document, DocumentToolContent
 
+from em_backend.langchain_citation_client import Document, DocumentToolContent
 from em_backend.models import SupportedParties
 
 
@@ -14,11 +13,12 @@ async def get_documents(
     search_query: str,
     party: SupportedParties | None,
     question: str,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
 ) -> list[DocumentToolContent]:
-    search_query_embedding_response = await cohere_async_clients[
-        "embed_multilingual_async_client"
+    # TO REMOVE: outdated calls -- migrating to third-party service
+    search_query_embedding_response = await langchain_async_clients[
+        "embed_client"
     ].embed(
         texts=[search_query],
         model="embed-multilingual-v3.0",
@@ -46,9 +46,8 @@ async def get_documents(
             limit=30,
         )
 
-    rerank_response = await cohere_async_clients[
-        "rerank_multilingual_async_client"
-    ].rerank(
+    # TO REMOVE: outdated calls -- migrating to third-party service
+    rerank_response = await langchain_async_clients["rerank_client"].rerank(
         model="rerank-v3.5",
         query=question,
         documents=map(lambda x: x.properties["chunk_content"], results.objects),
@@ -58,7 +57,6 @@ async def get_documents(
     documents = [
         DocumentToolContent(
             document=Document(
-                id=str(uuid4),
                 data={
                     "content": results.objects[rank.index].properties["chunk_content"],
                     "title": results.objects[rank.index].properties["title"],
@@ -76,15 +74,15 @@ async def database_search(
     search_queries: list[str],
     party: SupportedParties | None,
     question: str,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
-) -> list[Document]:
+) -> list[DocumentToolContent]:
     tasks = [
         get_documents(
             search_queries[i],
             party,
             question,
-            cohere_async_clients,
+            langchain_async_clients,
             weaviate_async_client,
         )
         for i in range(len(search_queries))

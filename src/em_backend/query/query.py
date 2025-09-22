@@ -1,22 +1,24 @@
 import asyncio
 import json
 from collections.abc import AsyncGenerator
+from typing import Any
 
 import aiostream
-import cohere
 import httpx
 import weaviate
-from cohere import (
-    AssistantChatMessageV2,
+
+from em_backend.query.db_search import database_search
+from em_backend.query.web_search import web_search
+from em_backend.statics.tools import database_search_tools, web_search_tools
+
+from ..langchain_citation_client import (
+    AIMessage,
     CitationOptions,
     DocumentToolContent,
-    SystemChatMessageV2,
-    ToolCallV2,
-    ToolCallV2Function,
-    ToolChatMessageV2,
-    UserChatMessageV2,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
 )
-
 from ..models import (
     Answer,
     AnswerChunk,
@@ -31,9 +33,6 @@ from ..statics.prompts import (
     query_rag_system_instructions,
     query_rag_system_multi_instructions,
 )
-from ..statics.tools import database_search_tools, web_search_tools
-from .db_search import database_search
-from .web_search import web_search
 
 
 async def single_pary_stream(
@@ -42,14 +41,14 @@ async def single_pary_stream(
     use_web_search: bool,
     use_database_search: bool,
     multiparty: bool,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
-):
+) -> AsyncGenerator[dict[str, Any] | dict[str, dict[str, Any]], Any]:
     messages = list()
     if party is None:
         messages.append(
-            SystemChatMessageV2(
+            SystemMessage(
                 content=query_rag_system_instructions(
                     use_web_search, use_database_search
                 )[language]
@@ -57,13 +56,13 @@ async def single_pary_stream(
         )
     else:
         messages.append(
-            SystemChatMessageV2(
+            SystemMessage(
                 content=query_rag_system_multi_instructions(
                     use_web_search, use_database_search
                 )[language].format(party)
             )
         )
-    messages.append(UserChatMessageV2(content=question))
+    messages.append(HumanMessage(content=question))
 
     tools = list()
     if use_web_search is True:
@@ -71,8 +70,8 @@ async def single_pary_stream(
     if use_database_search is True:
         tools.append(database_search_tools[language])
 
-    res = cohere_async_clients["command_r_async_client"].chat_stream(
-        model="command-r-08-2024",
+    res = langchain_async_clients["langchain_chat_client"].chat_stream(
+        model="gpt-4o",
         messages=messages,
         tools=tools,
         citation_options=CitationOptions(mode="ACCURATE"),
@@ -103,56 +102,58 @@ async def single_pary_stream(
                 if event.type == "tool-call-end":
                     # This assumes that 'tool-call-start'was received but doesn't check for performance optimization
                     func_name = None
-                if event.type == "message-end":
-                    if event.delta.finish_reason == "TOOL_CALL":
+                if (
+                    event.type == "message-end"
+                    and event.delta.finish_reason == "TOOL_CALL"
+                ):
+                    messages.append(
+                        AIMessage(
+                            content="",
+                            tool_calls=[
+                                {
+                                    "id": tool_calls_ids[func],
+                                    "type": "function",
+                                    "function": {
+                                        "name": func,
+                                        "arguments": tool_calls_arguments[func],
+                                    },
+                                }
+                                for func in tool_calls_ids
+                            ],
+                        )
+                    )
+                    for func in tool_calls_arguments:
+                        if func == "database_search":
+                            tool_results = await database_search(
+                                **json.loads(tool_calls_arguments[func]),
+                                party=party,
+                                question=question,
+                                langchain_async_clients=langchain_async_clients,
+                                weaviate_async_client=weaviate_async_client,
+                            )
+                            citations["database"].extend(tool_results)
+                        if func == "web_search":
+                            tool_results = await web_search(
+                                **json.loads(tool_calls_arguments[func]),
+                                langchain_async_clients=langchain_async_clients,
+                            )
+                            citations["web"].extend(tool_results)
                         messages.append(
-                            AssistantChatMessageV2(
-                                tool_calls=[
-                                    ToolCallV2(
-                                        id=tool_calls_ids[func],
-                                        type="function",
-                                        function=ToolCallV2Function(
-                                            name=func,
-                                            arguments=tool_calls_arguments[func],
-                                        ),
-                                    )
-                                    for func in tool_calls_ids
-                                ],
-                                tool_plan=tool_plan,
+                            ToolMessage(
+                                tool_call_id=tool_calls_ids[func],
+                                content=json.dumps(
+                                    [doc.document.data for doc in tool_results]
+                                ),
                             )
                         )
-                        for func in tool_calls_arguments:
-                            if func == "database_search":
-                                tool_results = await database_search(
-                                    **json.loads(tool_calls_arguments[func]),
-                                    party=party,
-                                    question=question,
-                                    cohere_async_clients=cohere_async_clients,
-                                    weaviate_async_client=weaviate_async_client,
-                                )
-                                citations["database"].extend(tool_results)
-                            if func == "web_search":
-                                tool_results = await web_search(
-                                    **json.loads(tool_calls_arguments[func]),
-                                    cohere_async_clients=cohere_async_clients,
-                                )
-                                citations["web"].extend(tool_results)
-                            messages.append(
-                                ToolChatMessageV2(
-                                    tool_call_id=tool_calls_ids[func],
-                                    content=tool_results,
-                                )
-                            )
-                        tool_calls_arguments = dict()
-                        tool_calls_ids = dict()
-                        res = cohere_async_clients[
-                            "command_r_async_client"
-                        ].chat_stream(
-                            model="command-r-08-2024",
-                            messages=messages,
-                            tools=tools,
-                            citation_options=CitationOptions(mode="ACCURATE"),
-                        )
+                    tool_calls_arguments = dict()
+                    tool_calls_ids = dict()
+                    res = langchain_async_clients["langchain_chat_client"].chat_stream(
+                        model="gpt-4o",
+                        messages=messages,
+                        tools=tools,
+                        citation_options=CitationOptions(mode="ACCURATE"),
+                    )
                 if event.type == "content-delta":
                     if multiparty is True:
                         yield {
@@ -197,16 +198,16 @@ async def stream_rag(
     parties: list[SupportedParties],
     use_web_search: bool,
     use_database_search: bool,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
 ) -> AsyncGenerator[AnswerChunk]:
     # Model to decide if a single party is refered to in multiparty scenario
-    res = await cohere_async_clients["command_r_async_client"].chat(
-        model="command-r-08-2024",
+    res = await langchain_async_clients["langchain_chat_client"].chat(
+        model="gpt-4o",
         messages=[
-            SystemChatMessageV2(content=multiparty_detection_instructions[language]),
-            UserChatMessageV2(content=question),
+            SystemMessage(content=multiparty_detection_instructions[language]),
+            HumanMessage(content=question),
         ],
         response_format=multiparty_detection_response_format,
     )
@@ -225,7 +226,7 @@ async def stream_rag(
             use_web_search=use_web_search,
             use_database_search=use_database_search,
             multiparty=False,
-            cohere_async_clients=cohere_async_clients,
+            langchain_async_clients=langchain_async_clients,
             weaviate_async_client=weaviate_async_client,
             language=language,
         )
@@ -241,7 +242,7 @@ async def stream_rag(
             use_web_search=use_web_search,
             use_database_search=use_database_search,
             multiparty=False,
-            cohere_async_clients=cohere_async_clients,
+            langchain_async_clients=langchain_async_clients,
             weaviate_async_client=weaviate_async_client,
             language=language,
         )
@@ -258,7 +259,7 @@ async def stream_rag(
                 use_web_search=False,
                 use_database_search=use_database_search,
                 multiparty=True,
-                cohere_async_clients=cohere_async_clients,
+                langchain_async_clients=langchain_async_clients,
                 weaviate_async_client=weaviate_async_client,
                 language=language,
             )
@@ -276,14 +277,14 @@ async def single_party_search(
     use_web_search: bool,
     use_database_search: bool,
     multiparty: bool,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
 ) -> StandardAnswer | SinglePartyAnswer:
     messages = list()
     if party is None:
         messages.append(
-            SystemChatMessageV2(
+            SystemMessage(
                 content=query_rag_system_instructions(
                     use_web_search, use_database_search
                 )[language]
@@ -291,13 +292,13 @@ async def single_party_search(
         )
     else:
         messages.append(
-            SystemChatMessageV2(
+            SystemMessage(
                 content=query_rag_system_multi_instructions(
                     use_web_search, use_database_search
                 )[language].format(party)
             )
         )
-    messages.append(UserChatMessageV2(content=question))
+    messages.append(HumanMessage(content=question))
 
     tools = list()
     if use_web_search is True:
@@ -305,19 +306,15 @@ async def single_party_search(
     if use_database_search is True:
         tools.append(database_search_tools[language])
 
-    res = await cohere_async_clients["command_r_async_client"].chat(
-        model="command-r-08-2024",
+    res = await langchain_async_clients["langchain_chat_client"].chat(
+        model="gpt-4o",
         messages=messages,
         tools=tools,
     )
 
     citations: dict[str, list[DocumentToolContent]] = {"database": [], "web": []}
     while res.message.tool_calls:
-        messages.append(
-            AssistantChatMessageV2(
-                tool_calls=res.message.tool_calls, tool_plan=res.message.tool_plan
-            )
-        )
+        messages.append(AIMessage(content="", tool_calls=res.message.tool_calls))
 
         for tc in res.message.tool_calls:
             if tc.function.name == "database_search":
@@ -325,21 +322,26 @@ async def single_party_search(
                     **json.loads(tc.function.arguments),
                     party=party,
                     question=question,
-                    cohere_async_clients=cohere_async_clients,
+                    langchain_async_clients=langchain_async_clients,
                     weaviate_async_client=weaviate_async_client,
                 )
                 citations["database"].extend(tool_results)
             elif tc.function.name == "web_search":
                 tool_results = await web_search(
                     **json.loads(tc.function.arguments),
-                    cohere_async_clients=cohere_async_clients,
+                    langchain_async_clients=langchain_async_clients,
                 )
                 citations["web"].extend(tool_results)
 
-            messages.append(ToolChatMessageV2(tool_call_id=tc.id, content=tool_results))
+            messages.append(
+                ToolMessage(
+                    tool_call_id=tc.id,
+                    content=json.dumps([doc.document.data for doc in tool_results]),
+                )
+            )
 
-            res = await cohere_async_clients["command_r_async_client"].chat(
-                model="command-r-08-2024", messages=messages, tools=tools
+            res = await langchain_async_clients["langchain_chat_client"].chat(
+                model="gpt-4o", messages=messages, tools=tools
             )
 
     citations_res = list()
@@ -385,16 +387,16 @@ async def query_rag(
     parties: list[SupportedParties],
     use_web_search: bool,
     use_database_search: bool,
-    cohere_async_clients: dict[str, cohere.AsyncClientV2],
+    langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
 ) -> Answer:
     # Model to decide if a single party is refered to in multiparty scenario
-    res = await cohere_async_clients["command_r_async_client"].chat(
-        model="command-r-08-2024",
+    res = await langchain_async_clients["langchain_chat_client"].chat(
+        model="gpt-4o",
         messages=[
-            SystemChatMessageV2(content=multiparty_detection_instructions[language]),
-            UserChatMessageV2(content=question),
+            SystemMessage(content=multiparty_detection_instructions[language]),
+            HumanMessage(content=question),
         ],
         response_format=multiparty_detection_response_format,
     )
@@ -412,7 +414,7 @@ async def query_rag(
             use_web_search=use_web_search,
             use_database_search=use_database_search,
             multiparty=False,
-            cohere_async_clients=cohere_async_clients,
+            langchain_async_clients=langchain_async_clients,
             weaviate_async_client=weaviate_async_client,
             language=language,
         )
@@ -424,7 +426,7 @@ async def query_rag(
             use_web_search=use_web_search,
             use_database_search=use_database_search,
             multiparty=False,
-            cohere_async_clients=cohere_async_clients,
+            langchain_async_clients=langchain_async_clients,
             weaviate_async_client=weaviate_async_client,
             language=language,
         )
@@ -437,7 +439,7 @@ async def query_rag(
                 use_web_search=False,
                 use_database_search=use_database_search,
                 multiparty=True,
-                cohere_async_clients=cohere_async_clients,
+                langchain_async_clients=langchain_async_clients,
                 weaviate_async_client=weaviate_async_client,
                 language=language,
             )

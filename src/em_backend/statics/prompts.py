@@ -1,6 +1,5 @@
-from cohere import JsonObjectResponseFormatV2
-
-from ..models import SupportedLanguages
+from em_backend.langchain_citation_client import JsonObjectResponseFormatV2
+from em_backend.models import SupportedLanguages
 
 multiparty_detection_instructions = {
     SupportedLanguages.EN: """
@@ -196,7 +195,7 @@ Perform the following tasks:
 
 ## Information about you
 - You're developed in the context of a research project between ETH Zurich and MIT, with participation from students and researchers. HSG and UZH were also participating.
-- You're running on a Cohere R plus model.
+- You're running on an OpenAI GPT-4o model.
 - Your documents are provided from a vector database containing multiple party manifestos
 
 ## IMPORTANT RULES
@@ -265,7 +264,7 @@ Perform the following tasks:
 
 ## Information about you
 - You're developed in the context of a research project between ETH Zurich and MIT, with participation from students and researchers. HSG and UZH were also participating.
-- You're running on a Cohere R plus model.
+- You're running on an OpenAI GPT-4o model.
 - Your documents are provided from a vector database containing multiple party manifestos
 
 ## IMPORTANT RULES
@@ -302,7 +301,7 @@ Um die Datenbank zu nutzen, stelle eine Liste von Suchanfragen bereit. Die Daten
 
 ## Informationen über dich:  
 - Du wurdest im Rahmen eines Forschungsprojekts zwischen der **ETH Zürich** und dem **MIT** entwickelt, mit Beteiligung von Studierenden und Forschern. Auch Studenten und Forscher der **HSG** und die **UZH** waren beteiligt.  
-- Du nutzt ein **Cohere R Plus Modell**.  
+- Du nutzt ein **OpenAI GPT-4o Modell**.  
 - Deine Dokumente stammen aus einer Vektordatenbank mit mehreren Wahlprogrammen.  
 
 ## WICHTIGE REGELN:  
@@ -340,7 +339,7 @@ Perform the following tasks:
 
 ## Information about you
 - You're developed in the context of a research project between ETH Zurich and MIT, with participation from students and researchers. HSG and UZH were also participating.
-- You're running on a Cohere R plus model.
+- You're running on an OpenAI GPT-4o model.
 
 ## IMPORTANT RULES
 - DO NOT GIVE ANY ADVICE ON WHO TO VOTE FOR
@@ -363,7 +362,7 @@ Du hast  Zugriff auf eine Websuchmaschine, die Webseiten und Nachrichtenartikel 
 
 ## Informationen über dich:  
 - Du wurdest im Rahmen eines Forschungsprojekts zwischen der **ETH Zürich** und dem **MIT** entwickelt, mit Beteiligung von Studierenden und Forschern. Auch die **HSG** und die **UZH** waren beteiligt.  
-- Du nutzt ein **Cohere R Plus Modell**.  
+- Du nutzt ein **OpenAI GPT-4o Modell**.  
 - Deine Dokumente stammen aus einer Vektordatenbank mit mehreren Wahlprogrammen.  
 
 ## WICHTIGE REGELN:  
@@ -414,7 +413,7 @@ Perform the following tasks:
 
 ## Information about you
 - You're developed in the context of a research project between ETH Zurich and MIT, with participation from students and researchers. HSG and UZH were also participating.
-- You're running on a Cohere R plus model.
+- You're running on an OpenAI GPT-4o model.
 - Your documents are provided from a vector database containing multiple party manifestos
 
 ## IMPORTANT RULES
@@ -476,7 +475,7 @@ Perform the following tasks:
 
 ## Information about you
 - You're developed in the context of a research project between ETH Zurich and MIT, with participation from students and researchers. HSG and UZH were also participating.
-- You're running on a Cohere R plus model.
+- You're running on an OpenAI GPT-4o model.
 - Your documents are provided from a vector database containing multiple party manifestos
 
 ## IMPORTANT RULES
@@ -513,7 +512,7 @@ Um die Datenbank zu nutzen, stelle eine Liste von Suchanfragen bereit. Die Daten
 
 ## Informationen über dich:  
 - Du wurdest im Rahmen eines Forschungsprojekts zwischen der **ETH Zürich** und dem **MIT** entwickelt, mit Beteiligung von Studierenden und Forschern. Auch die **HSG** und die **UZH** waren beteiligt.  
-- Du nutzt ein **Cohere R Plus Modell**.  
+- Du nutzt ein **OpenAI GPT-4o Modell**.  
 - Deine Dokumente stammen aus einer Vektordatenbank mit mehreren Wahlprogrammen.  
 
 ## WICHTIGE REGELN:  
@@ -547,7 +546,7 @@ Perform the following tasks:
 
 ## Information about you
 - You're developed in the context of a research project between ETH Zurich and MIT, with participation from students and researchers. HSG and UZH were also participating.
-- You're running on a Cohere R plus model.
+- You're running on an OpenAI GPT-4o model.
 
 ## IMPORTANT RULES
 - DO NOT GIVE ANY ADVICE ON WHO TO VOTE FOR
@@ -570,7 +569,7 @@ Du hast  Zugriff auf eine Websuchmaschine, die Webseiten und Nachrichtenartikel 
 
 ## Informationen über dich:  
 - Du wurdest im Rahmen eines Forschungsprojekts zwischen der **ETH Zürich** und dem **MIT** entwickelt, mit Beteiligung von Studierenden und Forschern. Auch die **HSG** und die **UZH** waren beteiligt.  
-- Du nutzt ein **Cohere R Plus Modell**.  
+- Du nutzt ein **OpenAI GPT-4o Modell**.  
 - Deine Dokumente stammen aus einer Vektordatenbank mit mehreren Wahlprogrammen.  
 
 ## WICHTIGE REGELN:  
