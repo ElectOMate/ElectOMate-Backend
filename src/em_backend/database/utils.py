@@ -1,7 +1,19 @@
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+from uuid import UUID
 
-from em_backend.database.models import Election, Party
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from em_backend.config import settings
+from em_backend.database.models import Country, Election, Party
+
+
+@asynccontextmanager
+async def create_database_sessionmaker() -> AsyncGenerator[async_sessionmaker]:
+    engine = create_async_engine(url=settings.postgres_url)
+    yield async_sessionmaker(engine)
+    await engine.dispose()
 
 
 async def get_missing_party_shortnames(
@@ -29,3 +41,25 @@ async def get_missing_party_shortnames(
         for shortname in all_party_shortnames
         if shortname not in given_party_shortnames
     ]
+
+
+async def get_country_from_shortcode(
+    session: AsyncSession, country_code: str
+) -> Country | None:
+    country_stmt = select(Country).where(Country.code == country_code)
+    country_result = await session.execute(country_stmt)
+    return country_result.scalar()
+
+
+async def get_election_from_election_id(
+    session: AsyncSession, election_id: UUID
+) -> Election | None:
+    return await session.get(Election, election_id)
+
+
+async def get_party_from_name_list(
+    session: AsyncSession, party_name: list[str]
+) -> list[Party]:
+    party_stmt = select(Party).where(Party.shortname.in_(party_name))
+    party_result = await session.execute(party_stmt)
+    return list(party_result.scalars().all())

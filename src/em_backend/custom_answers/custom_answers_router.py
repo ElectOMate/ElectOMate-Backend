@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, HTTPException
 
 from em_backend.custom_answers.custom_answers import get_custom_answers_evaluation
-from em_backend.models import EvaluationRequest, QuestionnaireQuestion, UserAnswer
+from em_backend.old_models import EvaluationRequest, QuestionnaireQuestion, UserAnswer
 
 router = APIRouter()
 

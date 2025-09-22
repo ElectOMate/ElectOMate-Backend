@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 
 from em_backend.config import langchain_async_clients, weaviate_async_client
-from em_backend.models import ChatFunctionCallRequest, SupportedLanguages
+from em_backend.old_models import ChatFunctionCallRequest, SupportedLanguages
 from em_backend.query.query import query_rag
 from em_backend.realtime.reatime import get_session
 

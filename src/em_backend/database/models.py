@@ -11,7 +11,7 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from em_backend.models import SupportedDocumentFormats
+from em_backend.old_models import SupportedDocumentFormats
 
 
 class Base(MappedAsDataclass, DeclarativeBase, AsyncAttrs):

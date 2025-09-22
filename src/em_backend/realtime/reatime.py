@@ -1,7 +1,7 @@
 from httpx import AsyncClient
 
 from em_backend.config import settings
-from em_backend.models import SupportedLanguages
+from em_backend.old_models import SupportedLanguages
 from em_backend.statics.prompts import realtime_session_instructions
 from em_backend.statics.tools import realtime_session_tools
 

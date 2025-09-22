@@ -9,7 +9,7 @@ from em_backend.custom_answers.score_calculator import (
     calculate_standard_scores,
     combine_results,
 )
-from em_backend.models import QuestionnaireQuestion, UserAnswer
+from em_backend.old_models import QuestionnaireQuestion, UserAnswer
 from em_backend.statics.evaluation_prompts import EVALUATION_PROMPT2
 from em_backend.statics.party_answers import party_answers
 from em_backend.statics.questionaire_party_answers import (

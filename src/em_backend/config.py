@@ -15,17 +15,21 @@ CHUNK_OVERLAP = 50
 class Settings(BaseSettings):
     # Weaviate API keys
     wv_url: str
+    wv_api_key: str
+
     wv_http_host: str
     wv_http_port: int
     wv_grpc_host: str
     wv_grpc_port: int
-    wv_api_key: str
 
     # Open AI API keys
     openai_api_key: str
 
     # Bing API keys
     tavily_api_key: str
+
+    # Postgres url
+    postgres_url: str
 
     # Deployement config
     allow_origins: str = "*"

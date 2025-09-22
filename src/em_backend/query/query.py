@@ -19,7 +19,7 @@ from ..langchain_citation_client import (
     SystemMessage,
     ToolMessage,
 )
-from ..models import (
+from ..old_models import (
     Answer,
     AnswerChunk,
     SinglePartyAnswer,
