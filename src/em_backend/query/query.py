@@ -1,38 +1,38 @@
-from ..langchain_citation_client import (
-    HumanMessage,
-    SystemMessage,
-    AIMessage,
-    ToolMessage,
-    CitationOptions,
-    DocumentToolContent,
-)
-import weaviate
-import httpx
-import aiostream
+import asyncio
+import json
+from collections.abc import AsyncGenerator
 from typing import Any
 
-from .db_search import database_search
-from .web_search import web_search
-from ..statics.prompts import (
-    query_rag_system_instructions,
-    query_rag_system_multi_instructions,
-    multiparty_detection_instructions,
-    multiparty_detection_response_format,
+import aiostream
+import httpx
+import weaviate
+
+from em_backend.query.db_search import database_search
+from em_backend.query.web_search import web_search
+from em_backend.statics.tools import database_search_tools, web_search_tools
+
+from ..langchain_citation_client import (
+    AIMessage,
+    CitationOptions,
+    DocumentToolContent,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
 )
-from ..statics.tools import database_search_tools, web_search_tools
 from ..models import (
-    AnswerChunk,
     Answer,
-    SupportedLanguages,
-    SupportedParties,
+    AnswerChunk,
     SinglePartyAnswer,
     StandardAnswer,
+    SupportedLanguages,
+    SupportedParties,
 )
-
-import json
-import asyncio
-import warnings
-from typing import AsyncGenerator
+from ..statics.prompts import (
+    multiparty_detection_instructions,
+    multiparty_detection_response_format,
+    query_rag_system_instructions,
+    query_rag_system_multi_instructions,
+)
 
 
 async def single_pary_stream(
@@ -44,7 +44,7 @@ async def single_pary_stream(
     langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
-):
+) -> AsyncGenerator[dict[str, Any] | dict[str, dict[str, Any]], Any]:
     messages = list()
     if party is None:
         messages.append(
@@ -96,62 +96,64 @@ async def single_pary_stream(
                     tool_calls_ids[func_name] = event.delta.message.tool_calls.id
                 if event.type == "tool-call-delta":
                     # This assumes that 'tool-call-start'was received but doesn't check for performance optimization
-                    tool_calls_arguments[
-                        func_name
-                    ] += event.delta.message.tool_calls.function.arguments
+                    tool_calls_arguments[func_name] += (
+                        event.delta.message.tool_calls.function.arguments
+                    )
                 if event.type == "tool-call-end":
                     # This assumes that 'tool-call-start'was received but doesn't check for performance optimization
                     func_name = None
-                if event.type == "message-end":
-                    if event.delta.finish_reason == "TOOL_CALL":
+                if (
+                    event.type == "message-end"
+                    and event.delta.finish_reason == "TOOL_CALL"
+                ):
+                    messages.append(
+                        AIMessage(
+                            content="",
+                            tool_calls=[
+                                {
+                                    "id": tool_calls_ids[func],
+                                    "type": "function",
+                                    "function": {
+                                        "name": func,
+                                        "arguments": tool_calls_arguments[func],
+                                    },
+                                }
+                                for func in tool_calls_ids
+                            ],
+                        )
+                    )
+                    for func in tool_calls_arguments:
+                        if func == "database_search":
+                            tool_results = await database_search(
+                                **json.loads(tool_calls_arguments[func]),
+                                party=party,
+                                question=question,
+                                langchain_async_clients=langchain_async_clients,
+                                weaviate_async_client=weaviate_async_client,
+                            )
+                            citations["database"].extend(tool_results)
+                        if func == "web_search":
+                            tool_results = await web_search(
+                                **json.loads(tool_calls_arguments[func]),
+                                langchain_async_clients=langchain_async_clients,
+                            )
+                            citations["web"].extend(tool_results)
                         messages.append(
-                            AIMessage(
-                                content="",
-                                tool_calls=[
-                                    {
-                                        "id": tool_calls_ids[func],
-                                        "type": "function",
-                                        "function": {
-                                            "name": func,
-                                            "arguments": tool_calls_arguments[func],
-                                        },
-                                    }
-                                    for func in tool_calls_ids.keys()
-                                ]
+                            ToolMessage(
+                                tool_call_id=tool_calls_ids[func],
+                                content=json.dumps(
+                                    [doc.document.data for doc in tool_results]
+                                ),
                             )
                         )
-                        for func in tool_calls_arguments.keys():
-                            if func == "database_search":
-                                tool_results = await database_search(
-                                    **json.loads(tool_calls_arguments[func]),
-                                    party=party,
-                                    question=question,
-                                    langchain_async_clients=langchain_async_clients,
-                                    weaviate_async_client=weaviate_async_client,
-                                )
-                                citations["database"].extend(tool_results)
-                            if func == "web_search":
-                                tool_results = await web_search(
-                                    **json.loads(tool_calls_arguments[func]),
-                                    langchain_async_clients=langchain_async_clients,
-                                )
-                                citations["web"].extend(tool_results)
-                            messages.append(
-                                ToolMessage(
-                                    tool_call_id=tool_calls_ids[func],
-                                    content=json.dumps([doc.document.data for doc in tool_results]),
-                                )
-                            )
-                        tool_calls_arguments = dict()
-                        tool_calls_ids = dict()
-                        res = langchain_async_clients[
-                            "langchain_chat_client"
-                        ].chat_stream(
-                            model="gpt-4o",
-                            messages=messages,
-                            tools=tools,
-                            citation_options=CitationOptions(mode="ACCURATE"),
-                        )
+                    tool_calls_arguments = dict()
+                    tool_calls_ids = dict()
+                    res = langchain_async_clients["langchain_chat_client"].chat_stream(
+                        model="gpt-4o",
+                        messages=messages,
+                        tools=tools,
+                        citation_options=CitationOptions(mode="ACCURATE"),
+                    )
                 if event.type == "content-delta":
                     if multiparty is True:
                         yield {
@@ -199,7 +201,7 @@ async def stream_rag(
     langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
-) -> AsyncGenerator[AnswerChunk, None]:
+) -> AsyncGenerator[AnswerChunk]:
     # Model to decide if a single party is refered to in multiparty scenario
     res = await langchain_async_clients["langchain_chat_client"].chat(
         model="gpt-4o",
@@ -312,12 +314,7 @@ async def single_party_search(
 
     citations: dict[str, list[DocumentToolContent]] = {"database": [], "web": []}
     while res.message.tool_calls:
-        messages.append(
-            AIMessage(
-                content="",
-                tool_calls=res.message.tool_calls
-            )
-        )
+        messages.append(AIMessage(content="", tool_calls=res.message.tool_calls))
 
         for tc in res.message.tool_calls:
             if tc.function.name == "database_search":
@@ -336,7 +333,12 @@ async def single_party_search(
                 )
                 citations["web"].extend(tool_results)
 
-            messages.append(ToolMessage(tool_call_id=tc.id, content=json.dumps([doc.document.data for doc in tool_results])))
+            messages.append(
+                ToolMessage(
+                    tool_call_id=tc.id,
+                    content=json.dumps([doc.document.data for doc in tool_results]),
+                )
+            )
 
             res = await langchain_async_clients["langchain_chat_client"].chat(
                 model="gpt-4o", messages=messages, tools=tools
@@ -389,7 +391,6 @@ async def query_rag(
     weaviate_async_client: weaviate.WeaviateAsyncClient,
     language: SupportedLanguages,
 ) -> Answer:
-
     # Model to decide if a single party is refered to in multiparty scenario
     res = await langchain_async_clients["langchain_chat_client"].chat(
         model="gpt-4o",

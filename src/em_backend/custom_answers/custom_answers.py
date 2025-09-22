@@ -1,18 +1,21 @@
-from ..langchain_citation_client import HumanMessage
-import weaviate.classes as wvc
-
-from em_backend.models import QuestionnaireQuestion, UserAnswer
-from em_backend.config import langchain_async_clients, weaviate_async_client
-from em_backend.statics.questionaire_party_answers import (
-    questionnaire_party_answers,
-    default_party_info,
-)
-from em_backend.statics.evaluation_prompts import EVALUATION_PROMPT2
-from em_backend.statics.party_answers import party_answers
-from em_backend.custom_answers.score_calculator import calculate_standard_scores, combine_results
-
 import json
 import logging
+
+import weaviate.classes as wvc
+from langchain_core.messages import HumanMessage
+
+from em_backend.config import langchain_async_clients, weaviate_async_client
+from em_backend.custom_answers.score_calculator import (
+    calculate_standard_scores,
+    combine_results,
+)
+from em_backend.models import QuestionnaireQuestion, UserAnswer
+from em_backend.statics.evaluation_prompts import EVALUATION_PROMPT2
+from em_backend.statics.party_answers import party_answers
+from em_backend.statics.questionaire_party_answers import (
+    default_party_info,
+    questionnaire_party_answers,
+)
 
 
 async def get_party_contexts(
@@ -22,9 +25,7 @@ async def get_party_contexts(
     try:
         # Generate embeddings for lookup prompts
         # TO REMOVE: outdated calls -- migrating to third-party service
-        embed_response = await langchain_async_clients[
-            "embed_client"
-        ].embed(
+        embed_response = await langchain_async_clients["embed_client"].embed(
             texts=lookup_prompts,
             model="embed-multilingual-v3.0",
             input_type="search_query",
@@ -58,7 +59,7 @@ async def get_party_contexts(
         unique_contexts = list(dict.fromkeys(contexts))
         return unique_contexts, details
 
-    except Exception as e:
+    except Exception:
         default_value = default_party_info.get(party_name, "No context available")
         return [default_value], [{"title": "", "content": default_value}]
 
@@ -95,14 +96,14 @@ async def compare_user_response_to_party(
         )
 
         messages = [HumanMessage(content=prompt_str)]
-        evaluation_response = await langchain_async_clients["langchain_chat_client"].chat(
-            model="gpt-4o", messages=messages
-        )
+        evaluation_response = await langchain_async_clients[
+            "langchain_chat_client"
+        ].chat(model="gpt-4o", messages=messages)
         evaluation_content = evaluation_response.message.content[0].text
         evaluation_dict = json.loads(evaluation_content)
         return process_evaluation(evaluation_dict)
 
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -147,12 +148,9 @@ async def get_custom_answers_evaluation(
 
     non_skipped_count = 0
     for idx, (question, answer) in enumerate(
-        zip(questionnaire_questions, custom_answers)
+        zip(questionnaire_questions, custom_answers, strict=False)
     ):
-        if answer.custom_answer:
-            answer_type = "custom"
-        else:
-            answer_type = "button"
+        answer_type = "custom" if answer.custom_answer else "button"
 
         # Log button answers with minimal details and skip further evaluation
         if answer_type == "button":
@@ -182,7 +180,9 @@ async def get_custom_answers_evaluation(
             """
 
             # Get lookup prompts
-            lookup_response = await langchain_async_clients["langchain_chat_client"].chat(
+            lookup_response = await langchain_async_clients[
+                "langchain_chat_client"
+            ].chat(
                 model="gpt-4o",
                 messages=[HumanMessage(content=lookup_prompt)],
             )

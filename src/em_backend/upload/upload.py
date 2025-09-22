@@ -1,20 +1,19 @@
-from fastapi import UploadFile
+import asyncio
+import logging
+from typing import Any
 
-import pymupdf4llm
 import pymupdf
+import pymupdf4llm
+import weaviate
+import weaviate.classes as wvc
+from fastapi import UploadFile
 from langchain_core.documents import Document
 from langchain_text_splitters import (
     ExperimentalMarkdownSyntaxTextSplitter,
     RecursiveCharacterTextSplitter,
 )
-import weaviate
-import weaviate.classes as wvc
-from typing import Any
 
-from ..config import CHUNK_SIZE, CHUNK_OVERLAP
-
-import asyncio
-import logging
+from em_backend.config import CHUNK_OVERLAP, CHUNK_SIZE
 
 
 async def process_file(
@@ -23,8 +22,8 @@ async def process_file(
     text_splitter: RecursiveCharacterTextSplitter,
     langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
-):
-    logging.info('Extracting markdown...')
+) -> bool:
+    logging.info("Extracting markdown...")
     # Parse pdf, also extracting tables
     # For some reason, this code doesn't work :(
     # md_text = await asyncify(pymupdf4llm.to_markdown)(
@@ -89,8 +88,7 @@ async def upload_documents(
     files: list[UploadFile],
     langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
-):
-
+) -> list[str | None]:
     # This splitter splits markdown based on header content, this allows for semantic parsing
     # We use the experimental version because is retains whitespaces better for tables extracted by pymupdf4llm
     markdown_text_splitter = ExperimentalMarkdownSyntaxTextSplitter()

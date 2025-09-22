@@ -16,8 +16,8 @@ To set up the project locally, follow these steps:
 1. **Clone the repository:**
 
     ```bash
-    git clone git@github.com:ElectOMate/ElectOMate-Backend.git
-    cd ElectOMate-Ghana-Backend
+    git clone https://github.com/ElectOMate/ElectOMate-Backend.git
+    cd ElectOMate-Backend
     ```
 
 2. **Install dependencies:**
@@ -26,9 +26,23 @@ To set up the project locally, follow these steps:
     uv sync
     ```
 
-3. **Setup the environment variables:** fill out the `.env-sample` file and name it `.env`.
+3. **Launch a local postgres instance**:
 
-4. **Run the project:**
+    ```bash
+    docker run -d \
+        --name em_postgres \
+        -e POSTGRES_USER=postgres \
+        -e POSTGRES_PASSWORD=postgres \
+        -e POSTGRES_DB=em \
+        -p 5432:5432 \
+        -v pgdata:/var/lib/postgresql/data \
+        postgres
+    uv run alembic upgrade head
+    ```
+
+4. **Setup the environment variables:** fill out the `.env-sample` file and name it `.env`.
+
+5. **Run the project:**
 
     ```bash
     fastapi dev src/em_backend/main.py

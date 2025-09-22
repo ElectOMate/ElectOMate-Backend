@@ -1,8 +1,8 @@
-from ..langchain_citation_client import Document, DocumentToolContent
-from uuid import uuid4
 from typing import Any
+from uuid import uuid4
 
-from ..config import tavily_client
+from em_backend.config import tavily_client
+from em_backend.langchain_citation_client import Document, DocumentToolContent
 
 
 async def web_search(
@@ -16,19 +16,17 @@ async def web_search(
     response = await tavily_client.search(query=search_query)
 
     chunks = []
-    for result in response['results']:
+    for result in response["results"]:
         chunks.append(
             {
-                "title": result['title'],
-                "url": result['url'],
-                "chunk_content": result['content'],
+                "title": result["title"],
+                "url": result["url"],
+                "chunk_content": result["content"],
             }
         )
-    
+
     # TO REMOVE: outdated calls -- migrating to third-party service
-    rerank_response = await langchain_async_clients[
-        "rerank_client"
-    ].rerank(
+    rerank_response = await langchain_async_clients["rerank_client"].rerank(
         model="rerank-v3.5",
         query=search_query,
         documents=map(lambda x: x["chunk_content"], chunks),

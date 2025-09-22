@@ -1,17 +1,18 @@
+from typing import Any
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 
-from em_backend.models import SupportedLanguages
-from em_backend.realtime.reatime import get_session
-from em_backend.models import ChatFunctionCallRequest
-from em_backend.config import weaviate_async_client, langchain_async_clients
+from em_backend.config import langchain_async_clients, weaviate_async_client
+from em_backend.models import ChatFunctionCallRequest, SupportedLanguages
 from em_backend.query.query import query_rag
+from em_backend.realtime.reatime import get_session
 
 router = APIRouter()
 
 
 @router.get("/session/{language_code}")
-async def session(language_code: SupportedLanguages):
+async def session(language_code: SupportedLanguages) -> dict[str, Any]:
     response = await get_session(language_code)
 
     if response.status_code != 200:
@@ -30,7 +31,7 @@ async def session(language_code: SupportedLanguages):
 @router.post("/function/fetch-rag-data")
 async def fetch_rag_data(
     payload: ChatFunctionCallRequest,
-):
+) -> JSONResponse:
     """
     This route is called internally by your function-calling logic (via real-time).
     It just delegates to the RAG pipeline used in /chat/{country_code}.
@@ -39,7 +40,6 @@ async def fetch_rag_data(
     question_obj = payload.question_body
     if not question_obj.question:
         raise HTTPException(status_code=400, detail="No question provided.")
-
 
     if not await weaviate_async_client.is_ready():
         raise HTTPException(status_code=503, detail="Weaviate is not ready.")

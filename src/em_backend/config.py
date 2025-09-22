@@ -1,10 +1,10 @@
 import openai
 import weaviate
 import weaviate.classes as wvc
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from tavily import AsyncTavilyClient
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from .langchain_citation_client import LangChainAsyncCitationClient
+from em_backend.langchain_citation_client import LangChainAsyncCitationClient
 
 FILE_CHUNK_SIZE = 1024 * 1024
 
@@ -14,6 +14,7 @@ CHUNK_OVERLAP = 50
 
 class Settings(BaseSettings):
     # Weaviate API keys
+    wv_url: str
     wv_http_host: str
     wv_http_port: int
     wv_grpc_host: str
@@ -32,7 +33,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
 
 
-settings = Settings()
+settings = Settings()  # type: ignore
 
 
 weaviate_async_client = weaviate.use_async_with_custom(
@@ -51,7 +52,9 @@ weaviate_async_client = weaviate.use_async_with_custom(
 openai_async_client = openai.AsyncClient(api_key=settings.openai_api_key)
 
 # LangChain Citation Client wrapper
-langchain_citation_client = LangChainAsyncCitationClient(api_key=settings.openai_api_key)
+langchain_citation_client = LangChainAsyncCitationClient(
+    api_key=settings.openai_api_key
+)
 
 # LangChain async clients dictionary
 langchain_async_clients = {
@@ -66,9 +69,9 @@ tavily_client = AsyncTavilyClient(settings.tavily_api_key)
 # Export clients
 __all__ = [
     "settings",
-    "weaviate_async_client", 
+    "weaviate_async_client",
     "openai_async_client",
     "langchain_citation_client",
     "langchain_async_clients",
-    "tavily_client"
+    "tavily_client",
 ]

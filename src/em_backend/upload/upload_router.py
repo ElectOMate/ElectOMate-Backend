@@ -1,14 +1,15 @@
-from fastapi import APIRouter, UploadFile, HTTPException
-
-from em_backend.config import weaviate_async_client, langchain_async_clients
-from em_backend.upload.upload import upload_documents
-
 import logging
+
+from fastapi import APIRouter, HTTPException, UploadFile
+
+from em_backend.config import langchain_async_clients, weaviate_async_client
+from em_backend.upload.upload import upload_documents
 
 router = APIRouter()
 
+
 @router.post("/uploadfiles")
-async def uploadfiles(files: list[UploadFile]):
+async def uploadfiles(files: list[UploadFile]) -> HTTPException | None:
     logging.debug("POST request received at /uploadfiles...")
 
     if not await weaviate_async_client.is_ready():
@@ -21,5 +22,5 @@ async def uploadfiles(files: list[UploadFile]):
     if len(errored_files) != 0:
         return HTTPException(
             status_code=500,
-            detail=f"File Upload failed for files: {", ".join(errored_files)}",
+            detail=f"File Upload failed for files: {', '.join(errored_files)}",
         )

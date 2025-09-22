@@ -1,24 +1,21 @@
-from ..langchain_citation_client import Document, DocumentToolContent
-import weaviate
-import weaviate.classes as wvc
-from typing import Any
-
-from em_backend.models import SupportedParties
-
 import asyncio
 import itertools
-from uuid import uuid4
-from typing import Optional
+from typing import Any
+
+import weaviate
+import weaviate.classes as wvc
+
+from em_backend.langchain_citation_client import Document, DocumentToolContent
+from em_backend.models import SupportedParties
 
 
 async def get_documents(
     search_query: str,
-    party: Optional[SupportedParties],
+    party: SupportedParties | None,
     question: str,
     langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
 ) -> list[DocumentToolContent]:
-    
     # TO REMOVE: outdated calls -- migrating to third-party service
     search_query_embedding_response = await langchain_async_clients[
         "embed_client"
@@ -28,12 +25,14 @@ async def get_documents(
         input_type="search_query",
         embedding_types=["float"],
     )
-    
+
     collection = weaviate_async_client.collections.get(name="Documents")
-    
+
     if party is not None:
-        party_filter = wvc.query.Filter.by_property("filename").like(f"{party.lower()}.pdf")
-        
+        party_filter = wvc.query.Filter.by_property("filename").like(
+            f"{party.lower()}.pdf"
+        )
+
         results = await collection.query.hybrid(
             search_query,
             vector=search_query_embedding_response.embeddings.float[0],
@@ -46,21 +45,18 @@ async def get_documents(
             vector=search_query_embedding_response.embeddings.float[0],
             limit=30,
         )
-    
+
     # TO REMOVE: outdated calls -- migrating to third-party service
-    rerank_response = await langchain_async_clients[
-        "rerank_client"
-    ].rerank(
+    rerank_response = await langchain_async_clients["rerank_client"].rerank(
         model="rerank-v3.5",
         query=question,
         documents=map(lambda x: x.properties["chunk_content"], results.objects),
         top_n=10,
     )
-    
+
     documents = [
         DocumentToolContent(
             document=Document(
-                id=str(uuid4),
                 data={
                     "content": results.objects[rank.index].properties["chunk_content"],
                     "title": results.objects[rank.index].properties["title"],
@@ -76,13 +72,19 @@ async def get_documents(
 
 async def database_search(
     search_queries: list[str],
-    party: Optional[SupportedParties],
+    party: SupportedParties | None,
     question: str,
     langchain_async_clients: dict[str, Any],
     weaviate_async_client: weaviate.WeaviateAsyncClient,
-) -> list[Document]:
+) -> list[DocumentToolContent]:
     tasks = [
-        get_documents(search_queries[i], party, question, langchain_async_clients, weaviate_async_client)
+        get_documents(
+            search_queries[i],
+            party,
+            question,
+            langchain_async_clients,
+            weaviate_async_client,
+        )
         for i in range(len(search_queries))
     ]
     results = await asyncio.gather(*tasks)

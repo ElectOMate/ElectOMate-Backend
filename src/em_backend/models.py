@@ -1,8 +1,23 @@
-from pydantic import BaseModel, Field, model_validator, HttpUrl
-from typing import Literal, Union
-from typing_extensions import Self
-from enum import Enum
-from typing import Optional
+from enum import Enum, StrEnum, auto
+from typing import Literal, Self
+
+from pydantic import BaseModel, Field, HttpUrl, model_validator
+
+
+class SupportedCountries(StrEnum):
+    CL = "cl"
+
+
+class SupportedDocumentFormats(StrEnum):
+    PDF = auto()
+    DOCX = auto()
+    XLSX = auto()
+    PPTX = auto()
+    MARKDOWN = auto()
+    ASCII = auto()
+    HTML = auto()
+    XHTML = auto()
+    CSV = auto()
 
 
 class SupportedLanguages(str, Enum):
@@ -41,12 +56,14 @@ class Question(BaseModel):
     @model_validator(mode="after")
     def check_model(self) -> Self:
         if self.use_web_search is False and self.use_database_search is False:
-            return ValueError(
-                "Model Validation Error. You have to at least use one of web search or database search."
+            raise ValueError(
+                "Model Validation Error. You have to at "
+                "least use one of web search or database search."
             )
         if self.use_web_search is True and len(self.selected_parties) > 1:
-            return ValueError(
-                "Model Validation Error. Web search cannot be activated when parties are selected."
+            raise ValueError(
+                "Model Validation Error. Web search"
+                " cannot be activated when parties are selected."
             )
         return self
 
@@ -75,7 +92,7 @@ class WebCitation(BaseModel):
 
 
 class Citation(BaseModel):
-    citation: Union[ManifestoCitation, WebCitation] = Field(discriminator="type")
+    citation: ManifestoCitation | WebCitation = Field(discriminator="type")
 
 
 class StandardAnswer(BaseModel):
@@ -98,7 +115,7 @@ class MultiPartyAnswer(BaseModel):
 
 
 class Answer(BaseModel):
-    answer: Union[StandardAnswer, MultiPartyAnswer] = Field(discriminator="type")
+    answer: StandardAnswer | MultiPartyAnswer = Field(discriminator="type")
 
 
 class AnswerTypeChunk(BaseModel):
@@ -125,9 +142,9 @@ class CitationChunk(BaseModel):
 
 
 class AnswerChunk(BaseModel):
-    chunk: Union[
-        AnswerTypeChunk, StandardAnswerChunk, MultiPartyAnswerChunk, CitationChunk
-    ] = Field(discriminator="type")
+    chunk: (
+        AnswerTypeChunk | StandardAnswerChunk | MultiPartyAnswerChunk | CitationChunk
+    ) = Field(discriminator="type")
 
 
 class RealtimeToken(BaseModel):
@@ -152,7 +169,7 @@ class EvaluationRequest(BaseModel):
 class QuestionnaireQuestion(BaseModel):
     q: str
     id: int
-    context: Optional[str] = Field(default=None)
+    context: str | None = Field(default=None)
 
 
 class UserAnswer(BaseModel):
