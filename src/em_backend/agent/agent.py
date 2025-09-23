@@ -79,7 +79,7 @@ class Agent:
             },
             context={
                 "session": session,
-                "chat_model": get_openai_model(with_proxy=True),
+                "chat_model": get_openai_model(),
                 "vector_database": self.vector_database,
             },
             stream_mode=["updates", "messages", "custom"],
