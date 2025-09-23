@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Environment
-    env: Literal["dev", "prod"] = "dev"
+    env: Literal["dev", "prod"] = "prod"
 
     # Weaviate API keys
     wv_url: str

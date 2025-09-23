@@ -1,4 +1,4 @@
-from em_backend.langchain_citation_client import ToolV2, ToolV2Function
+from em_backend.v1.langchain_citation_client import ToolV2, ToolV2Function
 from em_backend.old_models import SupportedLanguages
 
 realtime_session_tools = {

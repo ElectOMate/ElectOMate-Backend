@@ -15,7 +15,7 @@ from em_backend.config import settings
 class DocumentChunk(TypedDict):
     title: str
     text: str
-    score: str
+    score: float
 
 
 class VectorDatabase:

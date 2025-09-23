@@ -6,7 +6,7 @@ from aiostream import streamcontext
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from pydantic import AfterValidator, BaseModel, Field
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from em_backend.agent.agent import Agent
 from em_backend.database.utils import (
@@ -15,7 +15,7 @@ from em_backend.database.utils import (
     get_party_from_name_list,
 )
 from em_backend.models.messages import AnyMessage
-from em_backend.routers.v2 import get_agent, get_database_session
+from em_backend.routers.v2 import get_agent, get_database_session, get_sessionmaker
 
 agent_router = APIRouter()
 
@@ -44,6 +44,11 @@ async def agent_chat(
     country_code: str,
     agent: Annotated[Agent, Depends(get_agent)],
     session: Annotated[AsyncSession, Depends(get_database_session)],
+    # We need the sessionmaker as we need to open a new db session for execution
+    # As the dependency injection one gets closed when we return the StreamingResponse
+    session_maker: Annotated[
+        async_sessionmaker[AsyncSession], Depends(get_sessionmaker)
+    ],
 ) -> StreamingResponse:
     country = await get_country_from_shortcode(session, country_code=country_code)
     if country is None:
@@ -66,17 +71,26 @@ async def agent_chat(
             detail=f"Parties {', '.join(missing_parties)} not registered.",
         )
 
-    chunk_stream = agent.invoke(
-        chat_request.messages,
-        election=election,
-        selected_parties=selected_parties,
-        session=session,
-    )
-
     async def sse_stream() -> AsyncGenerator[str]:
-        async with streamcontext(chunk_stream) as streamer:
-            async for chunk in streamer:
-                yield f"event: {chunk.type}\ndata: {chunk.model_dump_json()}\n\n"
+        async with session_maker() as session, session.begin():
+            bound_election = await session.merge(election)
+            bound_selected_parties = [
+                await session.merge(party) for party in selected_parties
+            ]
+            async with streamcontext(
+                await agent.invoke(
+                    chat_request.messages,
+                    election=bound_election,
+                    selected_parties=bound_selected_parties,
+                    session=session,
+                )
+            ) as streamer:
+                try:
+                    async for chunk in streamer:
+                        yield f"event: {chunk.type}\ndata: {chunk.model_dump_json()}\n\n"
+                except Exception:
+                    yield "event: ERROR\ndata: ERROR\n\n"
+                    raise
         yield "event: DONE\ndata: DONE\n\n"
 
     return StreamingResponse(sse_stream(), media_type="text/event-stream")

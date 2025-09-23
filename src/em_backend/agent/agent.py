@@ -35,7 +35,10 @@ from em_backend.agent.utils import (
     retrieve_documents_from_user_question,
 )
 from em_backend.database.models import Election, Party
-from em_backend.database.utils import get_missing_party_shortnames
+from em_backend.database.utils import (
+    get_missing_party_shortnames,
+    get_party_from_name_list,
+)
 from em_backend.llm.openai import get_openai_model
 from em_backend.models.chunks import (
     AnyChunk,
@@ -47,11 +50,14 @@ from em_backend.vector.db import DocumentChunk, VectorDatabase
 
 
 class Agent:
-    def __init__(self, vector_database: VectorDatabase) -> None:
+    def __init__(
+        self,
+        vector_database: VectorDatabase,
+    ) -> None:
         self.graph = Agent.get_compiled_agent_graph()
         self.vector_database = vector_database
 
-    def invoke(
+    async def invoke(
         self,
         messages: list[AnyMessage],
         *,
@@ -64,7 +70,7 @@ class Agent:
         chunk_stream = self.graph.astream(
             {
                 "messages": lc_messages,
-                "country": election.country,
+                "country": await election.awaitable_attrs.country,
                 "election": election,
                 "selected_parties": selected_parties,
                 "is_comparison_question": False,
@@ -106,7 +112,10 @@ class Agent:
                     }
                 ),
             )
-            return {"selected_parties": selected_parties_response.selected_parties}
+            selected_parties = await get_party_from_name_list(
+                runtime.context["session"], selected_parties_response.selected_parties
+            )
+            return {"selected_parties": selected_parties}
 
         async def rephrase_question(
             state: AgentState, runtime: Runtime[AgentContext]
@@ -123,7 +132,7 @@ class Agent:
                 "messages": [
                     RemoveMessage(id=state["messages"][-1].id),  # pyright: ignore[reportArgumentType]
                     HumanMessage(
-                        id=uuid4(),
+                        id=str(uuid4()),
                         content=response.rephrased_question,
                     ),
                 ],
@@ -180,8 +189,9 @@ class Agent:
                     f"Abbreviation: {party.shortname}\n"
                     f"Full name: {party.fullname}\n"
                     f"Description: {party.description}\n"
-                    f"Top Candidate: {party.candidate.given_name} "
-                    "{party.candidate.family_name}\n"
+                    f"Top Candidate: "
+                    f"{(await party.awaitable_attrs.candidate).given_name} "
+                    f"{(await party.awaitable_attrs.candidate).family_name}\n"
                     f"Website: {party.url}\n"
                     f"### Party Documents\n"
                     + "\n".join(
@@ -226,20 +236,21 @@ class Agent:
             runtime.stream_writer(
                 PartySourcesChunk(party=state["party"].shortname, documents=documents)
             )
-            model = SINGLE_PARTY_ANSWER | runtime.context["chat_model"].bind(
-                tags=(runtime.context["chat_model"].tags or [])
-                + ["stream", f"party_f{state['party'].shortname}"]
-            )
+            model = SINGLE_PARTY_ANSWER | runtime.context["chat_model"]
+            party_candidate = await state["party"].awaitable_attrs.candidate
             response = await model.ainvoke(
                 {
                     "election_name": state["election"].name,
                     "election_year": state["election"].year,
                     "election_date": state["election"].date.strftime("%B %d, %Y"),
+                    "election_url": state["election"].url,
                     "date": date.today().strftime("%B %d, %Y"),
                     "party_name": state["party"].shortname,
                     "party_fullname": state["party"].fullname,
                     "party_description": state["party"].description,
                     "party_url": state["party"].url,
+                    "party_candidate": f"{party_candidate.given_name} "
+                    "{party_candidate.family_name}",
                     "sources": "\n".join(
                         [
                             "<document>\n"
@@ -251,7 +262,8 @@ class Agent:
                         ]
                     ),
                     "messages": state["messages"],
-                }
+                },
+                config={"tags": ["stream", f"party_{state['party'].shortname}"]},
             )
             return {"messages": [response], "party": state["party"]}
 

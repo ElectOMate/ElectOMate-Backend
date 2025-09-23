@@ -1,4 +1,4 @@
-from em_backend.langchain_citation_client import JsonObjectResponseFormatV2
+from em_backend.v1.langchain_citation_client import JsonObjectResponseFormatV2
 from em_backend.old_models import SupportedLanguages
 
 multiparty_detection_instructions = {
