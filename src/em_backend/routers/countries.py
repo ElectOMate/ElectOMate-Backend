@@ -5,13 +5,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from em_backend.crud import country as country_crud
-from em_backend.routers.v2 import get_database_session
-from em_backend.schemas.models import (
+from em_backend.models.crud import (
     CountryCreate,
     CountryResponse,
     CountryUpdate,
     CountryWithElections,
 )
+from em_backend.routers.v2 import get_database_session
 
 router = APIRouter(prefix="/countries", tags=["countries"])
 

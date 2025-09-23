@@ -6,12 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from em_backend.crud import party as party_crud
 from em_backend.database.models import Election
-from em_backend.routers.v2 import get_database_session
-from em_backend.schemas.models import (
+from em_backend.models.crud import (
     PartyCreate,
     PartyResponse,
     PartyUpdate,
 )
+from em_backend.routers.v2 import get_database_session
 
 router = APIRouter(prefix="/parties", tags=["parties"])
 

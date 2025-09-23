@@ -15,6 +15,11 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from em_backend.crud import document as document_crud
 from em_backend.database.models import Document, Party
+from em_backend.models.crud import (
+    DocumentResponse,
+    DocumentUpdate,
+    DocumentWithParty,
+)
 from em_backend.old_models import SupportedDocumentFormats
 from em_backend.parser.parser import DocumentParser
 from em_backend.routers.v2 import (
@@ -22,11 +27,6 @@ from em_backend.routers.v2 import (
     get_document_parser,
     get_sessionmaker,
     get_vector_database,
-)
-from em_backend.schemas.models import (
-    DocumentResponse,
-    DocumentUpdate,
-    DocumentWithParty,
 )
 from em_backend.vector.db import VectorDatabase
 

@@ -6,12 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from em_backend.crud import proposed_question as proposed_question_crud
 from em_backend.database.models import Party
-from em_backend.routers.v2 import get_database_session
-from em_backend.schemas.models import (
+from em_backend.models.crud import (
     ProposedQuestionCreate,
     ProposedQuestionResponse,
     ProposedQuestionUpdate,
 )
+from em_backend.routers.v2 import get_database_session
 
 router = APIRouter(prefix="/proposed-questions", tags=["proposed-questions"])
 

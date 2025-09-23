@@ -6,12 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from em_backend.crud import election as election_crud
 from em_backend.database.models import Country
-from em_backend.routers.v2 import get_database_session, get_vector_database
-from em_backend.schemas.models import (
+from em_backend.models.crud import (
     ElectionCreate,
     ElectionResponse,
     ElectionUpdate,
 )
+from em_backend.routers.v2 import get_database_session, get_vector_database
 from em_backend.vector.db import VectorDatabase
 
 router = APIRouter(prefix="/elections", tags=["elections"])
