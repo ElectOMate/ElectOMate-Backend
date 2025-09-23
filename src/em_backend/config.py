@@ -1,6 +1,6 @@
+from typing import Literal
+
 import openai
-import weaviate
-import weaviate.classes as wvc
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from tavily import AsyncTavilyClient
 
@@ -13,14 +13,12 @@ CHUNK_OVERLAP = 50
 
 
 class Settings(BaseSettings):
+    # Environment
+    env: Literal["dev", "prod"] = "dev"
+
     # Weaviate API keys
     wv_url: str
     wv_api_key: str
-
-    wv_http_host: str
-    wv_http_port: int
-    wv_grpc_host: str
-    wv_grpc_port: int
 
     # Open AI API keys
     openai_api_key: str
@@ -40,18 +38,18 @@ class Settings(BaseSettings):
 settings = Settings()  # type: ignore
 
 
-weaviate_async_client = weaviate.use_async_with_custom(
-    http_host=settings.wv_http_host,
-    http_port=settings.wv_http_port,
-    http_secure=False,
-    grpc_host=settings.wv_grpc_host,
-    grpc_port=settings.wv_grpc_port,
-    grpc_secure=False,
-    auth_credentials=wvc.init.Auth.api_key(settings.wv_api_key),
-    additional_config=wvc.init.AdditionalConfig(
-        timeout=wvc.init.Timeout(init=30, query=60, insert=120)
-    ),
-)
+# weaviate_async_client = weaviate.use_async_with_custom(
+#     http_host=settings.wv_http_host,
+#     http_port=settings.wv_http_port,
+#     http_secure=False,
+#     grpc_host=settings.wv_grpc_host,
+#     grpc_port=settings.wv_grpc_port,
+#     grpc_secure=False,
+#     auth_credentials=wvc.init.Auth.api_key(settings.wv_api_key),
+#     additional_config=wvc.init.AdditionalConfig(
+#         timeout=wvc.init.Timeout(init=30, query=60, insert=120)
+#     ),
+# )
 
 openai_async_client = openai.AsyncClient(api_key=settings.openai_api_key)
 
@@ -73,7 +71,6 @@ tavily_client = AsyncTavilyClient(settings.tavily_api_key)
 # Export clients
 __all__ = [
     "settings",
-    "weaviate_async_client",
     "openai_async_client",
     "langchain_citation_client",
     "langchain_async_clients",

@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from em_backend.config import langchain_async_clients, weaviate_async_client
+from em_backend.config import langchain_async_clients
 from em_backend.old_models import Answer, AnswerChunk, Question, SupportedLanguages
 from em_backend.query.query import query_rag, stream_rag
 

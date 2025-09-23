@@ -12,7 +12,6 @@ dependencies = [
     "alembic>=1.16.5",
     "alembic-postgresql-enum>=1.8.0",
     "asyncer>=0.0.8",
-    "cohere>=5.18.0",
     "docling>=2.53.0",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.116.2",
     "httpx>=0.28.1",
@@ -22,10 +21,13 @@ dependencies = [
     "langgraph>=0.6.7",
     "markdown>=3.9",
     "openai>=1.108.0",
+    "orjson>=3.11.3",
     "prometheus-fastapi-instrumentator>=7.1.0",
     "pydantic-settings>=2.10.1",
     "pymupdf4llm>=0.0.27",
+    "python-json-logger>=3.3.0",
     "sqlalchemy[postgresql-psycopgbinary]>=2.0.43",
+    "structlog>=25.4.0",
     "tavily-python>=0.7.12",
     "truststore>=0.10.4",
     "weaviate-client>=4.16.10",
@@ -72,6 +74,11 @@ script_location = "%(here)s/alembic"
 # additional paths to be prepended to sys.path. defaults to the current working directory.
 prepend_sys_path = [
     "."
+]
+
+[dependency-groups]
+dev = [
+    "rich>=14.1.0",
 ]
 
 # timezone to use when rendering the date within the migration file

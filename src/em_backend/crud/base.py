@@ -8,11 +8,11 @@ from sqlalchemy.orm import selectinload
 from em_backend.database.models import Base
 
 
-class CRUDBase:
-    def __init__(self, model: type[Base]):
+class CRUDBase[T: Base]:
+    def __init__(self, model: type[T]) -> None:
         self.model = model
 
-    async def get(self, db: AsyncSession, id: UUID) -> Base | None:
+    async def get(self, db: AsyncSession, id: UUID) -> T | None:
         """Get a single record by ID."""
         result = await db.execute(
             select(self.model).where(self.model.id == id)  # type: ignore
@@ -21,12 +21,12 @@ class CRUDBase:
 
     async def get_multi(
         self, db: AsyncSession, *, skip: int = 0, limit: int = 100
-    ) -> list[Base]:
+    ) -> list[T]:
         """Get multiple records with pagination."""
         result = await db.execute(select(self.model).offset(skip).limit(limit))
         return list(result.scalars().all())
 
-    async def create(self, db: AsyncSession, *, obj_in: dict[str, Any]) -> Base:
+    async def create(self, db: AsyncSession, *, obj_in: dict[str, Any]) -> T:
         """Create a new record."""
         db_obj = self.model(**obj_in)
         db.add(db_obj)
@@ -34,9 +34,7 @@ class CRUDBase:
         await db.refresh(db_obj)
         return db_obj
 
-    async def update(
-        self, db: AsyncSession, *, db_obj: Base, obj_in: dict[str, Any]
-    ) -> Base:
+    async def update(self, db: AsyncSession, *, db_obj: T, obj_in: dict[str, Any]) -> T:
         """Update an existing record."""
         for field, value in obj_in.items():
             if value is not None:
@@ -45,7 +43,7 @@ class CRUDBase:
         await db.refresh(db_obj)
         return db_obj
 
-    async def remove(self, db: AsyncSession, *, id: UUID) -> Base | None:
+    async def remove(self, db: AsyncSession, *, id: UUID) -> T | None:
         """Delete a record by ID."""
         db_obj = await self.get(db, id)
         if db_obj:
@@ -55,7 +53,7 @@ class CRUDBase:
 
     async def get_with_relationships(
         self, db: AsyncSession, id: UUID, relationships: list[str]
-    ) -> Base | None:
+    ) -> T | None:
         """Get a record with specific relationships loaded."""
         query = select(self.model).where(self.model.id == id)  # type: ignore
         for rel in relationships:

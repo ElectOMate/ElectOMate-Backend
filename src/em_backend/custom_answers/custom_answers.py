@@ -4,7 +4,7 @@ import logging
 import weaviate.classes as wvc
 from langchain_core.messages import HumanMessage
 
-from em_backend.config import langchain_async_clients, weaviate_async_client
+from em_backend.config import langchain_async_clients
 from em_backend.custom_answers.score_calculator import (
     calculate_standard_scores,
     combine_results,

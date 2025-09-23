@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from em_backend.old_models import SupportedDocumentFormats
 
@@ -24,8 +24,7 @@ class CountryUpdate(BaseModel):
 class CountryResponse(CountryBase):
     id: UUID
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CountryWithElections(CountryResponse):
@@ -56,13 +55,7 @@ class ElectionResponse(ElectionBase):
     id: UUID
     country_id: UUID
 
-    class Config:
-        from_attributes = True
-
-
-class ElectionWithDetails(ElectionResponse):
-    country: CountryResponse
-    parties: list["PartyResponse"] = []
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Party schemas
@@ -89,8 +82,7 @@ class PartyResponse(PartyBase):
     id: UUID
     election_id: UUID
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PartyWithDetails(PartyResponse):
@@ -124,8 +116,7 @@ class CandidateResponse(CandidateBase):
     id: UUID
     party_id: UUID
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class CandidateWithParty(CandidateResponse):
@@ -143,6 +134,7 @@ class DocumentBase(BaseModel):
 class DocumentCreate(DocumentBase):
     content: bytes
     party_id: UUID
+    filename: str
 
 
 class DocumentUpdate(BaseModel):
@@ -158,8 +150,7 @@ class DocumentResponse(DocumentBase):
     id: UUID
     party_id: UUID
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DocumentWithParty(DocumentResponse):
@@ -186,18 +177,11 @@ class ProposedQuestionResponse(ProposedQuestionBase):
     id: UUID
     party_id: UUID
 
-    class Config:
-        from_attributes = True
-
-
-class ProposedQuestionWithParty(ProposedQuestionResponse):
-    party: PartyResponse
+    model_config = ConfigDict(from_attributes=True)
 
 
 # Update forward references
 CountryWithElections.model_rebuild()
-ElectionWithDetails.model_rebuild()
 PartyWithDetails.model_rebuild()
 CandidateWithParty.model_rebuild()
 DocumentWithParty.model_rebuild()
-ProposedQuestionWithParty.model_rebuild()

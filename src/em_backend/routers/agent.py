@@ -38,7 +38,7 @@ class AgentChatRequest(BaseModel):
     use_web_search: bool
 
 
-@agent_router.post("/v2/{country_code}/chat")
+@agent_router.post("/{country_code}/chat")
 async def agent_chat(
     chat_request: AgentChatRequest,
     country_code: str,
