@@ -45,7 +45,7 @@ To set up the project locally, follow these steps:
 5. **Run the project:**
 
     ```bash
-    fastapi dev src/em_backend/main.py
+    uv run --env-file .env fastapi dev src/em_backend/main.py
     ```
 
 ## Test the deployement locally

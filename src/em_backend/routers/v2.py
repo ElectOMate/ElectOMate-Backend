@@ -1,17 +1,14 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, Any, cast
+from typing import Any, cast
 
 from fastapi import APIRouter, Request
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from em_backend.agent.agent import Agent
 from em_backend.database.utils import create_database_sessionmaker
 from em_backend.parser.parser import DocumentParser
 from em_backend.vector.db import VectorDatabase
-
-if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import async_sessionmaker
 
 
 @asynccontextmanager

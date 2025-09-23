@@ -2,20 +2,20 @@ import json
 import logging
 
 import weaviate.classes as wvc
-from langchain_core.messages import HumanMessage
-
-from em_backend.config import langchain_async_clients
 from em_backend.custom_answers.score_calculator import (
     calculate_standard_scores,
     combine_results,
 )
-from em_backend.old_models import QuestionnaireQuestion, UserAnswer
 from em_backend.statics.evaluation_prompts import EVALUATION_PROMPT2
 from em_backend.statics.party_answers import party_answers
 from em_backend.statics.questionaire_party_answers import (
     default_party_info,
     questionnaire_party_answers,
 )
+from langchain_core.messages import HumanMessage
+
+from em_backend.config import langchain_async_clients
+from em_backend.old_models import QuestionnaireQuestion, UserAnswer
 
 
 async def get_party_contexts(

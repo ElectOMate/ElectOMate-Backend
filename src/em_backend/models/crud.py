@@ -58,6 +58,11 @@ class ElectionResponse(ElectionBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ElectionWithDetails(ElectionResponse):
+    country: CountryResponse
+    parties: list["PartyResponse"] = []
+
+
 # Party schemas
 class PartyBase(BaseModel):
     shortname: str = Field(max_length=100)
@@ -128,22 +133,19 @@ class DocumentBase(BaseModel):
     title: str = Field(max_length=255)
     type: SupportedDocumentFormats
     is_indexed: bool = False
-    is_manifesto: bool = False
 
 
 class DocumentCreate(DocumentBase):
-    content: bytes
+    content: str | None = None
     party_id: UUID
-    filename: str
 
 
 class DocumentUpdate(BaseModel):
     title: str | None = Field(None, max_length=255)
-    content: bytes | None = None
+    content: str | None = None
     type: SupportedDocumentFormats | None = None
     party_id: UUID | None = None
     is_indexed: bool | None = None
-    is_manifesto: bool | None = None
 
 
 class DocumentResponse(DocumentBase):
@@ -153,8 +155,8 @@ class DocumentResponse(DocumentBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class DocumentWithParty(DocumentResponse):
-    party: PartyResponse
+class DocumentResponseWithContent(DocumentResponse):
+    content: str
 
 
 # ProposedQuestion schemas
@@ -180,8 +182,13 @@ class ProposedQuestionResponse(ProposedQuestionBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ProposedQuestionWithParty(ProposedQuestionResponse):
+    party: PartyResponse
+
+
 # Update forward references
 CountryWithElections.model_rebuild()
+ElectionWithDetails.model_rebuild()
 PartyWithDetails.model_rebuild()
 CandidateWithParty.model_rebuild()
-DocumentWithParty.model_rebuild()
+ProposedQuestionWithParty.model_rebuild()

@@ -42,10 +42,16 @@ class VectorDatabase:
         client = weaviate.connect_to_weaviate_cloud(
             cluster_url=settings.wv_url,
             auth_credentials=Auth.api_key(settings.wv_api_key),
+            headers={
+                "X-OpenAI-Api-Key": settings.openai_api_key,
+            },
         )
         async_client = weaviate.use_async_with_weaviate_cloud(
             cluster_url=settings.wv_url,
             auth_credentials=Auth.api_key(settings.wv_api_key),
+            headers={
+                "X-OpenAI-Api-Key": settings.openai_api_key,
+            },
         )
         client.connect()
         await async_client.connect()
@@ -58,7 +64,7 @@ class VectorDatabase:
     async def create_election_document_collection(self, election_id: UUID) -> str:
         async with self.async_client:
             collection = await self.async_client.collections.create(
-                name=str(election_id).replace("_", "").replace("-", ""),
+                name="D" + str(election_id).replace("_", "").replace("-", ""),
                 vector_config=Configure.Vectors.text2vec_openai(),
                 generative_config=Configure.Generative.openai(),
                 properties=[
@@ -79,14 +85,14 @@ class VectorDatabase:
     async def delete_collection(self, election_id: UUID) -> None:
         async with self.async_client:
             await self.async_client.collections.delete(
-                str(election_id).replace("_", "").replace("-", "")
+                "D" + str(election_id).replace("_", "").replace("-", "")
             )
 
     def insert_chunks(
         self, election_id: UUID, party_id: UUID, chunks: list[tuple[str, str]]
     ) -> list[ErrorObject]:
         country_docs = self.sync_client.collections.use(
-            str(election_id).replace("_", "").replace("-", "")
+            "D" + str(election_id).replace("_", "").replace("-", "")
         )
         with country_docs.batch.dynamic() as batch:
             for title, text in chunks:
@@ -99,7 +105,7 @@ class VectorDatabase:
         self, election_id: UUID, party_id: UUID, query: str, *, limit=10, offset=0
     ) -> list[DocumentChunk]:
         election_docs = self.async_client.collections.use(
-            str(election_id).replace("_", "").replace("-", "")
+            "D" + str(election_id).replace("_", "").replace("-", "")
         )
         async with self.async_client:
             response = await election_docs.query.hybrid(
@@ -120,7 +126,7 @@ class VectorDatabase:
 
     async def delete_chunks(self, election_id: UUID, document_id: UUID) -> None:
         election_docs = self.async_client.collections.use(
-            str(election_id).replace("_", "").replace("-", "")
+            "D" + str(election_id).replace("_", "").replace("-", "")
         )
         async with self.async_client:
             await election_docs.data.delete_many(

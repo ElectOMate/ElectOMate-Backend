@@ -6,7 +6,6 @@ from typing import Any
 import aiostream
 import httpx
 import weaviate
-
 from em_backend.query.db_search import database_search
 from em_backend.query.web_search import web_search
 from em_backend.statics.tools import database_search_tools, web_search_tools

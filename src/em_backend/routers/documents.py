@@ -17,8 +17,8 @@ from em_backend.crud import document as document_crud
 from em_backend.database.models import Document, Party
 from em_backend.models.crud import (
     DocumentResponse,
+    DocumentResponseWithContent,
     DocumentUpdate,
-    DocumentWithParty,
 )
 from em_backend.old_models import SupportedDocumentFormats
 from em_backend.parser.parser import DocumentParser
@@ -56,21 +56,22 @@ async def process_document(
 
         # Parse file
         parsed_document = await document_parser.parse_document(
-            document.title or "file", file_content
+            document.title, file_content
         )
         document.content = document_parser.serialize_document(parsed_document)
         await session.commit()
 
         # Chunk and vectorize file
         document_chunks = document_parser.chunk_document(parsed_document)
+        party = await document.awaitable_attrs.party
         weaviate_database.insert_chunks(
-            document.party.election_id, document.party_id, document_chunks
+            party.election_id, document.party.id, document_chunks
         )
         document.is_indexed = True
         await session.commit()
 
 
-@router.post("/", response_model=DocumentResponse)
+@router.post("/")
 async def create_document(
     file: UploadFile,
     party_id: Annotated[UUID, Form()],
@@ -108,6 +109,7 @@ async def create_document(
         obj_in={
             "title": file.filename,
             "type": DOCUMENT_TYPE_MAPPING[file_extension],
+            "party_id": party.id,
             "party": party,
         },
     )
@@ -124,7 +126,7 @@ async def create_document(
     return DocumentResponse.model_validate(document)
 
 
-@router.get("/", response_model=list[DocumentResponse])
+@router.get("/")
 async def read_documents(
     db: Annotated[AsyncSession, Depends(get_database_session)],
     skip: int = Query(0, ge=0),
@@ -135,33 +137,19 @@ async def read_documents(
     return [DocumentResponse.model_validate(document) for document in documents]
 
 
-@router.get("/{document_id}", response_model=DocumentResponse)
+@router.get("/{document_id}")
 async def read_document(
     document_id: UUID,
     db: Annotated[AsyncSession, Depends(get_database_session)],
-) -> DocumentResponse:
+) -> DocumentResponseWithContent:
     """Retrieve a specific document by ID."""
     document = await document_crud.get(db, id=document_id)
     if document is None:
         raise HTTPException(status_code=404, detail="Document not found")
-    return DocumentResponse.model_validate(document)
+    return DocumentResponseWithContent.model_validate(document)
 
 
-@router.get("/{document_id}/with-party", response_model=DocumentWithParty)
-async def read_document_with_party(
-    document_id: UUID,
-    db: Annotated[AsyncSession, Depends(get_database_session)],
-) -> DocumentWithParty:
-    """Retrieve a specific document with party information."""
-    document = await document_crud.get_with_relationships(
-        db, id=document_id, relationships=["party"]
-    )
-    if document is None:
-        raise HTTPException(status_code=404, detail="Document not found")
-    return DocumentWithParty.model_validate(document)
-
-
-@router.put("/{document_id}", response_model=DocumentResponse)
+@router.put("/{document_id}")
 async def update_document(
     document_id: UUID,
     document_in: DocumentUpdate,
