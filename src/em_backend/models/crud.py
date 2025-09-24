@@ -35,7 +35,7 @@ class ElectionBase(BaseModel):
     date: datetime
     url: str = Field(max_length=500)
     wv_collection: str = Field(
-        default_factory=lambda data: data["year"]
+        default_factory=lambda data: str(data["year"])
         + "".join(ch for ch in data["name"].lower() if ch in string.ascii_lowercase),
         pattern=r"^[a-z0-9]+$",
     )
