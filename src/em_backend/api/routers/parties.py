@@ -4,14 +4,14 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from em_backend.crud import party as party_crud
+from em_backend.api.routers.v2 import get_database_session
+from em_backend.database.crud import party as party_crud
 from em_backend.database.models import Election
 from em_backend.models.crud import (
     PartyCreate,
     PartyResponse,
     PartyUpdate,
 )
-from em_backend.routers.v2 import get_database_session
 
 router = APIRouter(prefix="/parties", tags=["parties"])
 
@@ -36,8 +36,8 @@ async def create_party(
 @router.get("/")
 async def read_parties(
     db: Annotated[AsyncSession, Depends(get_database_session)],
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=1000)] = 100,
 ) -> list[PartyResponse]:
     """Retrieve parties with pagination."""
     parties = await party_crud.get_multi(db, skip=skip, limit=limit)

@@ -4,20 +4,20 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from em_backend.crud import election as election_crud
+from em_backend.api.routers.v2 import get_database_session, get_vector_database
+from em_backend.database.crud import election as election_crud
 from em_backend.database.models import Country
 from em_backend.models.crud import (
     ElectionCreate,
     ElectionResponse,
     ElectionUpdate,
 )
-from em_backend.routers.v2 import get_database_session, get_vector_database
 from em_backend.vector.db import VectorDatabase
 
 router = APIRouter(prefix="/elections", tags=["elections"])
 
 
-@router.post("/", response_model=ElectionResponse)
+@router.post("/")
 async def create_election(
     election_in: ElectionCreate,
     db: Annotated[AsyncSession, Depends(get_database_session)],
@@ -34,23 +34,24 @@ async def create_election(
     )
 
     # Create election documents
-    await weaviate_database.create_election_document_collection(election.id)
+    if not weaviate_database.has_election_collection(election):
+        await weaviate_database.create_election_collection(election)
 
     return ElectionResponse.model_validate(election)
 
 
-@router.get("/", response_model=list[ElectionResponse])
+@router.get("/")
 async def read_elections(
     db: Annotated[AsyncSession, Depends(get_database_session)],
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=1000)] = 100,
 ) -> list[ElectionResponse]:
     """Retrieve elections with pagination."""
     elections = await election_crud.get_multi(db, skip=skip, limit=limit)
     return [ElectionResponse.model_validate(election) for election in elections]
 
 
-@router.get("/{election_id}", response_model=ElectionResponse)
+@router.get("/{election_id}")
 async def read_election(
     election_id: UUID,
     db: Annotated[AsyncSession, Depends(get_database_session)],
@@ -87,9 +88,11 @@ async def delete_election(
     weaviate_database: Annotated[VectorDatabase, Depends(get_vector_database)],
 ) -> dict[str, str]:
     """Delete an election."""
-    await weaviate_database.delete_collection(election_id)
     election = await election_crud.remove(db, id=election_id)
     if election is None:
         raise HTTPException(status_code=404, detail="Election not found")
+
+    if await weaviate_database.has_election_collection(election):
+        await weaviate_database.delete_collection(election)
 
     return {"message": "Election deleted successfully"}

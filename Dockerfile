@@ -42,6 +42,7 @@ COPY --from=builder --chown=app:app /app /app
 
 # Copy the entrypoint script
 COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/healthcheck.sh /healthcheck.sh
 RUN chmod +x /entrypoint.sh
 
 # Place executables in the environment at the front of the path
@@ -57,4 +58,4 @@ USER app
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Run the FastAPI application by default
-CMD ["fastapi", "run", "--host", "0.0.0.0", "/app/src/em_backend/main.py"]
+CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "/app/src/em_backend/main.py"]

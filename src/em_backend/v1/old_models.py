@@ -1,4 +1,4 @@
-from enum import Enum, StrEnum, auto
+from enum import Enum, StrEnum
 from typing import Literal, Self
 
 from pydantic import BaseModel, Field, HttpUrl, model_validator
@@ -6,18 +6,6 @@ from pydantic import BaseModel, Field, HttpUrl, model_validator
 
 class SupportedCountries(StrEnum):
     CL = "cl"
-
-
-class SupportedDocumentFormats(StrEnum):
-    PDF = auto()
-    DOCX = auto()
-    XLSX = auto()
-    PPTX = auto()
-    MARKDOWN = auto()
-    ASCII = auto()
-    HTML = auto()
-    XHTML = auto()
-    CSV = auto()
 
 
 class SupportedLanguages(str, Enum):

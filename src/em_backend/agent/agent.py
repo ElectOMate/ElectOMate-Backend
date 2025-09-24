@@ -89,6 +89,8 @@ class Agent:
 
     @staticmethod
     def get_compiled_agent_graph() -> Pregel[AgentState, AgentContext]:
+        """Build and compile the Langgraph agent."""
+
         async def update_qestion_targets(
             state: AgentState, runtime: Runtime[AgentContext]
         ) -> dict[str, Any]:

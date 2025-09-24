@@ -1,39 +1,38 @@
-.PHONY: help install db-start db-migrate dev migration docker-build docker-run docker-publish clean
+.PHONY: help dev dev-logs dev-shell db-migrate migration prod prod-logs prod-shell prod-migrate publish down clean
 
 # Default target
 help:
 	@echo "Available commands:"
-	@echo "  install     - Install dependencies using uv"
-	@echo "  db-start    - Start PostgreSQL database in Docker"
-	@echo "  db-migrate  - Run database migrations"
-	@echo "  dev         - Start development server"
-	@echo "  migration   - Create new migration (use: make migration message='your message')"
-	@echo "  docker-build - Build Docker container"
-	@echo "  docker-run  - Run Docker container"
-	@echo "  clean       - Clean up Docker containers and volumes"
+	@echo "  dev              - Start full development stack with Docker Compose"
+	@echo "  dev-logs         - View development application logs"
+	@echo "  dev-shell        - Access development container shell"
+	@echo "  db-migrate       - Run database migrations in development container"
+	@echo "  migration        - Create new migration (use: make migration message='your message')"
+	@echo "  prod             - Start production stack (requires external database)"
+	@echo "  prod-logs        - View production application logs"
+	@echo "  prod-shell       - Access production container shell"
+	@echo "  prod-migrate     - Run database migrations in production container"
+	@echo "  down             - Stop all services"
+	@echo "  clean            - Clean up all containers and volumes"
 
-# Install dependencies
-install:
-	uv sync
-
-# Start PostgreSQL database in Docker
-db-start:
-	docker run -d \
-		--name em_postgres \
-		-e POSTGRES_USER=postgres \
-		-e POSTGRES_PASSWORD=postgres \
-		-e POSTGRES_DB=em \
-		-p 5432:5432 \
-		-v pgdata:/var/lib/postgresql/data \
-		postgres
-
-# Run database migrations
-db-migrate:
-	uv run alembic upgrade head
-
-# Start development server
+# Start full development stack with Docker Compose
 dev:
-	uv run --dev --env-file .env fastapi dev src/em_backend/main.py
+	docker compose watch
+	@echo "Development stack started!"
+	@echo "Application: http://localhost:8000"
+	@echo "Database: localhost:5433"
+
+# View development application logs
+dev-logs:
+	docker compose logs -f app
+
+# Access development container shell
+dev-shell:
+	docker compose exec app bash
+
+# Run database migrations in development container
+db-migrate:
+	docker compose exec app alembic upgrade head
 
 # Create new migration (usage: make migration message="your message")
 migration:
@@ -41,22 +40,43 @@ migration:
 		echo "Error: Please provide a message. Usage: make migration message='your message'"; \
 		exit 1; \
 	fi
-	uv run alembic revision --autogenerate -m "$(message)"
+	docker compose exec app alembic revision --autogenerate -m "$(message)"
 
-# Build Docker container
-docker-build:
-	docker build -t em/backend .
+# Start production stack (requires external database configuration)
+prod:
+	@echo "Checking for required environment variables..."
+	@if [ -z "$$POSTGRES_HOST" ]; then \
+		echo "Error: POSTGRES_HOST is required for production deployment."; \
+		echo "Please set the following environment variables in your .env file:"; \
+		echo "  POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB"; \
+		exit 1; \
+	fi
+	docker compose -f docker-compose.prod.yml up --build -d
+	@echo "Production application started at http://localhost:8000"
+	@echo "Using external PostgreSQL database at $$POSTGRES_HOST"
 
-# Run Docker container
-docker-run:
-	docker run --env-file ./.env -p 8000:8000 em/backend
+# View production application logs
+prod-logs:
+	docker compose -f docker-compose.prod.yml logs -f app
 
-# Publish container to azure acr
-docker-publish:
+# Access production container shell
+prod-shell:
+	docker compose -f docker-compose.prod.yml exec app bash
+
+# Run database migrations in production container
+prod-migrate:
+	docker compose -f docker-compose.prod.yml exec app alembic upgrade head
+
+publish:
 	az acr run -f ./acr-build-task.yml --registry embackendacr --set image="em/backend:latest" .
 
-# Clean up Docker containers and volumes
+# Stop all services
+down:
+	docker compose down
+	docker compose -f docker-compose.prod.yml down
+
+# Clean up all containers and volumes
 clean:
-	-docker stop em_postgres
-	-docker rm em_postgres
-	-docker volume rm pgdata
+	docker compose down -v --remove-orphans
+	docker compose -f docker-compose.prod.yml down -v --remove-orphans
+	docker system prune -f

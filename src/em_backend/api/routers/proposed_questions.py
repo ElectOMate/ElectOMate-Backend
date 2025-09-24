@@ -4,14 +4,14 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from em_backend.crud import proposed_question as proposed_question_crud
+from em_backend.api.routers.v2 import get_database_session
+from em_backend.database.crud import proposed_question as proposed_question_crud
 from em_backend.database.models import Party
 from em_backend.models.crud import (
     ProposedQuestionCreate,
     ProposedQuestionResponse,
     ProposedQuestionUpdate,
 )
-from em_backend.routers.v2 import get_database_session
 
 router = APIRouter(prefix="/proposed-questions", tags=["proposed-questions"])
 
@@ -36,8 +36,8 @@ async def create_proposed_question(
 @router.get("/")
 async def read_proposed_questions(
     db: Annotated[AsyncSession, Depends(get_database_session)],
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=1000)] = 100,
 ) -> list[ProposedQuestionResponse]:
     """Retrieve proposed questions with pagination."""
     questions = await proposed_question_crud.get_multi(db, skip=skip, limit=limit)

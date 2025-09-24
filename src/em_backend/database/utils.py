@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from em_backend.config import settings
+from em_backend.core.config import settings
 from em_backend.database.models import Country, Election, Party
 
 

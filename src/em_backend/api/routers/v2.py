@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from em_backend.agent.agent import Agent
 from em_backend.database.utils import create_database_sessionmaker
-from em_backend.parser.parser import DocumentParser
 from em_backend.vector.db import VectorDatabase
+from em_backend.vector.parser import DocumentParser
 
 
 @asynccontextmanager
@@ -70,7 +70,7 @@ async def get_document_parser(req: Request) -> DocumentParser:
 
 v2_router = APIRouter(prefix="/v2", lifespan=lifespan)
 
-from em_backend.routers import (  # noqa: E402
+from em_backend.api.routers import (  # noqa: E402
     agent,
     candidates,
     countries,

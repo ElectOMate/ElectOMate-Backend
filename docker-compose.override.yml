@@ -1,0 +1,21 @@
+services:
+  app:
+    # Override for development
+    environment:
+      ENV: dev
+      # Enable debug logging
+      LOG_LEVEL: DEBUG
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - ./alembic/versions/
+        - action: rebuild
+          path: ./pyproject.toml
+    # Override command for development with auto-reload
+    command: [ "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "/app/src/em_backend/main.py" ]
+    volumes:
+      # Mount alembic versions for development
+      - ./alembic/versions:/app/alembic/versions

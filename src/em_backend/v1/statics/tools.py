@@ -1,5 +1,5 @@
 from em_backend.v1.langchain_citation_client import ToolV2, ToolV2Function
-from em_backend.old_models import SupportedLanguages
+from em_backend.v1.old_models import SupportedLanguages
 
 realtime_session_tools = {
     SupportedLanguages.DE: {

@@ -166,9 +166,7 @@ async def retrieve_documents_from_user_question(
             "messages": messages,
         }
     )
-    documents = await vector_database.retrieve_chunks(
-        election.id, party.id, response.text()
-    )
+    documents = await vector_database.retrieve_chunks(election, party, response.text())
     model = RERANK_DOCUMENTS | chat_model.with_structured_output(
         RerankDocumentsStructuredOutput
     )

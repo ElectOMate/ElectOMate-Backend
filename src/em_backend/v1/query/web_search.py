@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import uuid4
 
-from em_backend.config import tavily_client
+from em_backend.core.config import tavily_client
 from em_backend.v1.langchain_citation_client import Document, DocumentToolContent
 
 

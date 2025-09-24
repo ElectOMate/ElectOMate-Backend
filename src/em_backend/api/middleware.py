@@ -1,8 +1,10 @@
 """Middleware setup module.
 
 This module sets up two important middlewares:
-- Context middleware: contextvars are not enough to keep context inside a single request in startlette, we use the starlette-context library for that
-- Logging middleware: following the [11th factor](https://brandur.org/canonical-log-lines#what-are-they) we only emit one log per request, this is the log emission
+- Context middleware: contextvars are not enough to keep context inside a single request
+  in startlette, we use the starlette-context library for that
+- Logging middleware: following the [11th factor](https://brandur.org/canonical-log-lines#what-are-they)
+  we only emit one log per request, this is the log emission
 """
 
 import logging
@@ -16,6 +18,8 @@ from fastapi.routing import Mount
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.routing import Match
 from starlette.types import ASGIApp, Scope
+from starlette_context import plugins
+from starlette_context.middleware import RawContextMiddleware
 
 logger: structlog.stdlib.BoundLogger = structlog.get_logger()
 
@@ -101,7 +105,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         # https://brandur.org/canonical-log-lines
         log_kwargs: dict[str, Any] = {
             "level": logging.INFO if response.status_code < 400 else logging.ERROR,
-            "event": f"{response.status_code} {scope['method']} {get_path_with_query_string(scope)}",
+            "event": f"{response.status_code} {scope['method']}"
+            "{get_path_with_query_string(scope)}",
             "time": round(elapsed * 1000),
             "status": response.status_code,
             "method": scope["method"],
@@ -118,3 +123,20 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             logger.log(**log_kwargs)
 
         return response
+
+
+def add_middleware(app: FastAPI) -> None:
+    """Adds middleware for context management request across request."""
+    # For some reason, the first added middleware gets executed last
+    # https://fastapi.tiangolo.com/tutorial/middleware/#multiple-middleware-execution-order
+
+    # The logging middleware
+    app.add_middleware(LoggingMiddleware, app)
+
+    # We add a context middleware for context management accross requests
+    app.add_middleware(
+        # Raw context middleware works better with streaming responses
+        # https://starlette-context.readthedocs.io/en/latest/middleware.html#choosing-the-right-middleware
+        RawContextMiddleware,
+        plugins=(plugins.RequestIdPlugin(), plugins.CorrelationIdPlugin()),
+    )

@@ -4,19 +4,18 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from em_backend.crud import country as country_crud
+from em_backend.api.routers.v2 import get_database_session
+from em_backend.database.crud import country as country_crud
 from em_backend.models.crud import (
     CountryCreate,
     CountryResponse,
     CountryUpdate,
-    CountryWithElections,
 )
-from em_backend.routers.v2 import get_database_session
 
 router = APIRouter(prefix="/countries", tags=["countries"])
 
 
-@router.post("/", response_model=CountryResponse)
+@router.post("/")
 async def create_country(
     country_in: CountryCreate,
     db: Annotated[AsyncSession, Depends(get_database_session)],
@@ -26,18 +25,18 @@ async def create_country(
     return CountryResponse.model_validate(country)
 
 
-@router.get("/", response_model=list[CountryResponse])
+@router.get("/")
 async def read_countries(
     db: Annotated[AsyncSession, Depends(get_database_session)],
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=1000)] = 100,
 ) -> list[CountryResponse]:
     """Retrieve countries with pagination."""
     countries = await country_crud.get_multi(db, skip=skip, limit=limit)
     return [CountryResponse.model_validate(country) for country in countries]
 
 
-@router.get("/{country_id}", response_model=CountryResponse)
+@router.get("/{country_id}")
 async def read_country(
     country_id: UUID,
     db: Annotated[AsyncSession, Depends(get_database_session)],
@@ -49,21 +48,7 @@ async def read_country(
     return CountryResponse.model_validate(country)
 
 
-@router.get("/{country_id}/with-elections", response_model=CountryWithElections)
-async def read_country_with_elections(
-    country_id: UUID,
-    db: Annotated[AsyncSession, Depends(get_database_session)],
-) -> CountryWithElections:
-    """Retrieve a specific country with its elections."""
-    country = await country_crud.get_with_relationships(
-        db, id=country_id, relationships=["elections"]
-    )
-    if country is None:
-        raise HTTPException(status_code=404, detail="Country not found")
-    return CountryWithElections.model_validate(country)
-
-
-@router.put("/{country_id}", response_model=CountryResponse)
+@router.put("/{country_id}")
 async def update_country(
     country_id: UUID,
     country_in: CountryUpdate,

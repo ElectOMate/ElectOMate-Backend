@@ -13,7 +13,7 @@ from langchain_text_splitters import (
     RecursiveCharacterTextSplitter,
 )
 
-from em_backend.config import CHUNK_OVERLAP, CHUNK_SIZE
+from em_backend.core.config import CHUNK_OVERLAP, CHUNK_SIZE
 
 
 async def process_file(

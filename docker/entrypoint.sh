@@ -15,7 +15,6 @@ REQUIRED_VARS=(
     "WV_API_KEY"
     "POSTGRES_URL"
     "OPENAI_API_KEY"
-    "ENV"
 )
 
 echo -e "${YELLOW}📋 Checking environment variables...${NC}"

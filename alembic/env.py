@@ -42,7 +42,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    from em_backend.config import settings
+    from em_backend.core.config import settings
 
     context.configure(
         url=settings.postgres_url,
@@ -67,9 +67,11 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
+    from em_backend.core.config import settings
 
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        config.get_section(config.config_ini_section, {})
+        | {"sqlalchemy.url": settings.postgres_url},
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

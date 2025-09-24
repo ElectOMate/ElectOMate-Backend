@@ -1,9 +1,10 @@
+import string
 from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from em_backend.old_models import SupportedDocumentFormats
+from em_backend.models.enums import SupportedDocumentFormats
 
 
 # Base schemas
@@ -27,16 +28,17 @@ class CountryResponse(CountryBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class CountryWithElections(CountryResponse):
-    elections: list["ElectionResponse"] = []
-
-
 # Election schemas
 class ElectionBase(BaseModel):
     name: str = Field(max_length=255)
     year: int
     date: datetime
     url: str = Field(max_length=500)
+    wv_collection: str = Field(
+        default_factory=lambda data: data["year"]
+        + "".join(ch for ch in data["name"].lower() if ch in string.ascii_lowercase),
+        pattern=r"^[a-z0-9]+$",
+    )
 
 
 class ElectionCreate(ElectionBase):
@@ -56,11 +58,6 @@ class ElectionResponse(ElectionBase):
     country_id: UUID
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class ElectionWithDetails(ElectionResponse):
-    country: CountryResponse
-    parties: list["PartyResponse"] = []
 
 
 # Party schemas
@@ -90,13 +87,6 @@ class PartyResponse(PartyBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class PartyWithDetails(PartyResponse):
-    election: ElectionResponse
-    candidate: "CandidateResponse | None" = None
-    documents: list["DocumentResponse"] = []
-    proposed_questions: list["ProposedQuestionResponse"] = []
-
-
 # Candidate schemas
 class CandidateBase(BaseModel):
     given_name: str = Field(max_length=100)
@@ -122,10 +112,6 @@ class CandidateResponse(CandidateBase):
     party_id: UUID
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class CandidateWithParty(CandidateResponse):
-    party: PartyResponse
 
 
 # Document schemas
@@ -180,15 +166,3 @@ class ProposedQuestionResponse(ProposedQuestionBase):
     party_id: UUID
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class ProposedQuestionWithParty(ProposedQuestionResponse):
-    party: PartyResponse
-
-
-# Update forward references
-CountryWithElections.model_rebuild()
-ElectionWithDetails.model_rebuild()
-PartyWithDetails.model_rebuild()
-CandidateWithParty.model_rebuild()
-ProposedQuestionWithParty.model_rebuild()

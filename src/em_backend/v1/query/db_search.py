@@ -6,7 +6,7 @@ import weaviate
 import weaviate.classes as wvc
 
 from em_backend.v1.langchain_citation_client import Document, DocumentToolContent
-from em_backend.old_models import SupportedParties
+from em_backend.v1.old_models import SupportedParties
 
 
 async def get_documents(

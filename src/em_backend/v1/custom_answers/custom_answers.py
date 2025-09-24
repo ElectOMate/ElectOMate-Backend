@@ -14,8 +14,8 @@ from em_backend.statics.questionaire_party_answers import (
 )
 from langchain_core.messages import HumanMessage
 
-from em_backend.config import langchain_async_clients
-from em_backend.old_models import QuestionnaireQuestion, UserAnswer
+from em_backend.core.config import langchain_async_clients
+from em_backend.v1.old_models import QuestionnaireQuestion, UserAnswer
 
 
 async def get_party_contexts(

@@ -3,7 +3,7 @@ import logging
 from em_backend.upload.upload import upload_documents
 from fastapi import APIRouter, HTTPException, UploadFile
 
-from em_backend.config import langchain_async_clients
+from em_backend.core.config import langchain_async_clients
 
 router = APIRouter()
 

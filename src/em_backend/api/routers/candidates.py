@@ -4,20 +4,19 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from em_backend.crud import candidate as candidate_crud
+from em_backend.api.routers.v2 import get_database_session
+from em_backend.database.crud import candidate as candidate_crud
 from em_backend.database.models import Party
 from em_backend.models.crud import (
     CandidateCreate,
     CandidateResponse,
     CandidateUpdate,
-    CandidateWithParty,
 )
-from em_backend.routers.v2 import get_database_session
 
 router = APIRouter(prefix="/candidates", tags=["candidates"])
 
 
-@router.post("/", response_model=CandidateResponse)
+@router.post("/")
 async def create_candidate(
     candidate_in: CandidateCreate,
     db: Annotated[AsyncSession, Depends(get_database_session)],
@@ -34,18 +33,18 @@ async def create_candidate(
     return CandidateResponse.model_validate(candidate)
 
 
-@router.get("/", response_model=list[CandidateResponse])
+@router.get("/")
 async def read_candidates(
     db: Annotated[AsyncSession, Depends(get_database_session)],
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
+    skip: Annotated[int, Query(ge=0)] = 0,
+    limit: Annotated[int, Query(ge=1, le=1000)] = 100,
 ) -> list[CandidateResponse]:
     """Retrieve candidates with pagination."""
     candidates = await candidate_crud.get_multi(db, skip=skip, limit=limit)
     return [CandidateResponse.model_validate(candidate) for candidate in candidates]
 
 
-@router.get("/{candidate_id}", response_model=CandidateResponse)
+@router.get("/{candidate_id}")
 async def read_candidate(
     candidate_id: UUID,
     db: Annotated[AsyncSession, Depends(get_database_session)],
@@ -57,21 +56,7 @@ async def read_candidate(
     return CandidateResponse.model_validate(candidate)
 
 
-@router.get("/{candidate_id}/with-party", response_model=CandidateWithParty)
-async def read_candidate_with_party(
-    candidate_id: UUID,
-    db: Annotated[AsyncSession, Depends(get_database_session)],
-) -> CandidateWithParty:
-    """Retrieve a specific candidate with party information."""
-    candidate = await candidate_crud.get_with_relationships(
-        db, id=candidate_id, relationships=["party"]
-    )
-    if candidate is None:
-        raise HTTPException(status_code=404, detail="Candidate not found")
-    return CandidateWithParty.model_validate(candidate)
-
-
-@router.put("/{candidate_id}", response_model=CandidateResponse)
+@router.put("/{candidate_id}")
 async def update_candidate(
     candidate_id: UUID,
     candidate_in: CandidateUpdate,

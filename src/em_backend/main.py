@@ -3,9 +3,12 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from em_backend.api.exceptions import add_exception_handlers
+from em_backend.api.middleware import add_middleware
+from em_backend.api.observability import add_obervability
+from em_backend.api.routers import v2
+from em_backend.core.config import settings
 from em_backend.core.logging import setup_logging
-from em_backend.middleware.logging import LoggingMiddleware
-from em_backend.routers import v2
 
 
 @asynccontextmanager
@@ -16,8 +19,10 @@ async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
 
 app = FastAPI(lifespan=lifespan)
 
-# The logging middleware
-app.add_middleware(LoggingMiddleware, app)
+add_middleware(app)
+add_exception_handlers(app)
+if settings.env == "prod":
+    add_obervability(app)
 
 app.include_router(v2.v2_router)
 

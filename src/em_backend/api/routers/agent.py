@@ -9,15 +9,14 @@ from pydantic import AfterValidator, BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from em_backend.agent.agent import Agent
+from em_backend.api.routers.v2 import get_agent, get_database_session, get_sessionmaker
 from em_backend.database.utils import (
-    get_country_from_shortcode,
     get_election_from_election_id,
     get_party_from_name_list,
 )
 from em_backend.models.messages import AnyMessage
-from em_backend.routers.v2 import get_agent, get_database_session, get_sessionmaker
 
-agent_router = APIRouter()
+agent_router = APIRouter(tags=["agent"])
 
 
 def last_message_is_user(value: list[AnyMessage]) -> list[AnyMessage]:
@@ -38,10 +37,9 @@ class AgentChatRequest(BaseModel):
     use_web_search: bool
 
 
-@agent_router.post("/{country_code}/chat")
+@agent_router.post("/chat")
 async def agent_chat(
     chat_request: AgentChatRequest,
-    country_code: str,
     agent: Annotated[Agent, Depends(get_agent)],
     session: Annotated[AsyncSession, Depends(get_database_session)],
     # We need the sessionmaker as we need to open a new db session for execution
@@ -50,13 +48,8 @@ async def agent_chat(
         async_sessionmaker[AsyncSession], Depends(get_sessionmaker)
     ],
 ) -> StreamingResponse:
-    country = await get_country_from_shortcode(session, country_code=country_code)
-    if country is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Country not registered."
-        )
     election = await get_election_from_election_id(session, chat_request.election_id)
-    if election is None or election.country != country:
+    if election is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Election not registered."
         )
@@ -87,7 +80,8 @@ async def agent_chat(
             ) as streamer:
                 try:
                     async for chunk in streamer:
-                        yield f"event: {chunk.type}\ndata: {chunk.model_dump_json()}\n\n"
+                        yield f"event: {chunk.type}\n"
+                        "data: {chunk.model_dump_json()}\n\n"
                 except Exception:
                     yield "event: ERROR\ndata: ERROR\n\n"
                     raise

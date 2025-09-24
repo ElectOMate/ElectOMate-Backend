@@ -11,7 +11,11 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from em_backend.old_models import SupportedDocumentFormats
+from em_backend.models.enums import (
+    IndexingSuccess,
+    ParsingQuality,
+    SupportedDocumentFormats,
+)
 
 
 class Base(MappedAsDataclass, DeclarativeBase, AsyncAttrs):
@@ -40,6 +44,7 @@ class Election(Base):
     year: Mapped[int]
     date: Mapped[datetime]
     url: Mapped[str]
+    wv_collection: Mapped[str]
 
     country_id: Mapped[UUID] = mapped_column(ForeignKey("country_table.id"))
     country: Mapped[Country] = relationship(default=None)
@@ -99,7 +104,12 @@ class Document(Base):
     party: Mapped[Party] = relationship(default=None)
 
     content: Mapped[str | None] = mapped_column(default=None)
-    is_indexed: Mapped[bool] = mapped_column(default=False)
+    parsing_quality: Mapped[ParsingQuality] = mapped_column(
+        default=ParsingQuality.NO_PARSING
+    )
+    indexing_sucess: Mapped[IndexingSuccess] = mapped_column(
+        default=IndexingSuccess.NO_INDEXING
+    )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 

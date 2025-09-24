@@ -12,16 +12,11 @@ class Settings(BaseSettings):
     wv_api_key: str
 
     # Open AI API keys
+    openai_model_name: str = "gpt-4o"
     openai_api_key: str
-
-    # Bing API keys
-    tavily_api_key: str
 
     # Postgres url
     postgres_url: str
-
-    # Deployement config
-    allow_origins: str = "*"
 
 
 settings = Settings()  # type: ignore
