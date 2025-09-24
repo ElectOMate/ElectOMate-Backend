@@ -1,4 +1,4 @@
-.PHONY: help install db-start db-migrate dev migration docker-build docker-run clean
+.PHONY: help install db-start db-migrate dev migration docker-build docker-run docker-publish clean
 
 # Default target
 help:
@@ -50,6 +50,10 @@ docker-build:
 # Run Docker container
 docker-run:
 	docker run --env-file ./.env -p 8000:8000 em/backend
+
+# Publish container to azure acr
+docker-publish:
+	az acr run -f ./acr-build-task.yml --registry embackendacr --set image="em/backend:latest" .
 
 # Clean up Docker containers and volumes
 clean:
