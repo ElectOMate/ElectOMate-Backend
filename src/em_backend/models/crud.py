@@ -4,7 +4,11 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from em_backend.models.enums import SupportedDocumentFormats
+from em_backend.models.enums import (
+    IndexingSuccess,
+    ParsingQuality,
+    SupportedDocumentFormats,
+)
 
 
 # Base schemas
@@ -35,7 +39,7 @@ class ElectionBase(BaseModel):
     date: datetime
     url: str = Field(max_length=500)
     wv_collection: str = Field(
-        default_factory=lambda data: data["year"]
+        default_factory=lambda data: str(data["year"])
         + "".join(ch for ch in data["name"].lower() if ch in string.ascii_lowercase),
         pattern=r"^[a-z0-9]+$",
     )
@@ -118,7 +122,8 @@ class CandidateResponse(CandidateBase):
 class DocumentBase(BaseModel):
     title: str = Field(max_length=255)
     type: SupportedDocumentFormats
-    is_indexed: bool = False
+    parsing_quality: ParsingQuality = ParsingQuality.NO_PARSING
+    indexing_success: IndexingSuccess = IndexingSuccess.NO_INDEXING
 
 
 class DocumentCreate(DocumentBase):
