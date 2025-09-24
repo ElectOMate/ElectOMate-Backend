@@ -25,14 +25,37 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Then, use a final image without uv
 FROM debian:bookworm-slim
 
+# Install system dependencies for the entrypoint script
+RUN apt-get update && apt-get install -y \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app user and group
+RUN groupadd --gid 1000 app \
+    && useradd --uid 1000 --gid app --shell /bin/bash --create-home app
+
 # Copy the Python version
-COPY --from=builder --chown=python:python /python /python
+COPY --from=builder --chown=app:app /python /python
 
 # Copy the application from the builder
 COPY --from=builder --chown=app:app /app /app
 
+# Copy the entrypoint script
+COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/healthcheck.sh /healthcheck.sh
+RUN chmod +x /entrypoint.sh
+
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
+# Set working directory
+WORKDIR /app
+
+# Switch to app user
+USER app
+
+# Use the entrypoint script
+ENTRYPOINT ["/entrypoint.sh"]
+
 # Run the FastAPI application by default
-CMD ["fastapi", "run", "--host", "0.0.0.0", "/app/src/em_backend/main.py"]
+CMD ["fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "/app/src/em_backend/main.py"]

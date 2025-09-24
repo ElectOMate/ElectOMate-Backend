@@ -1,0 +1,66 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: electomate-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: em_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - electomate-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d em_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ElectOMate Backend Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: electomate-backend
+    environment:
+      # Database Configuration  
+      POSTGRES_URL: ${POSTGRES_URL:-postgresql+psycopg://postgres:postgres@postgres:5432/em_dev}
+      
+      # Weaviate Configuration (from .env)
+      WV_URL: ${WV_URL}
+      WV_API_KEY: ${WV_API_KEY}
+      
+      # OpenAI Configuration (from .env)
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      
+      # Application Environment
+      ENV: ${ENV:-dev}
+    ports:
+      - "8000:8000"
+    networks:
+      - electomate-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Networks
+networks:
+  electomate-network:
+    driver: bridge
+    name: electomate-network
+
+# Volumes
+volumes:
+  postgres_data:
+    driver: local
+    name: electomate-postgres-data

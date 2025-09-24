@@ -42,9 +42,10 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    from em_backend.core.config import settings
+
     context.configure(
-        url=url,
+        url=settings.postgres_url,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -66,9 +67,11 @@ async def run_async_migrations() -> None:
     and associate a connection with the context.
 
     """
+    from em_backend.core.config import settings
 
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        config.get_section(config.config_ini_section, {})
+        | {"sqlalchemy.url": settings.postgres_url},
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

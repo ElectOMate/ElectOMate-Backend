@@ -11,23 +11,38 @@ dependencies = [
     "aiostream>=0.7.0",
     "alembic>=1.16.5",
     "alembic-postgresql-enum>=1.8.0",
-    "asyncer>=0.0.8",
-    "cohere>=5.18.0",
-    "docling>=2.53.0",
+    "alembic-utils>=0.8.8",
+    "azure-monitor-opentelemetry>=1.8.1",
+    "docling>=2.54.0",
+    "docling-core[chunking-openai]>=2.48.2",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.116.2",
+    "httpx>=0.28.1",
     "langchain-core>=0.3.76",
     "langchain-openai>=0.3.33",
     "langchain-text-splitters>=0.3.11",
     "langgraph>=0.6.7",
-    "markdown>=3.9",
     "openai>=1.108.0",
-    "prometheus-fastapi-instrumentator>=7.1.0",
+    "opentelemetry-api>=1.37.0",
+    "opentelemetry-instrumentation-fastapi>=0.58b0",
+    "opentelemetry-instrumentation-httpx>=0.58b0",
+    "opentelemetry-sdk>=1.37.0",
+    "orjson>=3.11.3",
     "pydantic-settings>=2.10.1",
-    "pymupdf4llm>=0.0.27",
+    "python-json-logger>=3.3.0",
     "sqlalchemy[postgresql-psycopgbinary]>=2.0.43",
-    "tavily-python>=0.7.12",
+    "starlette-context>=0.4.0",
+    "structlog>=25.4.0",
+    "torch>=2.8.0",
+    "torchvision>=0.23.0",
     "weaviate-client>=4.16.10",
 ]
+
+[dependency-groups]
+dev = [
+    "rich>=14.1.0",
+    "truststore>=0.10.4",
+]
+
 
 [project.scripts]
 em-backend = "em_backend:main"
@@ -36,8 +51,27 @@ em-backend = "em_backend:main"
 requires = ["uv_build>=0.8.14,<0.9.0"]
 build-backend = "uv_build"
 
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu" },
+]
+torchvision = [
+  { index = "pytorch-cpu" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
 [tool.ruff.lint]
 select = [
+    # FastAPI
+    "FAST",
+    # flake8-annotations: detect missing annotations
+    "ANN",
+    # flake8-async: detect async problems
+    "ASYNC",
     # pycodestyle
     "E",
     # Pyflakes
@@ -71,6 +105,7 @@ script_location = "%(here)s/alembic"
 prepend_sys_path = [
     "."
 ]
+
 
 # timezone to use when rendering the date within the migration file
 # as well as the filename.

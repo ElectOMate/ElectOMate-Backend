@@ -11,7 +11,11 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from em_backend.models import SupportedDocumentFormats
+from em_backend.models.enums import (
+    IndexingSuccess,
+    ParsingQuality,
+    SupportedDocumentFormats,
+)
 
 
 class Base(MappedAsDataclass, DeclarativeBase, AsyncAttrs):
@@ -24,7 +28,7 @@ class Country(Base):
     __tablename__ = "country_table"
 
     name: Mapped[str]
-    code: Mapped[str] = mapped_column(CHAR(2))
+    code: Mapped[str] = mapped_column(CHAR(2), unique=True)
 
     elections: Mapped[list["Election"]] = relationship(
         default_factory=list, back_populates="country"
@@ -40,11 +44,14 @@ class Election(Base):
     year: Mapped[int]
     date: Mapped[datetime]
     url: Mapped[str]
+    wv_collection: Mapped[str]
 
     country_id: Mapped[UUID] = mapped_column(ForeignKey("country_table.id"))
-    country: Mapped[Country] = relationship(back_populates="elections")
+    country: Mapped[Country] = relationship(default=None)
 
-    parties: Mapped[list["Party"]] = relationship(back_populates="election")
+    parties: Mapped[list["Party"]] = relationship(
+        default_factory=list, back_populates="election"
+    )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
@@ -58,9 +65,9 @@ class Party(Base):
     url: Mapped[str | None]
 
     election_id: Mapped[UUID] = mapped_column(ForeignKey("election_table.id"))
-    election: Mapped[Country] = relationship(back_populates="parties")
+    election: Mapped[Election] = relationship(default=None)
 
-    candidate: Mapped["Candidate"] = relationship(back_populates="party")
+    candidate: Mapped["Candidate"] = relationship(default=None, back_populates="party")
 
     documents: Mapped[list["Document"]] = relationship(
         default_factory=list, back_populates="party"
@@ -82,7 +89,7 @@ class Candidate(Base):
     url: Mapped[str | None]
 
     party_id: Mapped[UUID] = mapped_column(ForeignKey("party_table.id"))
-    party: Mapped[Party] = relationship(back_populates="candidate")
+    party: Mapped[Party] = relationship(default=None)
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
@@ -91,14 +98,18 @@ class Document(Base):
     __tablename__ = "document_table"
 
     title: Mapped[str]
-    content: Mapped[bytes]
     type: Mapped[SupportedDocumentFormats]
 
     party_id: Mapped[UUID] = mapped_column(ForeignKey("party_table.id"))
-    party: Mapped[Party] = relationship(back_populates="documents")
+    party: Mapped[Party] = relationship(default=None)
 
-    is_indexed: Mapped[bool] = mapped_column(default=False)
-    is_manifesto: Mapped[bool] = mapped_column(default=False)
+    content: Mapped[str | None] = mapped_column(default=None)
+    parsing_quality: Mapped[ParsingQuality] = mapped_column(
+        default=ParsingQuality.NO_PARSING
+    )
+    indexing_sucess: Mapped[IndexingSuccess] = mapped_column(
+        default=IndexingSuccess.NO_INDEXING
+    )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
@@ -109,7 +120,7 @@ class ProposedQuestion(Base):
     question: Mapped[str]
 
     party_id: Mapped[UUID] = mapped_column(ForeignKey("party_table.id"))
-    party: Mapped[Party] = relationship(back_populates="proposed_questions")
+    party: Mapped[Party] = relationship(default=None)
 
     cached_answer: Mapped[str | None] = mapped_column(default=None)
 
