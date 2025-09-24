@@ -17,6 +17,7 @@ from pythonjsonlogger.orjson import OrjsonFormatter
 from starlette_context import context
 from starlette_context.header_keys import HeaderKeys
 
+from em_backend.api.middleware import API_LOGGER_NAME
 from em_backend.core.config import settings
 
 
@@ -26,15 +27,23 @@ class ExtraFormatter(logging.Formatter):
     alongside the log message.
     """
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: ANN401
+        super().__init__(*args, **kwargs)
+        standard_attrs = set(
+            logging.LogRecord("", 0, "", 0, "", (), None).__dict__.keys()
+        )
+        standard_attrs.add("message")
+        standard_attrs.add("asctime")
+        standard_attrs.add("color_message")
+        self.standard_attrs = standard_attrs
+
     def format(self, record: logging.LogRecord) -> str:
         # Default log message
         base = super().format(record)
 
-        # Collect "extra" fields (anything not standard in LogRecord)
-        standard_attrs = set(
-            logging.LogRecord("", 0, "", 0, "", (), None).__dict__.keys()
-        )
-        extras = {k: v for k, v in record.__dict__.items() if k not in standard_attrs}
+        extras = {
+            k: v for k, v in record.__dict__.items() if k not in self.standard_attrs
+        }
 
         if extras:
             return f"{base} | extra={json.dumps(extras, default=str)}"
@@ -105,13 +114,6 @@ def setup_logging() -> None:
             structlog.processors.TimeStamper(fmt="iso", utc=True),
             structlog.processors.StackInfoRenderer(),
             structlog.processors.UnicodeDecoder(),
-            structlog.processors.CallsiteParameterAdder(
-                {
-                    structlog.processors.CallsiteParameter.FILENAME,
-                    structlog.processors.CallsiteParameter.FUNC_NAME,
-                    structlog.processors.CallsiteParameter.LINENO,
-                }
-            ),
             structlog.stdlib.render_to_log_kwargs,
         ]
 
@@ -123,12 +125,17 @@ def setup_logging() -> None:
     )
 
     logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+
+    # Clear any existing handlers to ensure only our handler is used
+    logger.handlers.clear()
 
     if settings.env == "prod":
         handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(OrjsonFormatter())
-        logger.addHandler(handler)
+        logger.setLevel(logging.WARNING)
+        logging.getLogger(API_LOGGER_NAME).setLevel(logging.INFO)
     else:
-        handler = logging.StreamHandler()
+        handler = logging.StreamHandler(sys.stdout)
         handler.setFormatter(ExtraFormatter("%(levelname)s [%(name)s] %(message)s"))
+        logger.setLevel(logging.INFO)
+    logger.addHandler(handler)

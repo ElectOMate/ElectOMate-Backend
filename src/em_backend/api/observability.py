@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from starlette_context import context
 from starlette_context.header_keys import HeaderKeys
 
+from em_backend.api.middleware import API_LOGGER_NAME
+
 
 def add_obervability(app: FastAPI) -> None:
     """Setup Jaeger tracing on the application."""
@@ -20,7 +22,7 @@ def add_obervability(app: FastAPI) -> None:
 
     # === Setup Tracing === #
 
-    configure_azure_monitor()
+    configure_azure_monitor(logger_name=API_LOGGER_NAME)
 
     # === Instrumentation === #
 

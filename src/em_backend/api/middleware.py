@@ -21,7 +21,9 @@ from starlette.types import ASGIApp, Scope
 from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 
-logger: structlog.stdlib.BoundLogger = structlog.get_logger()
+API_LOGGER_NAME = "api"
+
+logger: structlog.stdlib.BoundLogger = structlog.get_logger(API_LOGGER_NAME)
 
 
 def get_route_name(app: ASGIApp, scope: Scope, prefix: str = "") -> str:

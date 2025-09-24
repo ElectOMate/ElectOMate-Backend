@@ -1,4 +1,4 @@
-from em_backend.crud.base import CRUDBase
+from em_backend.database.crud.base import CRUDBase
 from em_backend.database.models import (
     Candidate,
     Country,
