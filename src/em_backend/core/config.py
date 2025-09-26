@@ -1,6 +1,10 @@
 from typing import Literal
 
+import truststore
 from pydantic_settings import BaseSettings
+
+# Use system certificates
+truststore.inject_into_ssl()
 
 
 class Settings(BaseSettings):

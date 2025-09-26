@@ -28,6 +28,7 @@ class CountryUpdate(BaseModel):
 
 class CountryResponse(CountryBase):
     id: UUID
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -39,9 +40,10 @@ class ElectionBase(BaseModel):
     date: datetime
     url: str = Field(max_length=500)
     wv_collection: str = Field(
-        default_factory=lambda data: str(data["year"])
+        default_factory=lambda data: "D"
+        + str(data["year"])
         + "".join(ch for ch in data["name"].lower() if ch in string.ascii_lowercase),
-        pattern=r"^[a-z0-9]+$",
+        pattern=r"[A-Za-z0-9]+",
     )
 
 
@@ -55,11 +57,16 @@ class ElectionUpdate(BaseModel):
     date: datetime | None = None
     url: str | None = Field(None, max_length=500)
     country_id: UUID | None = None
+    wv_collection: str | None = Field(
+        default=None,
+        pattern=r"[A-Za-z0-9]+",
+    )
 
 
 class ElectionResponse(ElectionBase):
     id: UUID
     country_id: UUID
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -87,6 +94,7 @@ class PartyUpdate(BaseModel):
 class PartyResponse(PartyBase):
     id: UUID
     election_id: UUID
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -114,6 +122,7 @@ class CandidateUpdate(BaseModel):
 class CandidateResponse(CandidateBase):
     id: UUID
     party_id: UUID
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -136,12 +145,14 @@ class DocumentUpdate(BaseModel):
     content: str | None = None
     type: SupportedDocumentFormats | None = None
     party_id: UUID | None = None
-    is_indexed: bool | None = None
+    parsing_quality: ParsingQuality | None = None
+    indexing_success: IndexingSuccess | None = None
 
 
 class DocumentResponse(DocumentBase):
     id: UUID
     party_id: UUID
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -169,5 +180,6 @@ class ProposedQuestionUpdate(BaseModel):
 class ProposedQuestionResponse(ProposedQuestionBase):
     id: UUID
     party_id: UUID
+    created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

@@ -57,15 +57,8 @@ docker-compose exec postgres psql -U postgres -d em_dev
 #### Adding New Dependencies
 
 ```bash
-# Access the container
-make dev-shell
-
 # Inside container, add package
 uv add package-name
-
-# Exit and rebuild
-exit
-docker-compose up --build
 ```
 
 #### Debugging

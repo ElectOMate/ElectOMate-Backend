@@ -26,8 +26,17 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 FROM debian:bookworm-slim
 
 # Install system dependencies for the entrypoint script
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
+    dialog \
+    openssh-server \
+    ca-certificates \
+    openssl \
+    gosu \
+    # Required for https outbound traffic
+    && update-ca-certificates \ 
+    # Required for ssh into the container
+    && echo "root:Docker!" | chpasswd \
     && rm -rf /var/lib/apt/lists/*
 
 # Create app user and group
@@ -43,7 +52,11 @@ COPY --from=builder --chown=app:app /app /app
 # Copy the entrypoint script
 COPY docker/entrypoint.sh /entrypoint.sh
 COPY docker/healthcheck.sh /healthcheck.sh
-RUN chmod +x /entrypoint.sh
+COPY docker/sshd_config /etc/ssh/
+RUN chmod u+x /entrypoint.sh
+
+# Create SSH directory and set permissions
+RUN mkdir -p /run/sshd && chmod 755 /run/sshd
 
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
@@ -51,10 +64,10 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Set working directory
 WORKDIR /app
 
-# Switch to app user
-USER app
+# Expose ssh port
+EXPOSE 8000 2222
 
-# Use the entrypoint script
+# Use the entrypoint script (keep as root initially)
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Run the FastAPI application by default

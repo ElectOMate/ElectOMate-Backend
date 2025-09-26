@@ -22,10 +22,11 @@ services:
 
   # ElectOMate Backend Application
   app:
+    container_name: electomate-backend
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: electomate-backend
+    command: [ "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "/app/src/em_backend/main.py" ]
     environment:
       # Database Configuration  
       POSTGRES_URL: ${POSTGRES_URL:-postgresql+psycopg://postgres:postgres@postgres:5432/em_dev}
@@ -39,10 +40,23 @@ services:
       
       # Application Environment
       ENV: ${ENV:-dev}
+      LOG_LEVEL: DEBUG
     ports:
       - "8000:8000"
     networks:
       - electomate-network
+    volumes:
+      # Mount alembic versions for development
+      - ./alembic/versions:/app/alembic/versions
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - ./alembic/versions/
+        - action: rebuild
+          path: ./pyproject.toml
     depends_on:
       postgres:
         condition: service_healthy

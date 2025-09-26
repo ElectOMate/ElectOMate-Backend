@@ -27,7 +27,11 @@ from em_backend.models.crud import (
     DocumentResponseWithContent,
     DocumentUpdate,
 )
-from em_backend.models.enums import ParsingQuality, SupportedDocumentFormats
+from em_backend.models.enums import (
+    IndexingSuccess,
+    ParsingQuality,
+    SupportedDocumentFormats,
+)
 from em_backend.vector.db import VectorDatabase
 from em_backend.vector.parser import DocumentParser
 
@@ -62,21 +66,30 @@ async def process_document(
     async with sessionmaker() as session:
         document = await session.merge(document)
 
-        # Parse file
-        parsed_document, confidence = document_parser.parse_document(
-            document.title, file_content
-        )
-        document.parsing_quality = PARSING_QUALITY_MAPPING[confidence.mean_grade]
-        document.content = document_parser.serialize_document(parsed_document)
-        await session.commit()
+        try:
+            # Parse file
+            parsed_document, confidence = document_parser.parse_document(
+                document.title, file_content
+            )
+            document.parsing_quality = PARSING_QUALITY_MAPPING[confidence.mean_grade]
+            document.content = document_parser.serialize_document(parsed_document)
+            await session.commit()
+        except Exception:
+            document.parsing_quality = ParsingQuality.FAILED
+            await session.commit()
+            raise
 
-        # Chunk and vectorize file
-        document_chunks = document_parser.chunk_document(parsed_document)
-        party = cast("Party", await document.awaitable_attrs.party)
-        document.indexing_sucess = weaviate_database.insert_chunks(
-            party.election, party, document, document_chunks
-        )
-        await session.commit()
+        try:
+            # Chunk and vectorize file
+            document_chunks = document_parser.chunk_document(parsed_document)
+            party = cast("Party", await document.awaitable_attrs.party)
+            document.indexing_sucess = weaviate_database.insert_chunks(
+                party.election, party, document, document_chunks
+            )
+            await session.commit()
+        except Exception:
+            document.indexing_sucess = IndexingSuccess.FAILED
+            await session.commit()
 
 
 router = APIRouter(prefix="/documents", tags=["documents"])

@@ -19,6 +19,7 @@ class ParsingQuality(StrEnum):
     FAIR = auto()
     GOOD = auto()
     EXCELLENT = auto()
+    FAILED = auto()
     UNSPECIFIED = auto()
 
 

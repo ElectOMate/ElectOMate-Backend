@@ -5,6 +5,7 @@ from io import BytesIO
 import tiktoken
 from docling.datamodel.base_models import ConfidenceReport
 from docling.document_converter import DocumentConverter
+from docling.utils.model_downloader import download_models
 from docling_core.transforms.chunker.hybrid_chunker import HybridChunker
 from docling_core.transforms.chunker.tokenizer.openai import OpenAITokenizer
 from docling_core.transforms.serializer.markdown import MarkdownDocSerializer
@@ -20,6 +21,9 @@ class DocumentParser:
     """Parse PDF files."""
 
     def __init__(self) -> None:
+        # Pre download models
+        download_models(progress=True)
+
         # Setup Document converter
         self.doc_converter = DocumentConverter()
 

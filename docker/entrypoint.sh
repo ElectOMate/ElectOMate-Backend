@@ -41,15 +41,43 @@ fi
 
 echo -e "${GREEN}✅ All environment variables are present${NC}"
 
-# Run Alembic migrations
-echo -e "${YELLOW}🔄 Running database migrations...${NC}"
-if alembic upgrade head; then
-    echo -e "${GREEN}✅ Database migrations completed successfully${NC}"
+# Enable ssh (as root)
+echo -e "${YELLOW}🔐 Starting SSH service...${NC}"
+if [ "$(id -u)" = "0" ]; then
+    service ssh start
+    echo -e "${GREEN}✅ SSH service started${NC}"
+    
+    # Switch to app user for the rest of the operations
+    echo -e "${YELLOW}👤 Switching to app user...${NC}"
+    
+    # Run the rest as the app user
+    exec gosu app bash -c "
+        # Run Alembic migrations
+        echo -e '${YELLOW}🔄 Running database migrations...${NC}'
+        if alembic upgrade head; then
+            echo -e '${GREEN}✅ Database migrations completed successfully${NC}'
+        else
+            echo -e '${RED}❌ Database migrations failed${NC}'
+            exit 1
+        fi
+        
+        # Execute the main command
+        echo -e '${GREEN}🎯 Starting application...${NC}'
+        exec \"\$@\"
+    " -- "$@"
 else
-    echo -e "${RED}❌ Database migrations failed${NC}"
-    exit 1
+    echo -e "${YELLOW}⚠️ Already running as non-root user${NC}"
+    
+    # Run Alembic migrations
+    echo -e "${YELLOW}🔄 Running database migrations...${NC}"
+    if alembic upgrade head; then
+        echo -e "${GREEN}✅ Database migrations completed successfully${NC}"
+    else
+        echo -e "${RED}❌ Database migrations failed${NC}"
+        exit 1
+    fi
+    
+    # Execute the main command
+    echo -e "${GREEN}🎯 Starting application...${NC}"
+    exec "$@"
 fi
-
-# Execute the main command
-echo -e "${GREEN}🎯 Starting application...${NC}"
-exec "$@"

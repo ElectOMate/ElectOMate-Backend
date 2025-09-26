@@ -24,7 +24,15 @@ class Base(MappedAsDataclass, DeclarativeBase, AsyncAttrs):
     pass
 
 
-class Country(Base):
+class CreatedAtMixin(MappedAsDataclass):
+    """Adds a column in the relationship with a UTC created_at timestamp."""
+
+    created_at: Mapped[datetime] = mapped_column(
+        default_factory=datetime.now, init=False
+    )
+
+
+class Country(Base, CreatedAtMixin):
     __tablename__ = "country_table"
 
     name: Mapped[str]
@@ -37,7 +45,7 @@ class Country(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
 
-class Election(Base):
+class Election(Base, CreatedAtMixin):
     __tablename__ = "election_table"
 
     name: Mapped[str]
@@ -56,7 +64,7 @@ class Election(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
 
-class Party(Base):
+class Party(Base, CreatedAtMixin):
     __tablename__ = "party_table"
 
     shortname: Mapped[str]
@@ -80,7 +88,7 @@ class Party(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
 
-class Candidate(Base):
+class Candidate(Base, CreatedAtMixin):
     __tablename__ = "candidate_table"
 
     given_name: Mapped[str]
@@ -94,7 +102,7 @@ class Candidate(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
 
-class Document(Base):
+class Document(Base, CreatedAtMixin):
     __tablename__ = "document_table"
 
     title: Mapped[str]
@@ -107,14 +115,14 @@ class Document(Base):
     parsing_quality: Mapped[ParsingQuality] = mapped_column(
         default=ParsingQuality.NO_PARSING
     )
-    indexing_sucess: Mapped[IndexingSuccess] = mapped_column(
+    indexing_success: Mapped[IndexingSuccess] = mapped_column(
         default=IndexingSuccess.NO_INDEXING
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
 
-class ProposedQuestion(Base):
+class ProposedQuestion(Base, CreatedAtMixin):
     __tablename__ = "proposed_question_table"
 
     question: Mapped[str]

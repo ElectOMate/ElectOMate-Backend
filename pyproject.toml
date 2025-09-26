@@ -34,14 +34,12 @@ dependencies = [
     "structlog>=25.4.0",
     "torch>=2.8.0",
     "torchvision>=0.23.0",
+    "truststore>=0.10.4",
     "weaviate-client>=4.16.10",
 ]
 
 [dependency-groups]
-dev = [
-    "rich>=14.1.0",
-    "truststore>=0.10.4",
-]
+dev = []
 
 
 [project.scripts]

@@ -34,7 +34,7 @@ async def create_election(
     )
 
     # Create election documents
-    if not weaviate_database.has_election_collection(election):
+    if not await weaviate_database.has_election_collection(election):
         await weaviate_database.create_election_collection(election)
 
     return ElectionResponse.model_validate(election)
