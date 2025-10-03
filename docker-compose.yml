@@ -26,6 +26,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        PRELOAD_DOCLING_MODELS: ${PRELOAD_DOCLING_MODELS:-false}
     command: [ "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "/app/src/em_backend/main.py" ]
     environment:
       # Database Configuration  

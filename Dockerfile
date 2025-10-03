@@ -25,6 +25,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Then, use a final image without uv
 FROM debian:bookworm-slim
 
+ARG PRELOAD_DOCLING_MODELS=true
+
 # Install system dependencies for the entrypoint script
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
@@ -68,8 +70,12 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Set working directory
 WORKDIR /app
 
-# Preload all the models in the image
-RUN gosu app docling-tools models download
+# Preload all the models in the image (optional for development builds)
+RUN if [ "$PRELOAD_DOCLING_MODELS" = "true" ]; then \
+      gosu app docling-tools models download; \
+    else \
+      echo "Skipping Docling model download during image build"; \
+    fi
 
 # Expose ssh port
 EXPOSE 8000 2222
