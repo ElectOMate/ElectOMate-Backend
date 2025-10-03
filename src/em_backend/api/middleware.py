@@ -108,7 +108,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         log_kwargs: dict[str, Any] = {
             "level": logging.INFO if response.status_code < 400 else logging.ERROR,
             "event": f"{response.status_code} {scope['method']}"
-            "{get_path_with_query_string(scope)}",
+            f"{get_path_with_query_string(scope)}",
             "time": round(elapsed * 1000),
             "status": response.status_code,
             "method": scope["method"],

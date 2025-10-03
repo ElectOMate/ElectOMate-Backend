@@ -1,11 +1,12 @@
 import logging
 from collections.abc import Generator
 from io import BytesIO
+from pathlib import Path
 
 import tiktoken
-from docling.datamodel.base_models import ConfidenceReport
-from docling.document_converter import DocumentConverter
-from docling.utils.model_downloader import download_models
+from docling.datamodel.base_models import ConfidenceReport, InputFormat
+from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling_core.transforms.chunker.hybrid_chunker import HybridChunker
 from docling_core.transforms.chunker.tokenizer.openai import OpenAITokenizer
 from docling_core.transforms.serializer.markdown import MarkdownDocSerializer
@@ -21,11 +22,16 @@ class DocumentParser:
     """Parse PDF files."""
 
     def __init__(self) -> None:
-        # Pre download models
-        download_models(progress=True)
-
         # Setup Document converter
-        self.doc_converter = DocumentConverter()
+        self.doc_converter = DocumentConverter(
+            format_options={
+                InputFormat.PDF: PdfFormatOption(
+                    pipeline_options=PdfPipelineOptions(
+                        artifacts_path=Path.home() / ".cache" / "docling" / "models"
+                    )
+                )
+            }
+        )
 
         # Setup Document chunker
         self.tokenizer = OpenAITokenizer(

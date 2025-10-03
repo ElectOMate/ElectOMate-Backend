@@ -83,13 +83,14 @@ async def process_document(
             # Chunk and vectorize file
             document_chunks = document_parser.chunk_document(parsed_document)
             party = cast("Party", await document.awaitable_attrs.party)
-            document.indexing_sucess = weaviate_database.insert_chunks(
-                party.election, party, document, document_chunks
+            document.indexing_success = weaviate_database.insert_chunks(
+                await party.awaitable_attrs.election, party, document, document_chunks
             )
             await session.commit()
         except Exception:
-            document.indexing_sucess = IndexingSuccess.FAILED
+            document.indexing_success = IndexingSuccess.FAILED
             await session.commit()
+            raise
 
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -106,6 +107,7 @@ async def create_document(
         async_sessionmaker[AsyncSession], Depends(get_sessionmaker)
     ],
     background_tasks: BackgroundTasks,
+    is_document_already_parsed: Annotated[bool, Form()] = False,
 ) -> DocumentResponse:
     """Create a new document from uploaded file."""
     if not file.filename:
@@ -139,14 +141,18 @@ async def create_document(
     )
 
     # Document parsing is in the background
-    background_tasks.add_task(
-        process_document,
-        document,
-        BytesIO(await file.read()),
-        sessionmaker,
-        weaviate_database,
-        document_parser,
-    )
+    if not is_document_already_parsed:
+        background_tasks.add_task(
+            process_document,
+            document,
+            BytesIO(await file.read()),
+            sessionmaker,
+            weaviate_database,
+            document_parser,
+        )
+    else:
+        document.indexing_success = IndexingSuccess.SUCCESS
+        document.parsing_quality = ParsingQuality.UNSPECIFIED
     return DocumentResponse.model_validate(document)
 
 

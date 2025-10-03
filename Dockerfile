@@ -34,9 +34,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssl \
     gosu \
     # Required for https outbound traffic
-    && update-ca-certificates \ 
+    && update-ca-certificates \
     # Required for ssh into the container
     && echo "root:Docker!" | chpasswd \
+    # Check gosu works properly
+    && gosu nobody true \
+    # Clean up
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Create app user and group
@@ -63,6 +67,9 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Set working directory
 WORKDIR /app
+
+# Preload all the models in the image
+RUN gosu app docling-tools models download
 
 # Expose ssh port
 EXPOSE 8000 2222
