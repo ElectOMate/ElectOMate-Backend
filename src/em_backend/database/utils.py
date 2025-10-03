@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from enum import StrEnum
 from uuid import UUID
 
 from sqlalchemy import select
@@ -14,6 +15,17 @@ async def create_database_sessionmaker() -> AsyncGenerator[async_sessionmaker]:
     engine = create_async_engine(url=settings.postgres_url)
     yield async_sessionmaker(engine)
     await engine.dispose()
+
+
+async def get_parties_enum(session: AsyncSession, election: Election) -> type[StrEnum]:
+    # Get all party shortnames for the country
+    party_stmt = select(Party.shortname).where(Party.election == election)
+    party_result = await session.execute(party_stmt)
+    all_party_shortnames = [row[0] for row in party_result.fetchall()]
+
+    return StrEnum(
+        "Parties", {shortname.upper(): shortname for shortname in all_party_shortnames}
+    )  # pyright: ignore[reportReturnType]
 
 
 async def get_missing_party_shortnames(

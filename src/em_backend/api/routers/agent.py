@@ -70,18 +70,20 @@ async def agent_chat(
             bound_selected_parties = [
                 await session.merge(party) for party in selected_parties
             ]
-            async with streamcontext(
-                await agent.invoke(
+            try:
+                stream = await agent.invoke(
                     chat_request.messages,
                     election=bound_election,
                     selected_parties=bound_selected_parties,
                     session=session,
                 )
-            ) as streamer:
+            except Exception:
+                yield "event: ERROR\ndata: ERROR\n\n"
+                raise
+            async with streamcontext(stream) as streamer:
                 try:
                     async for chunk in streamer:
-                        yield f"event: {chunk.type}\n"
-                        "data: {chunk.model_dump_json()}\n\n"
+                        yield f"event: {chunk.type}\ndata: {chunk.model_dump_json()}\n\n"
                 except Exception:
                     yield "event: ERROR\ndata: ERROR\n\n"
                     raise
