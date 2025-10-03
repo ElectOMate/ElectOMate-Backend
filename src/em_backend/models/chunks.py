@@ -40,7 +40,7 @@ class ComparisonTokenChunk(BaseChunk):
 
 
 class ComparisonSourcesChunk(BaseChunk):
-    type: Literal["comparison_response_souces"] = "comparison_response_souces"
+    type: Literal["comparison_response_sources"] = "comparison_response_sources"
 
     documents: dict[str, list[DocumentChunk]]
 
