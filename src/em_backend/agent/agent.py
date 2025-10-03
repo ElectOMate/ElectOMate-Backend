@@ -27,6 +27,7 @@ from em_backend.agent.prompts.single_party_answer import SINGLE_PARTY_ANSWER
 from em_backend.agent.prompts.update_question_targets import (
     DETERMINE_QUESTION_TARGET,
     DetermineQuestionTargetStructuredOutput,
+    get_full_DetermineQuestionTargetStructuredOutput,
 )
 from em_backend.agent.types import AgentContext, AgentState, NonComparisonQuestionState
 from em_backend.agent.utils import (
@@ -37,6 +38,7 @@ from em_backend.agent.utils import (
 from em_backend.database.models import Election, Party
 from em_backend.database.utils import (
     get_missing_party_shortnames,
+    get_parties_enum,
     get_party_from_name_list,
 )
 from em_backend.llm.openai import get_openai_model
@@ -76,10 +78,11 @@ class Agent:
                 "is_comparison_question": False,
                 "conversation_title": "",
                 "conversation_follow_up_questions": [],
+                "party_tag": [],
             },
             context={
                 "session": session,
-                "chat_model": get_openai_model(),
+                "chat_model": get_openai_model(with_proxy=True),
                 "vector_database": self.vector_database,
             },
             stream_mode=["updates", "messages", "custom"],
@@ -101,7 +104,13 @@ class Agent:
             )
             model = DETERMINE_QUESTION_TARGET | runtime.context[
                 "chat_model"
-            ].with_structured_output(DetermineQuestionTargetStructuredOutput)
+            ].with_structured_output(
+                get_full_DetermineQuestionTargetStructuredOutput(
+                    await get_parties_enum(
+                        runtime.context["session"], state["election"]
+                    )
+                )
+            )
             selected_parties_response = cast(
                 "DetermineQuestionTargetStructuredOutput",
                 await model.ainvoke(
@@ -267,7 +276,7 @@ class Agent:
                 },
                 config={"tags": ["stream", f"party_{state['party'].shortname}"]},
             )
-            return {"messages": [response], "party": state["party"]}
+            return {"messages": [response], "party_tag": [state["party"]]}
 
         async def generate_title_and_replies(
             state: AgentState, runtime: Runtime[AgentContext]

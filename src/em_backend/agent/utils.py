@@ -73,7 +73,11 @@ async def process_lc_stream(
                 update_chunk: dict[str, AgentState] = chunk
 
                 if update := next(
-                    (d for d in update_chunk.values() if "conversation_title" in d),
+                    (
+                        d
+                        for d in update_chunk.values()
+                        if d is not None and "conversation_title" in d
+                    ),
                     None,
                 ):
                     yield TitleChunk(title=update["conversation_title"])
@@ -82,7 +86,7 @@ async def process_lc_stream(
                     (
                         d
                         for d in update_chunk.values()
-                        if "conversation_follow_up_questions" in d
+                        if d is not None and "conversation_follow_up_questions" in d
                     ),
                     None,
                 ):
@@ -96,7 +100,9 @@ async def process_lc_stream(
                         yield PartyMessageChunk(
                             id=msg.id or str(uuid4()),
                             message=msg,
-                            party=cast("Party", update.get("party")).shortname,
+                            party=cast("list[Party]", update.get("party_tag"))[
+                                -1
+                            ].shortname,
                         )
 
                     if node.startswith("generate_comparison_answer"):

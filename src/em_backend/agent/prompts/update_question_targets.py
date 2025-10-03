@@ -1,9 +1,11 @@
+from enum import StrEnum
+
 from langchain_core.prompts import (
     ChatPromptTemplate,
     MessagesPlaceholder,
     SystemMessagePromptTemplate,
 )
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, create_model
 
 DETERMINE_QUESTION_TARGET = ChatPromptTemplate.from_messages(
     [
@@ -37,7 +39,16 @@ If the user asks which party represents a specific position or intends to take a
 )
 
 
-class DetermineQuestionTargetStructuredOutput(BaseModel):
-    selected_parties: list[str] = Field(
+class DetermineQuestionTargetStructuredOutput[T](BaseModel):
+    selected_parties: list[T] = Field(
         description="The parties the user wants a reply from."
+    )
+
+
+def get_full_DetermineQuestionTargetStructuredOutput[T: StrEnum](
+    full_enum: type[StrEnum],
+) -> type[DetermineQuestionTargetStructuredOutput[StrEnum]]:
+    return create_model(
+        "DetermineQuestionTargetStructuredOutput",
+        __base__=DetermineQuestionTargetStructuredOutput[full_enum],
     )
