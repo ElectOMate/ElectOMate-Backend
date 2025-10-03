@@ -44,6 +44,9 @@ class Country(Base, CreatedAtMixin):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
+    def __repr__(self) -> str:
+        return f"Country(id={self.id}, name='{self.name}', code='{self.code}')"
+
 
 class Election(Base, CreatedAtMixin):
     __tablename__ = "election_table"
@@ -62,6 +65,12 @@ class Election(Base, CreatedAtMixin):
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
+
+    def __repr__(self) -> str:
+        return (
+            f"Election(id={self.id}, name='{self.name}', "
+            f"year={self.year}, country_id={self.country_id})"
+        )
 
 
 class Party(Base, CreatedAtMixin):
@@ -87,6 +96,12 @@ class Party(Base, CreatedAtMixin):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
+    def __repr__(self) -> str:
+        return (
+            f"Party(id={self.id}, shortname='{self.shortname}', "
+            f"fullname='{self.fullname}', election_id={self.election_id})"
+        )
+
 
 class Candidate(Base, CreatedAtMixin):
     __tablename__ = "candidate_table"
@@ -100,6 +115,12 @@ class Candidate(Base, CreatedAtMixin):
     party: Mapped[Party] = relationship(default=None)
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
+
+    def __repr__(self) -> str:
+        return (
+            f"Candidate(id={self.id}, given_name='{self.given_name}', "
+            f"family_name='{self.family_name}', party_id={self.party_id})"
+        )
 
 
 class Document(Base, CreatedAtMixin):
@@ -121,6 +142,12 @@ class Document(Base, CreatedAtMixin):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
+    def __repr__(self) -> str:
+        return (
+            f"Document(id={self.id}, title='{self.title}', "
+            f"type={self.type}, party_id={self.party_id})"
+        )
+
 
 class ProposedQuestion(Base, CreatedAtMixin):
     __tablename__ = "proposed_question_table"
@@ -133,3 +160,12 @@ class ProposedQuestion(Base, CreatedAtMixin):
     cached_answer: Mapped[str | None] = mapped_column(default=None)
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
+
+    def __repr__(self) -> str:
+        question_preview = (
+            self.question[:50] + "..." if len(self.question) > 50 else self.question
+        )
+        return (
+            f"ProposedQuestion(id={self.id}, question='{question_preview}', "
+            f"party_id={self.party_id})"
+        )

@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from operator import add
 from typing import Annotated, TypedDict
 
 from langchain_core.messages import AnyMessage as AnyLcMessage
@@ -18,6 +19,9 @@ class AgentState(TypedDict):
     is_comparison_question: bool
     conversation_title: str
     conversation_follow_up_questions: list[str]
+
+    # Keep this, even though the key is never used
+    party_tag: Annotated[list[Party], add]
 
 
 class NonComparisonQuestionState(AgentState):
