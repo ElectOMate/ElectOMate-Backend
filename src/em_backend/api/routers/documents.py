@@ -75,7 +75,7 @@ async def process_document(
             document.content = document_parser.serialize_document(parsed_document)
             await session.commit()
         except Exception:
-            document.parsing_quality = ParsingQuality.FAILED
+            document.parsing_quality = ParsingQuality.UNSPECIFIED
             await session.commit()
             raise
 
