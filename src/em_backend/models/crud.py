@@ -83,6 +83,11 @@ class PartyCreate(PartyBase):
     election_id: UUID
 
 
+class ExistingPartyCreate(PartyBase):
+    election_id: UUID
+    existing_documents: list["ExistingDocumentCreate"] = Field(default_factory=list)
+
+
 class PartyUpdate(BaseModel):
     shortname: str | None = Field(None, max_length=100)
     fullname: str | None = Field(None, max_length=255)
@@ -131,13 +136,17 @@ class CandidateResponse(CandidateBase):
 class DocumentBase(BaseModel):
     title: str = Field(max_length=255)
     type: SupportedDocumentFormats
-    parsing_quality: ParsingQuality = ParsingQuality.NO_PARSING
+    parsing_quality: ParsingQuality = ParsingQuality.UNSPECIFIED
     indexing_success: IndexingSuccess = IndexingSuccess.NO_INDEXING
 
 
 class DocumentCreate(DocumentBase):
     content: str | None = None
     party_id: UUID
+
+
+class ExistingDocumentCreate(DocumentBase):
+    id: UUID
 
 
 class DocumentUpdate(BaseModel):

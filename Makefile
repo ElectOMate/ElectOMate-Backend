@@ -70,7 +70,6 @@ prod-shell:
 # Stop all services
 down:
 	docker compose down
-	docker compose -f docker-compose.prod.yml down
 
 # Clean up all containers and volumes
 clean:

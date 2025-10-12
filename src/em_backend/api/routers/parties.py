@@ -5,9 +5,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from em_backend.api.routers.v2 import get_database_session
+from em_backend.database.crud import document as document_crud
 from em_backend.database.crud import party as party_crud
 from em_backend.database.models import Election
 from em_backend.models.crud import (
+    ExistingPartyCreate,
     PartyCreate,
     PartyResponse,
     PartyUpdate,
@@ -30,6 +32,33 @@ async def create_party(
     party = await party_crud.create(
         db, obj_in=party_in.model_dump() | {"election": election}
     )
+    return PartyResponse.model_validate(party)
+
+
+@router.post("/{party_id}")
+async def create_existing_party(
+    party_id: UUID,
+    party_in: ExistingPartyCreate,
+    db: Annotated[AsyncSession, Depends(get_database_session)],
+) -> PartyResponse:
+    """Create a party with already chunked documents."""
+    # Ensure election exists
+    election = await db.get(Election, party_in.election_id)
+    if election is None:
+        raise HTTPException(status_code=404, detail="Election not found.")
+
+    party = await party_crud.create(
+        db,
+        obj_in=party_in.model_dump(exclude={"existing_documents"})
+        | {"election": election, "id": party_id},
+    )
+
+    for document_in in party_in.existing_documents:
+        await document_crud.create(
+            db,
+            obj_in=document_in.model_dump() | {"party": party, "party_id": party.id},
+        )
+
     return PartyResponse.model_validate(party)
 
 
