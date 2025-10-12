@@ -1,4 +1,4 @@
-.PHONY: help dev dev-logs dev-shell db-migrate migration load-chile-data prod-deploy prod-logs prod-shell down clean
+.PHONY: help dev dev-logs dev-shell db-migrate migration load-chile-data prod-deploy prod-logs prod-shell down clean local
 
 # Default target
 help:
@@ -42,6 +42,9 @@ migration:
 		exit 1; \
 	fi
 	docker compose exec app alembic revision --autogenerate -m "$(message)"
+
+local:
+	uv run --env-file .env fastapi dev src/em_backend/main.py
 
 # Load Chile election data (starts services and runs data loading script)
 load-chile-data:
