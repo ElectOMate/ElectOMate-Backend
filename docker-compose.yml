@@ -26,8 +26,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        PRELOAD_DOCLING_MODELS: ${PRELOAD_DOCLING_MODELS:-false}
     command: [ "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "/app/src/em_backend/main.py" ]
     environment:
       # Database Configuration
@@ -40,9 +38,6 @@ services:
       # OpenAI Configuration (from .env)
       OPENAI_API_KEY: ${OPENAI_API_KEY}
 
-      # Docling Configuration
-      DOCLING_ARTIFACTS_PATH: /app/.cache/docling/models
-
       # Application Environment
       ENV: ${ENV:-dev}
       LOG_LEVEL: DEBUG
@@ -52,7 +47,7 @@ services:
       - electomate-network
     volumes:
       - ./alembic/versions:/app/alembic/versions
-      - ./ElectOMate-Backend/.cache/docling/models:/app/.cache/docling/models:ro
+      - ./ElectOMate-Backend/.cache/docling/models:/app/.cache/docling/models
     develop:
       watch:
         - action: sync

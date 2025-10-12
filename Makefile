@@ -1,4 +1,4 @@
-.PHONY: help dev dev-logs dev-shell db-migrate migration load-chile-data prod-deploy prod-logs prod-shell down clean
+.PHONY: help dev dev-logs dev-shell db-migrate migration load-chile-data prod-deploy prod-logs prod-shell down clean local
 
 # Default target
 help:
@@ -43,6 +43,9 @@ migration:
 	fi
 	docker compose exec app alembic revision --autogenerate -m "$(message)"
 
+local:
+	uv run --env-file .env fastapi dev src/em_backend/main.py
+
 # Load Chile election data (starts services and runs data loading script)
 load-chile-data:
 	@echo "Starting database and loading Chile election data..."
@@ -67,10 +70,8 @@ prod-shell:
 # Stop all services
 down:
 	docker compose down
-	docker compose -f docker-compose.prod.yml down
 
 # Clean up all containers and volumes
 clean:
 	docker compose down -v --remove-orphans
-	docker compose -f docker-compose.prod.yml down -v --remove-orphans
 	docker system prune -f

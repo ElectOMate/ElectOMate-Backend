@@ -1,3 +1,4 @@
+import asyncio
 from io import BytesIO
 from typing import Annotated, cast
 from uuid import UUID
@@ -13,6 +14,7 @@ from fastapi import (
     UploadFile,
 )
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from structlog.stdlib import get_logger
 
 from em_backend.api.routers.v2 import (
     get_database_session,
@@ -34,6 +36,8 @@ from em_backend.models.enums import (
 )
 from em_backend.vector.db import VectorDatabase
 from em_backend.vector.parser import DocumentParser
+
+logger = get_logger()
 
 DOCUMENT_TYPE_MAPPING = {
     "pdf": SupportedDocumentFormats.PDF,
@@ -57,40 +61,70 @@ PARSING_QUALITY_MAPPING = {
 
 
 async def process_document(
-    document: Document,
+    document_id: UUID,
     file_content: BytesIO,
     sessionmaker: async_sessionmaker[AsyncSession],
     weaviate_database: VectorDatabase,
     document_parser: DocumentParser,
 ) -> None:
+    logger.info(f"Started processing document {document_id}")
+
+    sleep_seconds = 1
     async with sessionmaker() as session:
-        document = await session.merge(document)
+        document_view: Document | None = None
+        while document_view is None:
+            document_view = await session.get(Document, document_id)
+            if document_view is None:
+                if sleep_seconds > 32:
+                    raise ValueError("Could not fetch document in the database.")
+                await asyncio.sleep(sleep_seconds)
+                sleep_seconds *= 2
+
+        document_view.parsing_quality = ParsingQuality.FAILED
+        document_view.indexing_success = IndexingSuccess.NO_INDEXING
+        await session.commit()
+        await session.refresh(document_view)
+
+        parsed_document, confidence = document_parser.parse_document(
+            document_view.title, file_content
+        )
+        document_content = document_parser.serialize_document(parsed_document)
+
+        document_view.parsing_quality = PARSING_QUALITY_MAPPING[confidence.mean_grade]
+        document_view.content = document_content
+        document_view.indexing_success = IndexingSuccess.FAILED
 
         try:
-            # Parse file
-            parsed_document, confidence = document_parser.parse_document(
-                document.title, file_content
-            )
-            document.parsing_quality = PARSING_QUALITY_MAPPING[confidence.mean_grade]
-            document.content = document_parser.serialize_document(parsed_document)
             await session.commit()
+            await session.refresh(document_view)
         except Exception:
-            document.parsing_quality = ParsingQuality.UNSPECIFIED
+            await session.rollback()
+            document_view.parsing_quality = ParsingQuality.FAILED
+            document_view.indexing_success = IndexingSuccess.NO_INDEXING
             await session.commit()
             raise
 
+        logger.info(f"Finished parsing {document_id}")
+
         try:
-            # Chunk and vectorize file
             document_chunks = document_parser.chunk_document(parsed_document)
-            party = cast("Party", await document.awaitable_attrs.party)
-            document.indexing_success = weaviate_database.insert_chunks(
-                await party.awaitable_attrs.election, party, document, document_chunks
+            party = cast("Party", await document_view.awaitable_attrs.party)
+            indexing_success = weaviate_database.insert_chunks(
+                await party.awaitable_attrs.election,
+                party,
+                document_view,
+                document_chunks,
             )
-            await session.commit()
         except Exception:
-            document.indexing_success = IndexingSuccess.FAILED
+            await session.rollback()
+            document_view.indexing_success = IndexingSuccess.FAILED
             await session.commit()
             raise
+
+        document_view.indexing_success = indexing_success
+        await session.commit()
+
+        logger.info(f"Finished chunking {document_id}")
 
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -139,21 +173,19 @@ async def create_document(
             "party": party,
         },
     )
-
     # Document parsing is in the background
-    if not is_document_already_parsed:
-        background_tasks.add_task(
-            process_document,
-            document,
-            BytesIO(await file.read()),
-            sessionmaker,
-            weaviate_database,
-            document_parser,
-        )
-    else:
-        document.indexing_success = IndexingSuccess.SUCCESS
-        document.parsing_quality = ParsingQuality.UNSPECIFIED
-    return DocumentResponse.model_validate(document)
+    background_tasks.add_task(
+        process_document,
+        document.id,
+        BytesIO(await file.read()),
+        sessionmaker,
+        weaviate_database,
+        document_parser,
+    )
+
+    response = DocumentResponse.model_validate(document)
+    await session.commit()
+    return response
 
 
 @router.get("/")

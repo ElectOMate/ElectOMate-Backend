@@ -36,7 +36,7 @@ class DocumentParser:
         # Setup Document chunker
         self.tokenizer = OpenAITokenizer(
             tokenizer=tiktoken.encoding_for_model(settings.openai_model_name),
-            max_tokens=128 * 1024,
+            max_tokens=8 * 1024,
         )
         self.chunker = HybridChunker(
             tokenizer=self.tokenizer,
