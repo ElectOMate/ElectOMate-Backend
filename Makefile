@@ -75,5 +75,4 @@ down:
 # Clean up all containers and volumes
 clean:
 	docker compose down -v --remove-orphans
-	docker compose -f docker-compose.prod.yml down -v --remove-orphans
 	docker system prune -f
