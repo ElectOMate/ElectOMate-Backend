@@ -28,16 +28,16 @@ services:
       dockerfile: Dockerfile
     command: [ "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "/app/src/em_backend/main.py" ]
     environment:
-      # Database Configuration  
+      # Database Configuration
       POSTGRES_URL: ${POSTGRES_URL:-postgresql+psycopg://postgres:postgres@postgres:5432/em_dev}
-      
+
       # Weaviate Configuration (from .env)
       WV_URL: ${WV_URL}
       WV_API_KEY: ${WV_API_KEY}
-      
+
       # OpenAI Configuration (from .env)
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-      
+
       # Application Environment
       ENV: ${ENV:-dev}
       LOG_LEVEL: DEBUG
@@ -46,8 +46,8 @@ services:
     networks:
       - electomate-network
     volumes:
-      # Mount alembic versions for development
       - ./alembic/versions:/app/alembic/versions
+      - ./ElectOMate-Backend/.cache/docling/models:/app/.cache/docling/models
     develop:
       watch:
         - action: sync
