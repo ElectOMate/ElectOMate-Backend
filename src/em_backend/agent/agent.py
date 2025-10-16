@@ -4,7 +4,9 @@ from datetime import date
 from typing import Any, Literal, cast
 from uuid import uuid4
 
+import logging
 from langchain_core.messages import (
+    AIMessage,
     HumanMessage,
     RemoveMessage,
 )
@@ -49,6 +51,10 @@ from em_backend.models.chunks import (
 )
 from em_backend.models.messages import AnyMessage
 from em_backend.vector.db import DocumentChunk, VectorDatabase
+from langchain_openai.chat_models.base import OpenAIRefusalError
+
+
+logger = logging.getLogger(__name__)
 
 
 class Agent:
@@ -249,33 +255,57 @@ class Agent:
             )
             model = SINGLE_PARTY_ANSWER | runtime.context["chat_model"]
             party_candidate = await state["party"].awaitable_attrs.candidate
-            response = await model.ainvoke(
-                {
-                    "election_name": state["election"].name,
-                    "election_year": state["election"].year,
-                    "election_date": state["election"].date.strftime("%B %d, %Y"),
-                    "election_url": state["election"].url,
-                    "date": date.today().strftime("%B %d, %Y"),
-                    "party_name": state["party"].shortname,
-                    "party_fullname": state["party"].fullname,
-                    "party_description": state["party"].description,
-                    "party_url": state["party"].url,
-                    "party_candidate": f"{party_candidate.given_name} "
-                    "{party_candidate.family_name}",
-                    "sources": "\n".join(
-                        [
-                            "<document>\n"
-                            f"index: {i}\n"
-                            f"# {doc['title']}\n"
-                            f"{doc['text']}\n"
-                            "</document>"
-                            for i, doc in enumerate(documents)
-                        ]
-                    ),
-                    "messages": state["messages"],
-                },
-                config={"tags": ["stream", f"party_{state['party'].shortname}"]},
-            )
+            try:
+                response = await model.ainvoke(
+                    {
+                        "election_name": state["election"].name,
+                        "election_year": state["election"].year,
+                        "election_date": state["election"].date.strftime("%B %d, %Y"),
+                        "election_url": state["election"].url,
+                        "date": date.today().strftime("%B %d, %Y"),
+                        "party_name": state["party"].shortname,
+                        "party_fullname": state["party"].fullname,
+                        "party_description": state["party"].description,
+                        "party_url": state["party"].url,
+                        "party_candidate": f"{party_candidate.given_name} "
+                        "{party_candidate.family_name}",
+                        "sources": "\n".join(
+                            [
+                                "<document>\n"
+                                f"index: {i}\n"
+                                f"# {doc['title']}\n"
+                                f"{doc['text']}\n"
+                                "</document>"
+                                for i, doc in enumerate(documents)
+                            ]
+                        ),
+                        "messages": state["messages"],
+                    },
+                    config={"tags": ["stream", f"party_{state['party'].shortname}"]},
+                )
+            except OpenAIRefusalError as exc:
+                logger.warning(
+                    "LLM refused to answer for party %s: %s",
+                    state["party"].shortname,
+                    exc,
+                )
+                response = AIMessage(
+                    content=(
+                        "I could not find enough context to answer this question right now. "
+                        "Please try rephrasing or ask about another topic."
+                    )
+                )
+            except Exception:  # pragma: no cover - defensive
+                logger.exception(
+                    "Unexpected error while generating single party answer for %s",
+                    state["party"].shortname,
+                )
+                response = AIMessage(
+                    content=(
+                        "Sorry, I ran into an internal issue while gathering the answer. "
+                        "Please try again in a moment."
+                    )
+                )
             return {"messages": [response], "party_tag": [state["party"]]}
 
         async def generate_title_and_replies(

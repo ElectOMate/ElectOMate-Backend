@@ -2,6 +2,7 @@ from collections.abc import AsyncGenerator, AsyncIterator, Sequence
 from typing import Any, cast
 from uuid import uuid4
 
+import logging
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.messages import AnyMessage as AnyLcMessage
 from langchain_openai import ChatOpenAI
@@ -26,6 +27,9 @@ from em_backend.models.chunks import (
 )
 from em_backend.models.messages import AnyMessage, AssistantMessage, UserMessage
 from em_backend.vector.db import DocumentChunk, VectorDatabase
+
+
+logger = logging.getLogger(__name__)
 
 
 def convert_to_lc_message(messages: list[AnyMessage]) -> list[AnyLcMessage]:
@@ -194,4 +198,16 @@ async def retrieve_documents_from_user_question(
             }
         ),
     )
-    return [documents[i] for i in response.reranked_doc_indices][:5]
+    valid_indices: list[int] = [
+        idx
+        for idx in response.reranked_doc_indices or []
+        if isinstance(idx, int) and 0 <= idx < len(documents)
+    ]
+    if not valid_indices:
+        if documents:
+            logger.warning(
+                "Reranker returned no valid indices; falling back to top documents for party %s",
+                party.shortname,
+            )
+        return documents[:5]
+    return [documents[i] for i in valid_indices][:5]

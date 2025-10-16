@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager
-from typing import Any, Self, TypedDict
+from typing import Any, Awaitable, Callable, Self, TypedDict, TypeVar
 
 import weaviate
 from weaviate.classes.config import Configure, DataType, Property
@@ -16,6 +16,8 @@ class DocumentChunk(TypedDict):
     title: str
     text: str
     score: float
+
+T = TypeVar("T")
 
 
 class VectorDatabase:
@@ -61,9 +63,16 @@ class VectorDatabase:
         client.close()
         await async_client.close()
 
+    async def _execute_with_reconnect(self, action: Callable[[], Awaitable[T]]) -> T:
+        try:
+            return await action()
+        except AssertionError:
+            await self.async_client.connect()
+            return await action()
+
     async def create_election_collection(self, election: Election) -> str:
-        async with self.async_client:
-            collection = await self.async_client.collections.create(
+        collection = await self._execute_with_reconnect(
+            lambda: self.async_client.collections.create(
                 name=election.wv_collection,
                 vector_config=Configure.Vectors.text2vec_openai(),
                 generative_config=Configure.Generative.openai(),
@@ -82,15 +91,18 @@ class VectorDatabase:
                     ),
                 ],
             )
-            return collection.name
+        )
+        return collection.name
 
     async def has_election_collection(self, election: Election) -> bool:
-        async with self.async_client:
-            return await self.async_client.collections.exists(election.wv_collection)
+        return await self._execute_with_reconnect(
+            lambda: self.async_client.collections.exists(election.wv_collection)
+        )
 
     async def delete_collection(self, election: Election) -> None:
-        async with self.async_client:
-            await self.async_client.collections.delete(election.wv_collection)
+        await self._execute_with_reconnect(
+            lambda: self.async_client.collections.delete(election.wv_collection)
+        )
 
     def insert_chunks(
         self,
@@ -129,14 +141,15 @@ class VectorDatabase:
         offset: int = 0,
     ) -> list[DocumentChunk]:
         election_docs = self.async_client.collections.use(election.wv_collection)
-        async with self.async_client:
-            response = await election_docs.query.hybrid(
+        response = await self._execute_with_reconnect(
+            lambda: election_docs.query.hybrid(
                 query,
                 filters=Filter.by_property("party").equal(party.id),
                 return_metadata=MetadataQuery(score=True),
                 limit=limit,
                 offset=offset,
             )
+        )
         return [
             DocumentChunk(
                 title=o.properties["title"],  # pyright: ignore[reportArgumentType]
@@ -148,7 +161,8 @@ class VectorDatabase:
 
     async def delete_chunks(self, election: Election, document: Document) -> None:
         election_docs = self.async_client.collections.use(election.wv_collection)
-        async with self.async_client:
-            await election_docs.data.delete_many(
+        await self._execute_with_reconnect(
+            lambda: election_docs.data.delete_many(
                 where=Filter.by_property("document").equal(document.id)
             )
+        )

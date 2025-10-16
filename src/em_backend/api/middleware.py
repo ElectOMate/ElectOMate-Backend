@@ -14,6 +14,7 @@ from urllib.parse import quote
 
 import structlog
 from fastapi import FastAPI, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import Mount
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.routing import Match
@@ -131,6 +132,15 @@ def add_middleware(app: FastAPI) -> None:
     """Adds middleware for context management request across request."""
     # For some reason, the first added middleware gets executed last
     # https://fastapi.tiangolo.com/tutorial/middleware/#multiple-middleware-execution-order
+
+    # CORS middleware for frontend requests
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173"],
+        allow_credentials=False,
+        allow_methods=["OPTIONS", "POST"],
+        allow_headers=["*"],
+    )
 
     # The logging middleware
     app.add_middleware(LoggingMiddleware, app)
