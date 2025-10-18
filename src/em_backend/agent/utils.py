@@ -6,6 +6,7 @@ import logging
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.messages import AnyMessage as AnyLcMessage
 from langchain_openai import ChatOpenAI
+from langchain_openai.chat_models.base import OpenAIRefusalError
 
 from em_backend.agent.prompts.improve_rag_query import IMPROVE_RAG_QUERY
 from em_backend.agent.prompts.rerank_documents import (
@@ -180,24 +181,32 @@ async def retrieve_documents_from_user_question(
     model = RERANK_DOCUMENTS | chat_model.with_structured_output(
         RerankDocumentsStructuredOutput
     )
-    response = cast(
-        "RerankDocumentsStructuredOutput",
-        await model.ainvoke(
-            {
-                "sources": "\n".join(
-                    [
-                        "<document>\n"
-                        f"index: {i}\n"
-                        f"# {doc['title']}\n"
-                        f"{doc['text']}\n"
-                        "</document>"
-                        for i, doc in enumerate(documents)
-                    ]
-                ),
-                "messages": messages,
-            }
-        ),
-    )
+    try:
+        response = cast(
+            "RerankDocumentsStructuredOutput",
+            await model.ainvoke(
+                {
+                    "sources": "\n".join(
+                        [
+                            "<document>\n"
+                            f"index: {i}\n"
+                            f"# {doc['title']}\n"
+                            f"{doc['text']}\n"
+                            "</document>"
+                            for i, doc in enumerate(documents)
+                        ]
+                    ),
+                    "messages": messages,
+                }
+            ),
+        )
+    except OpenAIRefusalError as exc:
+        logger.warning(
+            "Rerank model refused to respond for party %s: %s; using top documents fallback",
+            party.shortname,
+            exc,
+        )
+        return documents[:5]
     valid_indices: list[int] = [
         idx
         for idx in response.reranked_doc_indices or []

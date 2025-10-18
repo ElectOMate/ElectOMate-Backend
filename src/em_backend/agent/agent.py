@@ -31,6 +31,7 @@ from em_backend.agent.prompts.update_question_targets import (
     DetermineQuestionTargetStructuredOutput,
     get_full_DetermineQuestionTargetStructuredOutput,
 )
+from em_backend.agent.prompts.generic_answer import GENERIC_ANSWER
 from em_backend.agent.types import AgentContext, AgentState, NonComparisonQuestionState
 from em_backend.agent.utils import (
     convert_to_lc_message,
@@ -74,6 +75,12 @@ class Agent:
         session: AsyncSession,
     ) -> AsyncGenerator[AnyChunk]:
         lc_messages = convert_to_lc_message(messages)
+        logger.info(
+            "Agent invoke start: election=%s, initial_parties=%s, message_count=%s",
+            election.id,
+            [party.shortname for party in selected_parties],
+            len(messages),
+        )
 
         chunk_stream = self.graph.astream(
             {
@@ -81,6 +88,7 @@ class Agent:
                 "country": await election.awaitable_attrs.country,
                 "election": election,
                 "selected_parties": selected_parties,
+                "lock_selected_parties": False,
                 "is_comparison_question": False,
                 "conversation_title": "",
                 "conversation_follow_up_questions": [],
@@ -108,6 +116,11 @@ class Agent:
                 state["election"],
                 state["selected_parties"],
             )
+            logger.info(
+                "Running party auto-selection for election=%s; available options=%s",
+                state["election"].id,
+                available_parties,
+            )
             model = DETERMINE_QUESTION_TARGET | runtime.context[
                 "chat_model"
             ].with_structured_output(
@@ -129,8 +142,16 @@ class Agent:
                     }
                 ),
             )
+            logger.info(
+                "Party selection prompt result: %s",
+                selected_parties_response.selected_parties,
+            )
             selected_parties = await get_party_from_name_list(
                 runtime.context["session"], selected_parties_response.selected_parties
+            )
+            logger.info(
+                "Auto-selection completed with parties=%s",
+                [party.shortname for party in selected_parties],
             )
             return {"selected_parties": selected_parties}
 
@@ -158,10 +179,26 @@ class Agent:
 
         def route_answer_generation(
             state: AgentState,
-        ) -> list[Send] | Literal["generate_comparison_answer"]:
+        ) -> list[Send] | Literal[
+            "generate_comparison_answer",
+            "generate_generic_answer",
+        ]:
+            if not state["selected_parties"]:
+                logger.info(
+                    "Routing to generic answer due to empty party selection",
+                )
+                return "generate_generic_answer"
             if state["is_comparison_question"] and len(state["selected_parties"]) > 1:
+                logger.info(
+                    "Routing to comparison answer for parties=%s",
+                    [party.shortname for party in state["selected_parties"]],
+                )
                 return "generate_comparison_answer"
             else:
+                logger.info(
+                    "Routing to single-party answers for parties=%s",
+                    [party.shortname for party in state["selected_parties"]],
+                )
                 return [
                     Send(
                         "generate_single_party_answer",
@@ -175,9 +212,54 @@ class Agent:
                     for party in state["selected_parties"]
                 ]
 
+        async def generate_generic_answer(
+            state: AgentState, runtime: Runtime[AgentContext]
+        ) -> dict[str, Any]:
+            logger.info("Generating generic answer with no party context")
+            election = state["election"]
+            # Build a lightweight parties overview for context
+            try:
+                parties = await election.awaitable_attrs.parties
+            except Exception:  # pragma: no cover - defensive in case of lazy loading
+                parties = []
+            parties_overview = "\n".join(
+                [
+                    f"- {p.shortname} ({p.fullname})"
+                    for p in parties
+                    if getattr(p, "shortname", None) and getattr(p, "fullname", None)
+                ]
+            ) or "(Keine Parteien geladen)"
+
+            project_about = (
+                "ElectOMate ist ein offenes Forschungsprojekt (Open Source) rund um "
+                "politische Information und Wahlen. Entwickelt von Open Democracy, "
+                "mit dem Ziel, Bürgerinnen und Bürgern verständliche, neutrale Inhalte "
+                "bereitzustellen."
+            )
+
+            model = GENERIC_ANSWER | runtime.context["chat_model"]
+            response = await model.ainvoke(
+                {
+                    "election_name": election.name,
+                    "election_year": election.year,
+                    "election_date": election.date.strftime("%B %d, %Y"),
+                    "election_url": election.url,
+                    "parties_overview": parties_overview,
+                    "project_about": project_about,
+                    "date": date.today().strftime("%B %d, %Y"),
+                    "messages": state["messages"],
+                },
+                config={"tags": ["stream", "generic"]},
+            )
+            return {"messages": [response]}
+
         async def generate_comparison_answer(
             state: AgentState, runtime: Runtime[AgentContext]
         ) -> dict[str, Any]:
+            logger.info(
+                "Generating comparison answer for parties=%s",
+                [party.shortname for party in state["selected_parties"]],
+            )
             documents: dict[str, list[DocumentChunk]] = {}
 
             async def add_documents(party: Party) -> None:
@@ -243,6 +325,10 @@ class Agent:
         async def generate_single_party_answer(
             state: NonComparisonQuestionState, runtime: Runtime[AgentContext]
         ) -> dict[str, Any]:
+            logger.info(
+                "Generating single-party answer for party=%s",
+                state["party"].shortname,
+            )
             documents = await retrieve_documents_from_user_question(
                 state["messages"],
                 state["election"],
@@ -311,6 +397,10 @@ class Agent:
         async def generate_title_and_replies(
             state: AgentState, runtime: Runtime[AgentContext]
         ) -> dict[str, Any]:
+            logger.info(
+                "Generating title and follow-ups; final parties=%s",
+                [party.shortname for party in state["selected_parties"]],
+            )
             model = GENERATE_TITLE_AND_REPLIES | runtime.context[
                 "chat_model"
             ].with_structured_output(GenerateTitleAndRepliedStructuredOutput)
@@ -344,10 +434,16 @@ class Agent:
         workflow.add_conditional_edges(
             "rephrase_question",
             route_answer_generation,
-            ["generate_comparison_answer", "generate_comparison_answer"],
+            [
+                "generate_generic_answer",
+                "generate_comparison_answer",
+                "generate_comparison_answer",
+            ],
         )
+        workflow.add_node("generate_generic_answer", generate_generic_answer)
         workflow.add_node("generate_comparison_answer", generate_comparison_answer)
         workflow.add_node("generate_single_party_answer", generate_single_party_answer)
+        workflow.add_edge("generate_generic_answer", "generate_title_and_replies")
         workflow.add_edge("generate_comparison_answer", "generate_title_and_replies")
         workflow.add_edge("generate_single_party_answer", "generate_title_and_replies")
         workflow.add_node("generate_title_and_replies", generate_title_and_replies)

@@ -16,6 +16,7 @@ class AgentState(TypedDict):
     country: Country
     election: Election
     selected_parties: list[Party]
+    lock_selected_parties: bool
     is_comparison_question: bool
     conversation_title: str
     conversation_follow_up_questions: list[str]
