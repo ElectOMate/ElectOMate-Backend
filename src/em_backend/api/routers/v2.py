@@ -2,29 +2,53 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any, cast
 
+import logging
 from fastapi import APIRouter, Request
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from em_backend.agent.agent import Agent
+from em_backend.core.config import settings
 from em_backend.database.utils import create_database_sessionmaker
+from em_backend.llm.perplexity import PerplexityClient
 from em_backend.vector.db import VectorDatabase
 from em_backend.vector.parser import DocumentParser
 
 
+logger = logging.getLogger(__name__)
+
+
 @asynccontextmanager
 async def lifespan(_: APIRouter) -> AsyncGenerator[dict[str, Any]]:
+    perplexity_client: PerplexityClient | None = None
+    if settings.perplexity_api_key:
+        logger.info(
+            "Initializing Perplexity client with model='%s'",
+            settings.perplexity_model,
+        )
+        perplexity_client = PerplexityClient(
+            settings.perplexity_api_key,
+            model=settings.perplexity_model,
+        )
+    else:
+        logger.warning(
+            "PERPLEXITY_API_KEY is not configured; web search features will be disabled"
+        )
     async with (
         VectorDatabase.create() as vector_database,
         create_database_sessionmaker() as session_maker,
     ):
-        agent = Agent(vector_database)
+        agent = Agent(vector_database, perplexity_client=perplexity_client)
         document_parser = DocumentParser()
-        yield {
-            "vector_database": vector_database,
-            "session_maker": session_maker,
-            "agent": agent,
-            "document_parser": document_parser,
-        }
+        try:
+            yield {
+                "vector_database": vector_database,
+                "session_maker": session_maker,
+                "agent": agent,
+                "document_parser": document_parser,
+            }
+        finally:
+            if perplexity_client is not None:
+                await perplexity_client.close()
 
 
 def get_agent(req: Request) -> Agent:

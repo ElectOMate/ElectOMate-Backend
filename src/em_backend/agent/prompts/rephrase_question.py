@@ -21,6 +21,18 @@ Task 2: Decide whether it is an explicit comparison question or not.
 If the user explicitly asks to weigh or compare multiple parties directly against each other, respond with True.
 In all other cases, respond with False.
 
+# Language Requirements
+
+Always return the rephrased question in {target_language_name}. Preserve tone and formality when translating. If the user's latest message uses a different language, translate the rephrased question into {target_language_name} while keeping the original meaning.
+
+# Examples for other languages
+
+Input: "Kannst du mir sagen, was eure Pläne für die Energiewende sind?"
+Output: "Was ist eure Position zur Energiewende?"
+
+Input: "¿Qué propone tu partido sobre la vivienda?"
+Output: "¿Cuál es su postura sobre la política de vivienda?"
+
 # Important Notes on Classifying Comparison Questions
 
 A question is considered a comparison question (True) only if the user explicitly asks to directly compare the positions of multiple parties, e.g. by asking about differences, similarities, or a direct juxtaposition.

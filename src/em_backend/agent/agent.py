@@ -1,11 +1,12 @@
 from asyncio import TaskGroup
-from collections.abc import AsyncGenerator, Sequence
+from collections.abc import AsyncGenerator
 from datetime import date
 from typing import Any, Literal, cast
 from uuid import uuid4
 
 import logging
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, RemoveMessage
+import textwrap
+from langchain_core.messages import AIMessage, HumanMessage, RemoveMessage
 from langgraph.graph import StateGraph
 from langgraph.pregel import Pregel
 from langgraph.runtime import Runtime
@@ -13,9 +14,22 @@ from langgraph.types import Send
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from em_backend.agent.prompts.comparison_party_answer import COMPARISON_PARTY_ANSWER
+from em_backend.agent.prompts.decide_generic_web_search import (
+    DECIDE_GENERIC_WEB_SEARCH,
+    GenericWebSearchDecision,
+)
 from em_backend.agent.prompts.generate_title_and_replies import (
     GENERATE_TITLE_AND_REPLIES,
     GenerateTitleAndRepliedStructuredOutput,
+)
+from em_backend.agent.prompts.perplexity_comparison_query import (
+    PERPLEXITY_COMPARISON_QUERY,
+)
+from em_backend.agent.prompts.perplexity_generic_query import (
+    PERPLEXITY_GENERIC_QUERY,
+)
+from em_backend.agent.prompts.perplexity_single_party_query import (
+    PERPLEXITY_SINGLE_PARTY_QUERY,
 )
 from em_backend.agent.prompts.rephrase_question import (
     REPHRASE_QUESTION,
@@ -28,9 +42,18 @@ from em_backend.agent.prompts.update_question_targets import (
     get_full_DetermineQuestionTargetStructuredOutput,
 )
 from em_backend.agent.prompts.generic_answer import GENERIC_ANSWER
-from em_backend.agent.types import AgentContext, AgentState, NonComparisonQuestionState
+from em_backend.agent.types import (
+    AgentContext,
+    AgentState,
+    NonComparisonQuestionState,
+    WebSource,
+)
 from em_backend.agent.utils import (
+    convert_documents_to_web_sources,
     convert_to_lc_message,
+    format_web_sources_for_prompt,
+    generate_perplexity_query,
+    normalize_perplexity_sources,
     process_lc_stream,
     retrieve_documents_from_user_question,
 )
@@ -41,10 +64,12 @@ from em_backend.database.utils import (
     get_party_from_name_list,
 )
 from em_backend.llm.openai import get_openai_model
+from em_backend.llm.perplexity import PerplexityClient
 from em_backend.models.chunks import (
     AnyChunk,
     ComparisonSourcesChunk,
     PartySourcesChunk,
+    PerplexitySourcesChunk,
 )
 from em_backend.models.messages import AnyMessage
 from em_backend.vector.db import DocumentChunk, VectorDatabase
@@ -52,6 +77,18 @@ from langchain_openai.chat_models.base import OpenAIRefusalError
 
 
 logger = logging.getLogger(__name__)
+
+
+COUNTRY_LANGUAGE_MAP: dict[str, dict[str, str]] = {
+    "DE": {"name": "Deutsch", "code": "de"},
+    "CL": {"name": "Español", "code": "es"},
+    "IE": {"name": "English", "code": "en"},
+    "HU": {"name": "Magyar", "code": "hu"},
+    "PL": {"name": "Polski", "code": "pl"},
+    "NL": {"name": "Nederlands", "code": "nl"},
+    "NO": {"name": "Norsk", "code": "no"},
+    "SI": {"name": "Slovenščina", "code": "sl"},
+}
 
 
 def _format_message_content(content: Any) -> str:
@@ -65,27 +102,34 @@ def _format_message_content(content: Any) -> str:
     return str(content)
 
 
-def _log_prompt_messages(label: str, messages: Sequence[BaseMessage]) -> None:
-    prompt_text = "\n\n".join(
-        f"{msg.type.upper() if hasattr(msg, 'type') else type(msg).__name__}: "
-        f"{_format_message_content(msg.content)}"
-        for msg in messages
-    )
-    logger.info("🧾 Prompt [%s]\n%s", label, prompt_text)
-
-
 def _format_content_preview(message: AIMessage) -> str:
     text = _format_message_content(getattr(message, "content", ""))
     return text.replace("\n", " ")[:200]
+
+
+def _language_name_from_state(state: AgentState) -> str:
+    if name := state.get("manifesto_language_name"):
+        return cast(str, name)
+    if name := state.get("response_language_name"):
+        return cast(str, name)
+    country = state.get("country")
+    if country is not None:
+        if code := getattr(country, "code", None):
+            if match := COUNTRY_LANGUAGE_MAP.get(str(code).upper()):
+                return match["name"]
+    return "English"
 
 
 class Agent:
     def __init__(
         self,
         vector_database: VectorDatabase,
+        *,
+        perplexity_client: PerplexityClient | None = None,
     ) -> None:
         self.graph = Agent.get_compiled_agent_graph()
         self.vector_database = vector_database
+        self.perplexity_client = perplexity_client
 
     async def invoke(
         self,
@@ -94,6 +138,9 @@ class Agent:
         election: Election,
         selected_parties: list[Party],
         session: AsyncSession,
+        use_web_search: bool = False,
+        use_vector_database: bool = True,
+        language_context: dict[str, Any] | None = None,
     ) -> AsyncGenerator[AnyChunk]:
         lc_messages = convert_to_lc_message(messages)
         logger.info(
@@ -103,10 +150,32 @@ class Agent:
             len(messages),
         )
 
+        effective_web_search = use_web_search and self.perplexity_client is not None
+        if use_web_search and not effective_web_search:
+            client_state = "missing" if self.perplexity_client is None else "disabled"
+            logger.warning(
+                "Web search requested but Perplexity client unavailable (%s); proceeding without web search",
+                client_state,
+            )
+
+        country = await election.awaitable_attrs.country
+        language_ctx = language_context or {}
+        fallback_language = COUNTRY_LANGUAGE_MAP.get(
+            getattr(country, "code", "").upper(), {"name": "English", "code": "en"}
+        )
+        response_language_name = (
+            (language_ctx.get("selected_language") or {}).get("name")
+            or fallback_language["name"]
+        )
+        manifesto_language_name = (
+            (language_ctx.get("manifesto_language") or {}).get("name")
+            or fallback_language["name"]
+        )
+
         chunk_stream = self.graph.astream(
             {
                 "messages": lc_messages,
-                "country": await election.awaitable_attrs.country,
+                "country": country,
                 "election": election,
                 "selected_parties": selected_parties,
                 "lock_selected_parties": False,
@@ -114,11 +183,29 @@ class Agent:
                 "conversation_title": "",
                 "conversation_follow_up_questions": [],
                 "party_tag": [],
+                "use_web_search": effective_web_search,
+                "use_vector_database": use_vector_database,
+                "should_use_generic_web_search": False,
+                "perplexity_generic_sources": [],
+                "perplexity_generic_summary": "",
+                "perplexity_comparison_sources": [],
+                "perplexity_comparison_summary": "",
+                "perplexity_party_sources": {},
+                "perplexity_party_summaries": {},
+                # Language preferences (names preferred, no backend mapping needed)
+                "response_language_name": response_language_name,
+                "manifesto_language_name": manifesto_language_name,
+                "respond_in_user_language": (
+                    language_ctx.get("respond_in_user_language")
+                    if language_context
+                    else None
+                ),
             },
             context={
                 "session": session,
                 "chat_model": get_openai_model(),
                 "vector_database": self.vector_database,
+                "perplexity_client": self.perplexity_client,
             },
             stream_mode=["updates", "messages", "custom"],
         )
@@ -149,10 +236,6 @@ class Agent:
                 "additional_party_list": ", ".join(available_parties),
                 "messages": state["messages"],
             }
-            _log_prompt_messages(
-                "DetermineQuestionTarget",
-                DETERMINE_QUESTION_TARGET.format_messages(**prompt_input),
-            )
             model = DETERMINE_QUESTION_TARGET | runtime.context[
                 "chat_model"
             ].with_structured_output(
@@ -182,11 +265,10 @@ class Agent:
         async def rephrase_question(
             state: AgentState, runtime: Runtime[AgentContext]
         ) -> dict[str, Any]:
-            prompt_input = {"messages": state["messages"]}
-            _log_prompt_messages(
-                "RephraseQuestion",
-                REPHRASE_QUESTION.format_messages(**prompt_input),
-            )
+            prompt_input = {
+                "messages": state["messages"],
+                "target_language_name": _language_name_from_state(state),
+            }
             model = REPHRASE_QUESTION | runtime.context[
                 "chat_model"
             ].with_structured_output(RephraseQuestionStructuredOutput)
@@ -206,40 +288,395 @@ class Agent:
                 "is_comparison_question": response.is_comparison_question,
             }
 
-        def route_answer_generation(
+        async def decide_generic_web_search(
+            state: AgentState, runtime: Runtime[AgentContext]
+        ) -> dict[str, Any]:
+            if not state["use_web_search"]:
+                return {}
+
+            if runtime.context.get("perplexity_client") is None:
+                logger.info("Perplexity client unavailable; skipping web search decision")
+                return {}
+
+            prompt_input = {
+                "election_name": state["election"].name,
+                "election_year": state["election"].year,
+                "response_language_name": state.get("response_language_name") or "English",
+                "date": date.today().strftime("%B %d, %Y"),
+                "messages": state["messages"],
+            }
+            model = DECIDE_GENERIC_WEB_SEARCH | runtime.context[
+                "chat_model"
+            ].with_structured_output(GenericWebSearchDecision)
+            decision = cast(
+                "GenericWebSearchDecision",
+                await model.ainvoke(prompt_input),
+            )
+            logger.info(
+                "Generic web search decision: use_web_search=%s reason=%s",
+                decision.use_web_search,
+                decision.reason,
+            )
+            return {"should_use_generic_web_search": decision.use_web_search}
+
+        async def perplexity_generic_search(
+            state: AgentState, runtime: Runtime[AgentContext]
+        ) -> dict[str, Any]:
+            if not state["use_web_search"]:
+                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+
+            client = runtime.context.get("perplexity_client")
+            if client is None:
+                logger.info("Perplexity client unavailable; skipping generic web search")
+                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+
+            query_language = _language_name_from_state(state)
+            prompt_input = {
+                "election_name": state["election"].name,
+                "election_year": state["election"].year,
+                "query_language": query_language,
+                "messages": state["messages"],
+                "date": date.today().strftime("%B %d, %Y"),
+            }
+            try:
+                query = await generate_perplexity_query(
+                    "PerplexityGenericQuery",
+                    PERPLEXITY_GENERIC_QUERY,
+                    prompt_input,
+                    runtime.context["chat_model"],
+                )
+            except Exception:  # pragma: no cover - network/LLM errors
+                logger.exception("Failed to build Perplexity query for generic flow")
+                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+
+            if not query:
+                logger.warning("Empty Perplexity query for generic flow; skipping web search")
+                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+
+            latest_user = state["messages"][-1]
+            user_question = _format_message_content(getattr(latest_user, "content", ""))
+            history_snippets = [
+                f"{msg.type.capitalize()}: {_format_message_content(msg.content)}"
+                for msg in state["messages"][-4:-1]
+            ]
+            history_block = "\n".join(history_snippets).strip()
+            user_prompt_parts = [
+                f"User question:\n{user_question}",
+                f"Search query:\n{query}",
+            ]
+            if history_block:
+                user_prompt_parts.append(f"Conversation context:\n{history_block}")
+            user_prompt_parts.append(
+                "Provide at most four bullet points with the freshest factual findings. "
+                "Quote or paraphrase carefully and cite the source URL in parentheses at the end of each bullet."
+            )
+            system_prompt = (
+                "You are a neutral political information assistant with live web search access. "
+                "Use authoritative sources, focus on elections and party programmes, and avoid speculation."
+            )
+            try:
+                raw_response = await client.create_completion(
+                    [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": "\n\n".join(user_prompt_parts)},
+                    ],
+                    temperature=0.0,
+                )
+            except Exception:  # pragma: no cover - network/LLM errors
+                logger.exception("Perplexity generic search request failed")
+                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+
+            answer, sources = normalize_perplexity_sources(raw_response)
+            logger.info(
+                "Perplexity generic search returned %s sources", len(sources)
+            )
+
+            if sources:
+                runtime.stream_writer(
+                    PerplexitySourcesChunk(
+                        scope="generic",
+                        sources=sources,
+                        summary=answer,
+                    )
+                )
+
+            return {
+                "perplexity_generic_sources": sources,
+                "perplexity_generic_summary": answer,
+            }
+
+        async def perplexity_comparison_search(
+            state: AgentState, runtime: Runtime[AgentContext]
+        ) -> dict[str, Any]:
+            if not state["use_web_search"]:
+                return {
+                    "perplexity_comparison_sources": [],
+                    "perplexity_comparison_summary": "",
+                }
+
+            client = runtime.context.get("perplexity_client")
+            if client is None:
+                logger.info("Perplexity client unavailable; skipping comparison web search")
+                return {
+                    "perplexity_comparison_sources": [],
+                    "perplexity_comparison_summary": "",
+                }
+
+            query_language = _language_name_from_state(state)
+            party_list = ", ".join(
+                f"{party.shortname} ({party.fullname})"
+                for party in state["selected_parties"]
+            )
+            prompt_input = {
+                "election_name": state["election"].name,
+                "election_year": state["election"].year,
+                "country_name": getattr(state["country"], "name", "Unknown Country"),
+                "party_list": party_list,
+                "query_language": query_language,
+                "messages": state["messages"],
+                "date": date.today().strftime("%B %d, %Y"),
+            }
+            try:
+                query = await generate_perplexity_query(
+                    "PerplexityComparisonQuery",
+                    PERPLEXITY_COMPARISON_QUERY,
+                    prompt_input,
+                    runtime.context["chat_model"],
+                )
+            except Exception:  # pragma: no cover
+                logger.exception("Failed to build Perplexity query for comparison flow")
+                return {
+                    "perplexity_comparison_sources": [],
+                    "perplexity_comparison_summary": "",
+                }
+
+            if not query:
+                logger.warning("Empty Perplexity query for comparison flow; skipping web search")
+                return {
+                    "perplexity_comparison_sources": [],
+                    "perplexity_comparison_summary": "",
+                }
+
+            latest_user = state["messages"][-1]
+            user_question = _format_message_content(getattr(latest_user, "content", ""))
+            system_prompt = (
+                "You are a political analyst comparing party positions using live web search. "
+                "Focus on factual differences backed by reputable sources."
+            )
+            user_prompt = (
+                f"User question:\n{user_question}\n\n"
+                f"Parties: {party_list}\n"
+                f"Search query:\n{query}\n\n"
+                "Summarise the latest points of comparison in up to four bullet points. "
+                "Cite each bullet with the source URL."
+            )
+
+            try:
+                raw_response = await client.create_completion(
+                    [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=0.0,
+                )
+            except Exception:  # pragma: no cover
+                logger.exception("Perplexity comparison search request failed")
+                return {
+                    "perplexity_comparison_sources": [],
+                    "perplexity_comparison_summary": "",
+                }
+
+            answer, sources = normalize_perplexity_sources(raw_response)
+            logger.info(
+                "Perplexity comparison search returned %s sources", len(sources)
+            )
+
+            return {
+                "perplexity_comparison_sources": sources,
+                "perplexity_comparison_summary": answer,
+            }
+
+        async def perplexity_single_party_search(
+            state: NonComparisonQuestionState, runtime: Runtime[AgentContext]
+        ) -> dict[str, Any]:
+            if not state["use_web_search"]:
+                return {}
+
+            client = runtime.context.get("perplexity_client")
+            if client is None:
+                logger.info(
+                    "Perplexity client unavailable; skipping web search for party %s",
+                    state["party"].shortname,
+                )
+                return {}
+
+            query_language = _language_name_from_state(state)
+            prompt_input = {
+                "election_name": state["election"].name,
+                "election_year": state["election"].year,
+                "country_name": getattr(state["country"], "name", "Unknown Country"),
+                "party_fullname": state["party"].fullname,
+                "party_shortname": state["party"].shortname,
+                "query_language": query_language,
+                "messages": state["messages"],
+                "date": date.today().strftime("%B %d, %Y"),
+            }
+            try:
+                query = await generate_perplexity_query(
+                    f"PerplexitySinglePartyQuery[{state['party'].shortname}]",
+                    PERPLEXITY_SINGLE_PARTY_QUERY,
+                    prompt_input,
+                    runtime.context["chat_model"],
+                )
+            except Exception:  # pragma: no cover
+                logger.exception(
+                    "Failed to build Perplexity query for party %s",
+                    state["party"].shortname,
+                )
+                return {}
+
+            if not query:
+                logger.warning(
+                    "Empty Perplexity query for party %s; skipping web search",
+                    state["party"].shortname,
+                )
+                return {}
+
+            latest_user = state["messages"][-1]
+            user_question = _format_message_content(getattr(latest_user, "content", ""))
+            system_prompt = (
+                "You are researching a political party using live web search. "
+                "Report concrete commitments or statements from trustworthy media or official sources."
+            )
+            user_prompt = (
+                f"User question:\n{user_question}\n\n"
+                f"Party: {state['party'].fullname} ({state['party'].shortname})\n"
+                f"Search query:\n{query}\n\n"
+                "Provide up to three bullet points with the latest findings about this party. "
+                "Cite each bullet with the source URL."
+            )
+
+            try:
+                raw_response = await client.create_completion(
+                    [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=0.0,
+                )
+            except Exception:  # pragma: no cover
+                logger.exception(
+                    "Perplexity single-party search failed for %s",
+                    state["party"].shortname,
+                )
+                return {}
+
+            answer, sources = normalize_perplexity_sources(raw_response)
+            logger.info(
+                "Perplexity party search returned %s sources for %s",
+                len(sources),
+                state["party"].shortname,
+            )
+
+            updated_sources = dict(state["perplexity_party_sources"])
+            updated_sources[state["party"].shortname] = sources
+            updated_summaries = dict(state["perplexity_party_summaries"])
+            updated_summaries[state["party"].shortname] = answer
+
+            return {
+                # Ensure downstream nodes keep the scoped party context.
+                "party": state["party"],
+                "perplexity_party_sources": updated_sources,
+                "perplexity_party_summaries": updated_summaries,
+            }
+
+        def route_after_rephrase(
             state: AgentState,
         ) -> list[Send] | Literal[
-            "generate_comparison_answer",
+            "decide_generic_web_search",
             "generate_generic_answer",
+            "perplexity_comparison_search",
+            "generate_comparison_answer",
+            "perplexity_single_party_search",
+            "generate_single_party_answer",
         ]:
+            def _single_party_payload(party: Party) -> dict[str, Any]:
+                return {
+                    "messages": state["messages"],
+                    "country": state["country"],
+                    "election": state["election"],
+                    "party": party,
+                    "use_web_search": state["use_web_search"],
+                    "use_vector_database": state["use_vector_database"],
+                    "response_language_name": state.get("response_language_name"),
+                    "manifesto_language_name": state.get("manifesto_language_name"),
+                    "respond_in_user_language": state.get("respond_in_user_language"),
+                    "is_comparison_question": state["is_comparison_question"],
+                    "lock_selected_parties": state["lock_selected_parties"],
+                    "conversation_title": state["conversation_title"],
+                    "conversation_follow_up_questions": state[
+                        "conversation_follow_up_questions"
+                    ],
+                    "selected_parties": state["selected_parties"],
+                    "should_use_generic_web_search": state["should_use_generic_web_search"],
+                    "perplexity_generic_sources": state["perplexity_generic_sources"],
+                    "perplexity_generic_summary": state["perplexity_generic_summary"],
+                    "perplexity_comparison_sources": state["perplexity_comparison_sources"],
+                    "perplexity_comparison_summary": state["perplexity_comparison_summary"],
+                    "perplexity_party_sources": state["perplexity_party_sources"],
+                    "perplexity_party_summaries": state["perplexity_party_summaries"],
+                    "party_tag": state["party_tag"],
+                }
+
             if not state["selected_parties"]:
+                if state["use_web_search"]:
+                    logger.info(
+                        "Routing to generic web search decision (no parties selected)"
+                    )
+                    return "decide_generic_web_search"
                 logger.info(
-                    "Routing to generic answer due to empty party selection",
+                    "Routing directly to generic answer (web search disabled)"
                 )
                 return "generate_generic_answer"
+
             if state["is_comparison_question"] and len(state["selected_parties"]) > 1:
+                if state["use_web_search"]:
+                    logger.info(
+                        "Routing to comparison web search for parties=%s",
+                        [party.shortname for party in state["selected_parties"]],
+                    )
+                    return "perplexity_comparison_search"
                 logger.info(
                     "Routing to comparison answer for parties=%s",
                     [party.shortname for party in state["selected_parties"]],
                 )
                 return "generate_comparison_answer"
-            else:
-                logger.info(
-                    "Routing to single-party answers for parties=%s",
-                    [party.shortname for party in state["selected_parties"]],
-                )
-                return [
-                    Send(
-                        "generate_single_party_answer",
-                        {
-                            "messages": state["messages"],
-                            "country": state["country"],
-                            "election": state["election"],
-                            "party": party,
-                        },
-                    )
-                    for party in state["selected_parties"]
-                ]
+
+            target_node = (
+                "perplexity_single_party_search"
+                if state["use_web_search"]
+                else "generate_single_party_answer"
+            )
+            logger.info(
+                "Routing to single-party flow (%s) for parties=%s",
+                target_node,
+                [party.shortname for party in state["selected_parties"]],
+            )
+            payloads = []
+            for party in state["selected_parties"]:
+                payload = _single_party_payload(party)
+                payload["party"] = party
+                payloads.append(Send(target_node, payload))
+            return payloads
+
+        def route_after_generic_decision(
+            state: AgentState,
+        ) -> Literal["perplexity_generic_search", "generate_generic_answer"]:
+            if state["use_web_search"] and state["should_use_generic_web_search"]:
+                logger.info("Decision: run generic web search before answering")
+                return "perplexity_generic_search"
+            logger.info("Decision: skip web search and answer generically")
+            return "generate_generic_answer"
 
         async def generate_generic_answer(
             state: AgentState, runtime: Runtime[AgentContext]
@@ -260,11 +697,27 @@ class Agent:
             ) or "(Keine Parteien geladen)"
 
             project_about = (
-                "ElectOMate ist ein offenes Forschungsprojekt (Open Source) rund um "
-                "politische Information und Wahlen. Entwickelt von Open Democracy, "
-                "mit dem Ziel, Bürgerinnen und Bürgern verständliche, neutrale Inhalte "
-                "bereitzustellen."
+                "Open Democracy is an open research project (Open Source, Non Profit) focused on political information and elections. "
+                "Developed by Open Democracy, our aim is to provide citizens with clear, neutral content, in reserch collaboration with researchers from ETH Zurich. "
+                "If you would like to contact a member of the team, please email info@opendemocracy.ai. "
+                "To learn more about our pipeline and how the algorithms work, please visit the About Us page, where you will find a 'How it Works' button and detailed documentation about our algorithms. "
+                "If a previous question has already been answered by the assistant, it will not be answered again unless the user specifically requests it."
             )
+
+            latest_user_message = ""
+            for msg in reversed(state["messages"]):
+                if getattr(msg, "type", None) == "human":
+                    latest_user_message = _format_message_content(getattr(msg, "content", ""))
+                    break
+
+            generic_sources = state.get("perplexity_generic_sources", [])
+            web_summary = state.get("perplexity_generic_summary", "") if generic_sources else ""
+            web_sources_block = (
+                format_web_sources_for_prompt(generic_sources)
+                if generic_sources
+                else ""
+            )
+            web_search_enabled = bool(generic_sources)
 
             model = GENERIC_ANSWER | runtime.context["chat_model"]
             prompt_input = {
@@ -275,11 +728,14 @@ class Agent:
                 "parties_overview": parties_overview,
                 "project_about": project_about,
                 "date": date.today().strftime("%B %d, %Y"),
+                "response_language_name": state.get("response_language_name")
+                or "",
+                "web_search_enabled": web_search_enabled,
+                "web_summary": web_summary,
+                "web_sources": web_sources_block,
+                "latest_user_message": latest_user_message,
                 "messages": state["messages"],
             }
-            _log_prompt_messages(
-                "GenericAnswer", GENERIC_ANSWER.format_messages(**prompt_input)
-            )
             response = await model.ainvoke(
                 prompt_input,
                 config={"tags": ["stream", "generic"]},
@@ -297,24 +753,62 @@ class Agent:
                 "Generating comparison answer for parties=%s",
                 [party.shortname for party in state["selected_parties"]],
             )
-            documents: dict[str, list[DocumentChunk]] = {}
+            documents: dict[str, list[DocumentChunk]] = {
+                party.shortname: [] for party in state["selected_parties"]
+            }
 
-            async def add_documents(party: Party) -> None:
-                documents[
-                    party.shortname
-                ] = await retrieve_documents_from_user_question(
-                    state["messages"],
-                    state["election"],
-                    party,
-                    runtime.context["chat_model"],
-                    runtime.context["vector_database"],
+            if state["use_vector_database"]:
+                async def add_documents(party: Party) -> None:
+                    documents[
+                        party.shortname
+                    ] = await retrieve_documents_from_user_question(
+                        state["messages"],
+                        state["election"],
+                        party,
+                        runtime.context["chat_model"],
+                        runtime.context["vector_database"],
+                        manifesto_language_name=state.get("manifesto_language_name"),
+                    )
+
+                async with TaskGroup() as tg:
+                    for party in state["selected_parties"]:
+                        tg.create_task(add_documents(party))
+
+                runtime.stream_writer(ComparisonSourcesChunk(documents=documents))
+            else:
+                logger.info(
+                    "Vector database disabled; skipping RAG retrieval for comparison answer"
                 )
 
-            async with TaskGroup() as tg:
-                for party in state["selected_parties"]:
-                    tg.create_task(add_documents(party))
+            vector_web_sources: list[WebSource] = []
+            for party in state["selected_parties"]:
+                vector_web_sources.extend(
+                    convert_documents_to_web_sources(
+                        documents.get(party.shortname, []),
+                        party=party.shortname,
+                        fallback_url=party.url or state["election"].url,
+                    )
+                )
 
-            runtime.stream_writer(ComparisonSourcesChunk(documents=documents))
+            perplexity_sources = state.get("perplexity_comparison_sources", [])
+            combined_web_sources = [*perplexity_sources, *vector_web_sources]
+            web_summary = state.get("perplexity_comparison_summary", "")
+            if not web_summary and vector_web_sources:
+                first_snippet = vector_web_sources[0].get("snippet", "") or ""
+                if first_snippet:
+                    web_summary = textwrap.shorten(first_snippet, width=200, placeholder="…")
+
+            if combined_web_sources:
+                runtime.stream_writer(
+                    PerplexitySourcesChunk(
+                        scope="comparison",
+                        sources=combined_web_sources,
+                        summary=web_summary,
+                    )
+                )
+
+            web_sources_block = format_web_sources_for_prompt(combined_web_sources)
+            web_search_enabled = bool(combined_web_sources)
 
             model = COMPARISON_PARTY_ANSWER | runtime.context["chat_model"].bind(
                 tags=(runtime.context["chat_model"].tags or []) + ["stream"]
@@ -343,6 +837,12 @@ class Agent:
                     for party in state["selected_parties"]
                 ]
             )
+
+            latest_user_message = ""
+            for msg in reversed(state["messages"]):
+                if getattr(msg, "type", None) == "human":
+                    latest_user_message = _format_message_content(getattr(msg, "content", ""))
+                    break
             prompt_input = {
                 "election_name": state["election"].name,
                 "election_year": state["election"].year,
@@ -353,12 +853,14 @@ class Agent:
                     for party in state["selected_parties"]
                 ),
                 "parties_data": parties_data,
+                "response_language_name": state.get("response_language_name")
+                or "",
+                "web_search_enabled": web_search_enabled,
+                "web_summary": web_summary,
+                "web_sources": web_sources_block,
+                "latest_user_message": latest_user_message,
                 "messages": state["messages"],
             }
-            _log_prompt_messages(
-                "ComparisonAnswer",
-                COMPARISON_PARTY_ANSWER.format_messages(**prompt_input),
-            )
             response = await model.ainvoke(prompt_input)
             logger.info(
                 "✅ Chat response (comparison) preview: %s",
@@ -373,18 +875,66 @@ class Agent:
                 "Generating single-party answer for party=%s",
                 state["party"].shortname,
             )
-            documents = await retrieve_documents_from_user_question(
-                state["messages"],
-                state["election"],
-                state["party"],
-                runtime.context["chat_model"],
-                runtime.context["vector_database"],
+            documents: list[DocumentChunk] = []
+            if state["use_vector_database"]:
+                documents = await retrieve_documents_from_user_question(
+                    state["messages"],
+                    state["election"],
+                    state["party"],
+                    runtime.context["chat_model"],
+                    runtime.context["vector_database"],
+                    manifesto_language_name=state.get("manifesto_language_name"),
+                )
+                runtime.stream_writer(
+                    PartySourcesChunk(
+                        party=state["party"].shortname, documents=documents
+                    )
+                )
+            else:
+                logger.info(
+                    "Vector database disabled; skipping RAG retrieval for party %s",
+                    state["party"].shortname,
+                )
+
+            party_key = state["party"].shortname
+            web_summary = state.get("perplexity_party_summaries", {}).get(party_key, "")
+            party_web_sources = state.get("perplexity_party_sources", {}).get(
+                party_key, []
             )
-            runtime.stream_writer(
-                PartySourcesChunk(party=state["party"].shortname, documents=documents)
+            vector_web_sources: list[WebSource] = convert_documents_to_web_sources(
+                documents,
+                party=party_key,
+                fallback_url=state["party"].url or state["election"].url,
             )
+
+            combined_web_sources = [*party_web_sources, *vector_web_sources]
+            if not web_summary and vector_web_sources:
+                first_snippet = vector_web_sources[0].get("snippet", "") or ""
+                if first_snippet:
+                    web_summary = textwrap.shorten(first_snippet, width=180, placeholder="…")
+                else:
+                    web_summary = "Context extracted from party documents."
+
+            if combined_web_sources:
+                runtime.stream_writer(
+                    PerplexitySourcesChunk(
+                        scope="party",
+                        party=party_key,
+                        sources=combined_web_sources,
+                        summary=web_summary,
+                    )
+                )
+
+            web_sources_block = format_web_sources_for_prompt(combined_web_sources)
+            web_search_enabled = bool(combined_web_sources)
+
             model = SINGLE_PARTY_ANSWER | runtime.context["chat_model"]
             party_candidate = await state["party"].awaitable_attrs.candidate
+            latest_user_message = ""
+            for msg in reversed(state["messages"]):
+                if getattr(msg, "type", None) == "human":
+                    latest_user_message = _format_message_content(getattr(msg, "content", ""))
+                    break
             prompt_input = {
                 "election_name": state["election"].name,
                 "election_year": state["election"].year,
@@ -406,12 +956,14 @@ class Agent:
                         for i, doc in enumerate(documents)
                     ]
                 ),
+                "response_language_name": state.get("response_language_name")
+                or "",
+                "web_search_enabled": web_search_enabled,
+                "web_summary": web_summary,
+                "web_sources": web_sources_block,
+                "latest_user_message": latest_user_message,
                 "messages": state["messages"],
             }
-            _log_prompt_messages(
-                f"SinglePartyAnswer[{state['party'].shortname}]",
-                SINGLE_PARTY_ANSWER.format_messages(**prompt_input),
-            )
             try:
                 response = await model.ainvoke(
                     prompt_input,
@@ -464,10 +1016,6 @@ class Agent:
                 ),
                 "messages": state["messages"],
             }
-            _log_prompt_messages(
-                "GenerateTitleAndReplies",
-                GENERATE_TITLE_AND_REPLIES.format_messages(**prompt_input),
-            )
             response = cast(
                 "GenerateTitleAndRepliedStructuredOutput",
                 await model.ainvoke(prompt_input),
@@ -487,18 +1035,35 @@ class Agent:
         workflow.add_node("update_qestion_targets", update_qestion_targets)
         workflow.add_edge("update_qestion_targets", "rephrase_question")
         workflow.add_node("rephrase_question", rephrase_question)
+        workflow.add_node("decide_generic_web_search", decide_generic_web_search)
+        workflow.add_node("perplexity_generic_search", perplexity_generic_search)
+        workflow.add_node("perplexity_comparison_search", perplexity_comparison_search)
+        workflow.add_node("perplexity_single_party_search", perplexity_single_party_search)
         workflow.add_conditional_edges(
             "rephrase_question",
-            route_answer_generation,
+            route_after_rephrase,
             [
+                "decide_generic_web_search",
                 "generate_generic_answer",
+                "perplexity_comparison_search",
                 "generate_comparison_answer",
-                "generate_comparison_answer",
+                "perplexity_single_party_search",
+                "generate_single_party_answer",
             ],
+        )
+        workflow.add_conditional_edges(
+            "decide_generic_web_search",
+            route_after_generic_decision,
+            ["perplexity_generic_search", "generate_generic_answer"],
         )
         workflow.add_node("generate_generic_answer", generate_generic_answer)
         workflow.add_node("generate_comparison_answer", generate_comparison_answer)
         workflow.add_node("generate_single_party_answer", generate_single_party_answer)
+        workflow.add_edge("perplexity_generic_search", "generate_generic_answer")
+        workflow.add_edge("perplexity_comparison_search", "generate_comparison_answer")
+        workflow.add_edge(
+            "perplexity_single_party_search", "generate_single_party_answer"
+        )
         workflow.add_edge("generate_generic_answer", "generate_title_and_replies")
         workflow.add_edge("generate_comparison_answer", "generate_title_and_replies")
         workflow.add_edge("generate_single_party_answer", "generate_title_and_replies")

@@ -21,7 +21,12 @@ Relevant information is found based on the similarity of the documents to the pr
 # Your Instructions
 
 You receive a user's message and the previous conversation history.
-From this, generate a query that complements and corrects the user's information to improve the search for useful documents. 
+From this, generate a query that complements and corrects the user's information to improve the search for useful documents.
+
+# Language for the Query
+
+Generate the final query in the following language, translating if needed: {manifesto_language_name}.
+If the user's message is in a different language, translate the essence of the question into {manifesto_language_name} before producing the query.
 
 The query must meet the following criteria:
 

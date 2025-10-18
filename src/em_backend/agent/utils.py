@@ -1,10 +1,12 @@
-from collections.abc import AsyncGenerator, AsyncIterator, Sequence
+from collections.abc import AsyncGenerator, AsyncIterator, Sequence, Mapping
 from typing import Any, cast
 from uuid import uuid4
 
 import logging
+from textwrap import shorten
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_core.messages import AnyMessage as AnyLcMessage
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_openai.chat_models.base import OpenAIRefusalError
 
@@ -14,6 +16,7 @@ from em_backend.agent.prompts.rerank_documents import (
     RerankDocumentsStructuredOutput,
 )
 from em_backend.agent.types import AgentState
+from em_backend.agent.types import WebSource
 from em_backend.database.models import Election, Party
 from em_backend.models.chunks import (
     AnyChunk,
@@ -21,6 +24,7 @@ from em_backend.models.chunks import (
     ComparisonSourcesChunk,
     ComparisonTokenChunk,
     FollowUpQuestionsChunk,
+    PerplexitySourcesChunk,
     PartyMessageChunk,
     PartySourcesChunk,
     PartyTokenChunk,
@@ -77,6 +81,138 @@ def convert_from_lc_message(lc_messages: Sequence[AnyLcMessage]) -> list[AnyMess
                     UserMessage(id=msg.id or str(uuid4()), content=msg.text())
                 )
     return messages
+
+
+async def generate_perplexity_query(
+    label: str,
+    prompt: ChatPromptTemplate,
+    prompt_input: dict[str, Any],
+    chat_model: ChatOpenAI,
+) -> str:
+    """Run a query-rewrite prompt to obtain a web search query."""
+
+    # _log_prompt(label, prompt.format_messages(**prompt_input))
+    response = await (prompt | chat_model).ainvoke(prompt_input)
+    query = response.text().strip()
+    logger.info("🌐 Perplexity query [%s]: %s", label, query)
+    return query
+
+
+def normalize_perplexity_sources(payload: Mapping[str, Any]) -> tuple[str, list[WebSource]]:
+    """Extract assistant text and citation-like metadata from a Perplexity payload."""
+
+    def _coerce_str(value: Any) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, str):
+            return value
+        return str(value)
+
+    answer = ""
+    choices = payload.get("choices")
+    if isinstance(choices, list) and choices:
+        message = choices[0].get("message", {})
+        content = message.get("content")
+        if isinstance(content, str):
+            answer = content
+        elif isinstance(content, list):
+            answer = " ".join(
+                _coerce_str(item.get("text") if isinstance(item, dict) else item).strip()
+                for item in content
+            ).strip()
+
+    sources: list[WebSource] = []
+    seen_urls: set[str] = set()
+
+    def _push_source(title: str, url: str, snippet: str) -> None:
+        normalized_url = url.strip()
+        if normalized_url and normalized_url in seen_urls:
+            return
+        if normalized_url:
+            seen_urls.add(normalized_url)
+        sources.append(
+            {
+                "title": title.strip() or (normalized_url or "Unbenannte Quelle"),
+                "url": normalized_url,
+                "snippet": snippet.strip(),
+            }
+        )
+
+    # Potential keys containing source metadata across API versions.
+    candidate_keys = ["citations", "search_results", "sources", "data"]
+
+    for key in candidate_keys:
+        items = payload.get(key)
+        if not isinstance(items, list):
+            continue
+        for item in items:
+            if isinstance(item, Mapping):
+                url = _coerce_str(
+                    item.get("url")
+                    or item.get("source")
+                    or item.get("origin")
+                    or item.get("id")
+                )
+                title = _coerce_str(item.get("title") or item.get("name") or url)
+                snippet = _coerce_str(
+                    item.get("snippet")
+                    or item.get("content")
+                    or item.get("passage")
+                    or item.get("body")
+                    or ""
+                )
+                _push_source(title, url, snippet)
+            elif isinstance(item, str):
+                _push_source(item, item, "")
+
+    return answer, sources
+
+
+def format_web_sources_for_prompt(sources: Sequence[WebSource]) -> str:
+    """Render web sources into a readable block for LLM prompts."""
+
+    if not sources:
+        return "No live web search findings were retrieved for this request."
+
+    lines: list[str] = []
+    for idx, source in enumerate(sources, start=1):
+        title = source.get("title") or "Unbenannte Quelle"
+        url = source.get("url") or ""
+        snippet = (source.get("snippet") or "").strip()
+
+        lines.append(f"{idx}. Title: {title}")
+        if url:
+            lines.append(f"   URL: {url}")
+        if snippet:
+            lines.append(f"   Snippet: {snippet}")
+    return "\n".join(lines)
+
+
+def convert_documents_to_web_sources(
+    documents: Sequence[DocumentChunk],
+    *,
+    party: str | None = None,
+    fallback_url: str | None = None,
+) -> list[WebSource]:
+    """Convert vector document chunks into web-source style entries."""
+
+    if not documents:
+        return []
+
+    base_url = (fallback_url or "https://opendemocracy.ai/documents").rstrip("#")
+    sources: list[WebSource] = []
+    for idx, doc in enumerate(documents, start=1):
+        title = doc.get("title") or f"Document {idx}"
+        if party:
+            title = f"{party}: {title}"
+        snippet = shorten(doc.get("text", ""), width=220, placeholder="…")
+        anchor = f"doc-{party or 'generic'}-{idx}"
+        if fallback_url:
+            url = f"{base_url}#{anchor}"
+        else:
+            url = f"https://opendemocracy.ai/documents/{party or 'generic'}/{idx}"
+        sources.append({"title": title, "url": url, "snippet": snippet})
+    return sources
 
 
 async def process_lc_stream(
@@ -175,7 +311,14 @@ async def process_lc_stream(
                         )
 
             case "custom":
-                if isinstance(chunk, PartySourcesChunk | ComparisonSourcesChunk):
+                if isinstance(
+                    chunk,
+                    (
+                        PartySourcesChunk,
+                        ComparisonSourcesChunk,
+                        PerplexitySourcesChunk,
+                    ),
+                ):
                     yield chunk
 
             case _:
@@ -188,14 +331,17 @@ async def retrieve_documents_from_user_question(
     party: Party,
     chat_model: ChatOpenAI,
     vector_database: VectorDatabase,
+    *,
+    manifesto_language_name: str | None = None,
 ) -> list[DocumentChunk]:
     model = IMPROVE_RAG_QUERY | chat_model
     prompt_input = {
         "election_year": election.year,
         "election_name": election.name,
         "messages": messages,
+        "manifesto_language_name": manifesto_language_name or "",
     }
-    _log_prompt("ImproveRAGQuery", IMPROVE_RAG_QUERY.format_messages(**prompt_input))
+    # _log_prompt("ImproveRAGQuery", IMPROVE_RAG_QUERY.format_messages(**prompt_input))
     response = await model.ainvoke(prompt_input)
     improved_query = response.text()
     logger.info(
@@ -253,7 +399,7 @@ async def retrieve_documents_from_user_question(
             ),
             "messages": messages,
         }
-        _log_prompt("RerankDocuments", RERANK_DOCUMENTS.format_messages(**rerank_input))
+        # _log_prompt("RerankDocuments", RERANK_DOCUMENTS.format_messages(**rerank_input))
         response = cast(
             "RerankDocumentsStructuredOutput",
             await model.ainvoke(rerank_input),

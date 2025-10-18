@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     openai_model_name: str = "gpt-4o"
     openai_api_key: str
 
+    # Perplexity API
+    perplexity_api_key: str | None = None
+    perplexity_model: str = "sonar"
+
     # Postgres url
     postgres_url: str
 

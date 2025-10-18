@@ -63,6 +63,21 @@ class FollowUpQuestionsChunk(BaseChunk):
     follow_up_questions: list[str]
 
 
+class WebSourceModel(BaseModel):
+    title: str
+    url: str
+    snippet: str | None = None
+
+
+class PerplexitySourcesChunk(BaseChunk):
+    type: Literal["web_response_sources"] = "web_response_sources"
+
+    scope: Literal["generic", "comparison", "party"]
+    sources: list[WebSourceModel]
+    summary: str | None = None
+    party: str | None = None
+
+
 AnyChunk = Annotated[
     PartyTokenChunk
     | PartySourcesChunk
@@ -71,6 +86,7 @@ AnyChunk = Annotated[
     | ComparisonSourcesChunk
     | ComparisonMessageChunk
     | TitleChunk
-    | FollowUpQuestionsChunk,
+    | FollowUpQuestionsChunk
+    | PerplexitySourcesChunk,
     Field(discriminator="type"),
 ]

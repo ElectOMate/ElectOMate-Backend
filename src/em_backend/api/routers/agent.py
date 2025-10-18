@@ -24,6 +24,19 @@ logger = logging.getLogger(__name__)
 agent_router = APIRouter(tags=["agent"])
 
 
+class LanguageDescriptor(BaseModel):
+    name: str
+    code: str | None = None
+    flag: str | None = None
+
+
+class LanguageContext(BaseModel):
+    selected_language: LanguageDescriptor
+    manifesto_language: LanguageDescriptor
+    available_languages: list[LanguageDescriptor] = Field(default_factory=list)
+    respond_in_user_language: bool = True
+
+
 def last_message_is_user(value: list[AnyMessage]) -> list[AnyMessage]:
     if value[-1].type != "user":
         raise ValueError("Last message should be user message")
@@ -40,6 +53,7 @@ class AgentChatRequest(BaseModel):
 
     use_vector_database: bool
     use_web_search: bool
+    language_context: LanguageContext | None = None
 
 
 @agent_router.post("/chat")
@@ -116,6 +130,14 @@ async def agent_chat(
                     election=bound_election,
                     selected_parties=bound_selected_parties,
                     session=session,
+                    use_web_search=chat_request.use_web_search,
+                    use_vector_database=chat_request.use_vector_database,
+                    # Pass language preferences through to the agent
+                    language_context=(
+                        chat_request.language_context.model_dump()
+                        if chat_request.language_context is not None
+                        else None
+                    ),
                 )
             except Exception:
                 logger.exception("Agent invocation failed")

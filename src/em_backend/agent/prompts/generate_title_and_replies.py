@@ -34,7 +34,6 @@ Make sure that:
 - The quick replies are directed at the party/parties.
 - The quick replies are especially relevant or pressing in relation to the given party/parties.
 - The quick replies are short and concise. Quick replies must be no longer than seven words.
-- The quick replies are written fully in correct German.
 
 # Output Format
 
