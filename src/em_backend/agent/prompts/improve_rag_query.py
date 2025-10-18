@@ -21,7 +21,7 @@ Relevant information is found based on the similarity of the documents to the pr
 # Your Instructions
 
 You receive a user's message and the previous conversation history.
-From this, generate a query that complements and corrects the user's information to improve the search for useful documents.
+From this, generate a query that complements and corrects the user's information to improve the search for useful documents. 
 
 The query must meet the following criteria:
 

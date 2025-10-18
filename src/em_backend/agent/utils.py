@@ -3,7 +3,7 @@ from typing import Any, cast
 from uuid import uuid4
 
 import logging
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_core.messages import AnyMessage as AnyLcMessage
 from langchain_openai import ChatOpenAI
 from langchain_openai.chat_models.base import OpenAIRefusalError
@@ -31,6 +31,26 @@ from em_backend.vector.db import DocumentChunk, VectorDatabase
 
 
 logger = logging.getLogger(__name__)
+
+
+def _format_message_content(content: Any) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return " ".join(
+            item.get("text", str(item)) if isinstance(item, dict) else str(item)
+            for item in content
+        )
+    return str(content)
+
+
+def _log_prompt(label: str, prompt_messages: Sequence[BaseMessage]) -> None:
+    prompt_text = "\n\n".join(
+        f"{msg.type.upper() if hasattr(msg, 'type') else type(msg).__name__}: "
+        f"{_format_message_content(msg.content)}"
+        for msg in prompt_messages
+    )
+    logger.info("🧾 Prompt [%s]\n%s", label, prompt_text)
 
 
 def convert_to_lc_message(messages: list[AnyMessage]) -> list[AnyLcMessage]:
@@ -170,35 +190,79 @@ async def retrieve_documents_from_user_question(
     vector_database: VectorDatabase,
 ) -> list[DocumentChunk]:
     model = IMPROVE_RAG_QUERY | chat_model
-    response = await model.ainvoke(
-        {
-            "election_year": election.year,
-            "election_name": election.name,
-            "messages": messages,
-        }
+    prompt_input = {
+        "election_year": election.year,
+        "election_name": election.name,
+        "messages": messages,
+    }
+    _log_prompt("ImproveRAGQuery", IMPROVE_RAG_QUERY.format_messages(**prompt_input))
+    response = await model.ainvoke(prompt_input)
+    improved_query = response.text()
+    logger.info(
+        "🛠️  Refined RAG query for %s-%s ➜ %s",
+        election.id,
+        party.shortname,
+        improved_query,
     )
-    documents = await vector_database.retrieve_chunks(election, party, response.text())
+    documents = await vector_database.retrieve_chunks(
+        election, party, improved_query
+    )
+    if documents:
+        logger.info(
+            "✅ Retrieved %s doc(s) from Weaviate for %s-%s: %s",
+            len(documents),
+            election.id,
+            party.shortname,
+            [doc["title"] for doc in documents],
+        )
+        for idx, doc in enumerate(documents):
+            text_preview = doc["text"]
+            if len(text_preview) > 800:
+                text_preview = f"{text_preview[:800]}…"
+            logger.info(
+                "📄 RAG chunk %s for %s-%s:\nTitle: %s\nScore: %.4f\nText:\n%s\n",
+                idx,
+                election.id,
+                party.shortname,
+                doc["title"],
+                doc["score"],
+                text_preview,
+            )
+            logger.info("")
+    else:
+        logger.warning(
+            "⚠️ No documents returned from Weaviate for %s-%s (query=%s)",
+            election.id,
+            party.shortname,
+            improved_query,
+        )
     model = RERANK_DOCUMENTS | chat_model.with_structured_output(
         RerankDocumentsStructuredOutput
     )
     try:
+        rerank_input = {
+            "sources": "\n".join(
+                [
+                    "<document>\n"
+                    f"index: {i}\n"
+                    f"# {doc['title']}\n"
+                    f"{doc['text']}\n"
+                    "</document>"
+                    for i, doc in enumerate(documents)
+                ]
+            ),
+            "messages": messages,
+        }
+        _log_prompt("RerankDocuments", RERANK_DOCUMENTS.format_messages(**rerank_input))
         response = cast(
             "RerankDocumentsStructuredOutput",
-            await model.ainvoke(
-                {
-                    "sources": "\n".join(
-                        [
-                            "<document>\n"
-                            f"index: {i}\n"
-                            f"# {doc['title']}\n"
-                            f"{doc['text']}\n"
-                            "</document>"
-                            for i, doc in enumerate(documents)
-                        ]
-                    ),
-                    "messages": messages,
-                }
-            ),
+            await model.ainvoke(rerank_input),
+        )
+        logger.info(
+            "✅ Reranker indices for %s-%s: %s",
+            election.id,
+            party.shortname,
+            response.reranked_doc_indices,
         )
     except OpenAIRefusalError as exc:
         logger.warning(

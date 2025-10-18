@@ -20,9 +20,10 @@ You receive a user question and the conversation history, and you sort the indic
 Rank the indices of the sources by relevance to answering the user's question. Specifically:
 
 - Sources that directly address the question or contain relevant information should be ranked higher, with their index appearing earlier in the list.
+- Prioritize sources that refer to applicable, topic-relevant policies or statements when determining usefulness. Chunks mentioning specific policies, proposals, or statements directly related to the user question should be ranked highest.
 - Sources that are vague, irrelevant, or redundant should be ranked lower, with their index appearing later in the list.
 
-The conversation history can provide context to better assess relevance.
+The conversation history can provide context to better assess relevance, but only if the latest user message refers to an earlier context; otherwise, only take the latest user message into account.
 
 # Output Format
 

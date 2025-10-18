@@ -1,15 +1,11 @@
 from asyncio import TaskGroup
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Sequence
 from datetime import date
 from typing import Any, Literal, cast
 from uuid import uuid4
 
 import logging
-from langchain_core.messages import (
-    AIMessage,
-    HumanMessage,
-    RemoveMessage,
-)
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, RemoveMessage
 from langgraph.graph import StateGraph
 from langgraph.pregel import Pregel
 from langgraph.runtime import Runtime
@@ -56,6 +52,31 @@ from langchain_openai.chat_models.base import OpenAIRefusalError
 
 
 logger = logging.getLogger(__name__)
+
+
+def _format_message_content(content: Any) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        return " ".join(
+            item.get("text", str(item)) if isinstance(item, dict) else str(item)
+            for item in content
+        )
+    return str(content)
+
+
+def _log_prompt_messages(label: str, messages: Sequence[BaseMessage]) -> None:
+    prompt_text = "\n\n".join(
+        f"{msg.type.upper() if hasattr(msg, 'type') else type(msg).__name__}: "
+        f"{_format_message_content(msg.content)}"
+        for msg in messages
+    )
+    logger.info("🧾 Prompt [%s]\n%s", label, prompt_text)
+
+
+def _format_content_preview(message: AIMessage) -> str:
+    text = _format_message_content(getattr(message, "content", ""))
+    return text.replace("\n", " ")[:200]
 
 
 class Agent:
@@ -121,6 +142,17 @@ class Agent:
                 state["election"].id,
                 available_parties,
             )
+            prompt_input = {
+                "current_party_list": ", ".join(
+                    [party.fullname for party in state["selected_parties"]]
+                ),
+                "additional_party_list": ", ".join(available_parties),
+                "messages": state["messages"],
+            }
+            _log_prompt_messages(
+                "DetermineQuestionTarget",
+                DETERMINE_QUESTION_TARGET.format_messages(**prompt_input),
+            )
             model = DETERMINE_QUESTION_TARGET | runtime.context[
                 "chat_model"
             ].with_structured_output(
@@ -132,15 +164,7 @@ class Agent:
             )
             selected_parties_response = cast(
                 "DetermineQuestionTargetStructuredOutput",
-                await model.ainvoke(
-                    {
-                        "current_party_list": ", ".join(
-                            [party.fullname for party in state["selected_parties"]]
-                        ),
-                        "additional_party_list": ", ".join(available_parties),
-                        "messages": state["messages"],
-                    }
-                ),
+                await model.ainvoke(prompt_input),
             )
             logger.info(
                 "Party selection prompt result: %s",
@@ -158,12 +182,17 @@ class Agent:
         async def rephrase_question(
             state: AgentState, runtime: Runtime[AgentContext]
         ) -> dict[str, Any]:
+            prompt_input = {"messages": state["messages"]}
+            _log_prompt_messages(
+                "RephraseQuestion",
+                REPHRASE_QUESTION.format_messages(**prompt_input),
+            )
             model = REPHRASE_QUESTION | runtime.context[
                 "chat_model"
             ].with_structured_output(RephraseQuestionStructuredOutput)
             response = cast(
                 "RephraseQuestionStructuredOutput",
-                await model.ainvoke({"messages": state["messages"]}),
+                await model.ainvoke(prompt_input),
             )
 
             return {
@@ -238,18 +267,26 @@ class Agent:
             )
 
             model = GENERIC_ANSWER | runtime.context["chat_model"]
+            prompt_input = {
+                "election_name": election.name,
+                "election_year": election.year,
+                "election_date": election.date.strftime("%B %d, %Y"),
+                "election_url": election.url,
+                "parties_overview": parties_overview,
+                "project_about": project_about,
+                "date": date.today().strftime("%B %d, %Y"),
+                "messages": state["messages"],
+            }
+            _log_prompt_messages(
+                "GenericAnswer", GENERIC_ANSWER.format_messages(**prompt_input)
+            )
             response = await model.ainvoke(
-                {
-                    "election_name": election.name,
-                    "election_year": election.year,
-                    "election_date": election.date.strftime("%B %d, %Y"),
-                    "election_url": election.url,
-                    "parties_overview": parties_overview,
-                    "project_about": project_about,
-                    "date": date.today().strftime("%B %d, %Y"),
-                    "messages": state["messages"],
-                },
+                prompt_input,
                 config={"tags": ["stream", "generic"]},
+            )
+            logger.info(
+                "✅ Chat response (generic) preview: %s",
+                _format_content_preview(response),
             )
             return {"messages": [response]}
 
@@ -306,19 +343,26 @@ class Agent:
                     for party in state["selected_parties"]
                 ]
             )
-            response = await model.ainvoke(
-                {
-                    "election_name": state["election"].name,
-                    "election_year": state["election"].year,
-                    "election_date": state["election"].date.strftime("%B %d, %Y"),
-                    "date": date.today().strftime("%B %d, %Y"),
-                    "selected_parties": ", ".join(
-                        f"{party.shortname} ({party.fullname})"
-                        for party in state["selected_parties"]
-                    ),
-                    "parties_data": parties_data,
-                    "messages": state["messages"],
-                }
+            prompt_input = {
+                "election_name": state["election"].name,
+                "election_year": state["election"].year,
+                "election_date": state["election"].date.strftime("%B %d, %Y"),
+                "date": date.today().strftime("%B %d, %Y"),
+                "selected_parties": ", ".join(
+                    f"{party.shortname} ({party.fullname})"
+                    for party in state["selected_parties"]
+                ),
+                "parties_data": parties_data,
+                "messages": state["messages"],
+            }
+            _log_prompt_messages(
+                "ComparisonAnswer",
+                COMPARISON_PARTY_ANSWER.format_messages(**prompt_input),
+            )
+            response = await model.ainvoke(prompt_input)
+            logger.info(
+                "✅ Chat response (comparison) preview: %s",
+                _format_content_preview(response),
             )
             return {"messages": [response]}
 
@@ -341,33 +385,42 @@ class Agent:
             )
             model = SINGLE_PARTY_ANSWER | runtime.context["chat_model"]
             party_candidate = await state["party"].awaitable_attrs.candidate
+            prompt_input = {
+                "election_name": state["election"].name,
+                "election_year": state["election"].year,
+                "election_date": state["election"].date.strftime("%B %d, %Y"),
+                "election_url": state["election"].url,
+                "date": date.today().strftime("%B %d, %Y"),
+                "party_name": state["party"].shortname,
+                "party_fullname": state["party"].fullname,
+                "party_description": state["party"].description,
+                "party_url": state["party"].url,
+                "party_candidate": f"{party_candidate.given_name} {party_candidate.family_name}",
+                "sources": "\n".join(
+                    [
+                        "<document>\n"
+                        f"index: {i}\n"
+                        f"# {doc['title']}\n"
+                        f"{doc['text']}\n"
+                        "</document>"
+                        for i, doc in enumerate(documents)
+                    ]
+                ),
+                "messages": state["messages"],
+            }
+            _log_prompt_messages(
+                f"SinglePartyAnswer[{state['party'].shortname}]",
+                SINGLE_PARTY_ANSWER.format_messages(**prompt_input),
+            )
             try:
                 response = await model.ainvoke(
-                    {
-                        "election_name": state["election"].name,
-                        "election_year": state["election"].year,
-                        "election_date": state["election"].date.strftime("%B %d, %Y"),
-                        "election_url": state["election"].url,
-                        "date": date.today().strftime("%B %d, %Y"),
-                        "party_name": state["party"].shortname,
-                        "party_fullname": state["party"].fullname,
-                        "party_description": state["party"].description,
-                        "party_url": state["party"].url,
-                        "party_candidate": f"{party_candidate.given_name} "
-                        "{party_candidate.family_name}",
-                        "sources": "\n".join(
-                            [
-                                "<document>\n"
-                                f"index: {i}\n"
-                                f"# {doc['title']}\n"
-                                f"{doc['text']}\n"
-                                "</document>"
-                                for i, doc in enumerate(documents)
-                            ]
-                        ),
-                        "messages": state["messages"],
-                    },
+                    prompt_input,
                     config={"tags": ["stream", f"party_{state['party'].shortname}"]},
+                )
+                logger.info(
+                    "✅ Chat response (party=%s) preview: %s",
+                    state["party"].shortname,
+                    _format_content_preview(response),
                 )
             except OpenAIRefusalError as exc:
                 logger.warning(
@@ -404,17 +457,20 @@ class Agent:
             model = GENERATE_TITLE_AND_REPLIES | runtime.context[
                 "chat_model"
             ].with_structured_output(GenerateTitleAndRepliedStructuredOutput)
+            prompt_input = {
+                "party_list": ", ".join(
+                    f"{party.shortname} ({party.fullname})"
+                    for party in state["selected_parties"]
+                ),
+                "messages": state["messages"],
+            }
+            _log_prompt_messages(
+                "GenerateTitleAndReplies",
+                GENERATE_TITLE_AND_REPLIES.format_messages(**prompt_input),
+            )
             response = cast(
                 "GenerateTitleAndRepliedStructuredOutput",
-                await model.ainvoke(
-                    {
-                        "party_list": ", ".join(
-                            f"{party.shortname} ({party.fullname})"
-                            for party in state["selected_parties"]
-                        ),
-                        "messages": state["messages"],
-                    }
-                ),
+                await model.ainvoke(prompt_input),
             )
             return {
                 "conversation_title": response.conversation_title,
