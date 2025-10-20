@@ -440,11 +440,12 @@ async def retrieve_documents_from_user_question(
             "sources": "\n".join(
                 [
                     "<document>\n"
-                    f"index: {i}\n"
-                    f"# {doc['title']}\n"
-                    f"{doc['text']}\n"
+                    f"Source ID: {doc.get('chunk_id', '')}\n"
+                    f"Title: {doc['title']}\n"
+                    f"Page number: {doc.get('page_number', 'unknown')}\n"
+                    f"Content: {doc['text']}\n"
                     "</document>"
-                    for i, doc in enumerate(documents)
+                    for doc in documents
                 ]
             ),
             "messages": messages,

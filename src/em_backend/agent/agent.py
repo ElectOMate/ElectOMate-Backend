@@ -927,7 +927,9 @@ class Agent:
                     + "\n".join(
                         [
                             "<document>\n"
+                            f"Source ID: {doc.get('chunk_id', '')}\n"
                             f"Title: {doc['title']}\n"
+                            f"Page number: {doc.get('page_number', 'unknown')}\n"
                             f"Text: {doc['text']}\n"
                             "</document>"
                             for doc in documents[party.shortname]
@@ -1028,7 +1030,9 @@ class Agent:
             web_sources_block = format_web_sources_for_prompt(combined_web_sources)
             web_search_enabled = bool(combined_web_sources)
 
-            model = SINGLE_PARTY_ANSWER | runtime.context["chat_model"]
+            model = SINGLE_PARTY_ANSWER | runtime.context["chat_model"].bind(
+                tags=(runtime.context["chat_model"].tags or []) + [f"party_{state['party'].shortname}", "stream"]
+            )
             party_candidate = await state["party"].awaitable_attrs.candidate
             latest_user_message = ""
             for msg in reversed(state["messages"]):

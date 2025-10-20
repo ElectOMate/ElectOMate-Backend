@@ -1,5 +1,6 @@
 import asyncio
 from io import BytesIO
+from pathlib import Path
 from typing import Annotated, cast
 from uuid import UUID
 
@@ -22,6 +23,8 @@ from em_backend.api.routers.v2 import (
     get_sessionmaker,
     get_vector_database,
 )
+from pydantic import BaseModel, Field
+
 from em_backend.database.crud import document as document_crud
 from em_backend.database.models import Document, Election, Party
 from em_backend.models.crud import (
@@ -128,6 +131,10 @@ async def process_document(
 
 
 router = APIRouter(prefix="/documents", tags=["documents"])
+
+
+class ChunkDebugRequest(BaseModel):
+    file_path: str = Field(..., description="Absolute path to the PDF file to chunk")
 
 
 @router.post("/")
@@ -248,3 +255,38 @@ async def delete_document(
     await weaviate_database.delete_chunks(election, document)
 
     return {"message": "Document deleted successfully"}
+
+3
+@router.post("/debug/chunks")
+async def debug_chunk_document(
+    payload: ChunkDebugRequest,
+    document_parser: Annotated[DocumentParser, Depends(get_document_parser)],
+) -> dict[str, object]:
+    file_path = Path(payload.file_path)
+    if not file_path.exists() or not file_path.is_file():
+        raise HTTPException(status_code=404, detail="Provided file path does not exist")
+
+    file_bytes = file_path.read_bytes()
+    document, confidence = document_parser.parse_document(
+        file_path.name,
+        BytesIO(file_bytes),
+    )
+
+    chunks = list(document_parser.chunk_document(document))
+    preview: list[dict[str, object]] = []
+    for idx, chunk in enumerate(chunks[:5]):
+        preview.append(
+            {
+                "chunk_id": chunk.get("chunk_id"),
+                "page_number": chunk.get("page_number"),
+                "chunk_index": chunk.get("chunk_index"),
+                "text_preview": (chunk.get("text") or "")[:200],
+            }
+        )
+
+    return {
+        "file": str(file_path),
+        "chunk_count": len(chunks),
+        "confidence": confidence.model_dump(),
+        "preview": preview,
+    }

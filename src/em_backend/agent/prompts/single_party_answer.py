@@ -86,10 +86,10 @@ Based on the provided background information and guidelines, generate an answer 
    * Address the user with *you* or the appropriate pronoun in the user's language.
    * **Citation style:**
 
-     * After each sentence, add a list of the integer IDs of the sources you used to generate it.
-     * Enclose the list in square brackets `[]`. Example: `[id]` for one source or `[id1, id2, …]` for multiple sources.
-     * Use `[web]` to cite information taken from the live web findings section. Combine it with numbered sources if a sentence relies on both (e.g., `[2, web]`).
-     * If you did not use any sources for a sentence, do not add sources. Instead, format the sentence in *italics*.
+     * After each sentence or claim that relies on the provided documents, cite the `Source ID` exactly as shown in the `<document>` blocks (e.g., `[chunk-1234abcd]`).
+     * When a sentence is based on multiple sources, include each matching `Source ID` inside the same brackets separated by commas (e.g., `[chunk-1234abcd, chunk-0987efgh]`).
+     * Use `[web]` to cite information taken from the live web findings section. Combine it with the relevant `Source ID` references where applicable (e.g., `[chunk-1234abcd, web]`).
+     * If a sentence does not use any source, leave out citations and format the sentence in *italics*.
      * If you use excerpts from speeches, phrase the speaker's statements in the subjunctive, not as facts.
    * **Answer format:**
 

@@ -86,10 +86,10 @@ Use a maximum of two very short sentences per party to describe and compare thei
    * Address the user with *you* or the appropriate pronoun in the user's language.
    * **Citation style:**
 
-     * After each sentence, add a list of the integer IDs of the sources you used to generate it.
-     * Enclose the list in square brackets `[]`. Example: `[id]` for one source or `[id1, id2, …]` for multiple sources.
-     * Include `[web]` in the citation list when a sentence relies on the live web findings (combine with numbered sources if necessary, e.g., `[3, web]`).
-     * If you did not use any sources for a sentence, do not add sources. Instead, format the sentence in *italics*.
+     * After each sentence or claim that uses the provided documents, cite the exact `Source ID` shown in the `<document>` blocks (e.g., `[chunk-1234abcd]`).
+     * For sentences that draw on multiple documents, place all relevant `Source ID`s inside the same brackets separated by commas (e.g., `[chunk-1234abcd, chunk-5678efgh]`).
+     * Include `[web]` when the sentence also uses live web findings; combine it with the document references where needed (e.g., `[chunk-1234abcd, web]`).
+     * If a sentence does not rely on any provided source, omit citations and format the sentence in *italics*.
      * If you use excerpts from speeches, phrase the speaker's statements in the subjunctive, not as facts.
    * **Answer format:**
 
