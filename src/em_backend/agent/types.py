@@ -14,6 +14,49 @@ if TYPE_CHECKING:  # pragma: no cover - type checking hook
     from em_backend.llm.perplexity import PerplexityClient
 
 
+def use_latest_party(existing: "Party | None", update: "Party | None") -> "Party | None":
+    """LangGraph aggregator that keeps the most recent party value."""
+
+    return update or existing
+
+
+def merge_party_sources(
+    existing: "dict[str, list[WebSource]] | None",
+    update: "dict[str, list[WebSource]] | None",
+) -> "dict[str, list[WebSource]]":
+    """Merge party-scoped web sources, concatenating lists per party."""
+
+    merged: dict[str, list[WebSource]] = {}
+
+    if existing:
+        for key, documents in existing.items():
+            merged[key] = list(documents)
+
+    if update:
+        for key, documents in update.items():
+            current = merged.setdefault(key, [])
+            current.extend(documents)
+
+    return merged
+
+
+def merge_party_summaries(
+    existing: "dict[str, str] | None",
+    update: "dict[str, str] | None",
+) -> "dict[str, str]":
+    """Merge party summaries preferring most recent values per party."""
+
+    merged: dict[str, str] = {}
+
+    if existing:
+        merged.update(existing)
+
+    if update:
+        merged.update(update)
+
+    return merged
+
+
 class AgentState(TypedDict):
     messages: Annotated[Sequence[AnyLcMessage], add_messages]
     country: Country
@@ -31,8 +74,14 @@ class AgentState(TypedDict):
     perplexity_generic_summary: str
     perplexity_comparison_sources: list["WebSource"]
     perplexity_comparison_summary: str
-    perplexity_party_sources: dict[str, list["WebSource"]]
-    perplexity_party_summaries: dict[str, str]
+    perplexity_party_sources: Annotated[
+        dict[str, list["WebSource"]],
+        merge_party_sources,
+    ]
+    perplexity_party_summaries: Annotated[
+        dict[str, str],
+        merge_party_summaries,
+    ]
 
     # Language preferences passed from frontend
     # Name of the language in which to write final answers (human-readable, e.g., "Spanish")
@@ -47,7 +96,7 @@ class AgentState(TypedDict):
 
 
 class NonComparisonQuestionState(AgentState):
-    party: Party
+    party: Annotated[Party, use_latest_party]
 
 
 class AgentContext(TypedDict):

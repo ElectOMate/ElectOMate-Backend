@@ -1,5 +1,5 @@
-from collections.abc import AsyncGenerator, AsyncIterator, Sequence, Mapping
-from typing import Any, cast
+from collections.abc import AsyncGenerator, AsyncIterator, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Mapping, cast
 from uuid import uuid4
 
 import logging
@@ -15,7 +15,7 @@ from em_backend.agent.prompts.rerank_documents import (
     RERANK_DOCUMENTS,
     RerankDocumentsStructuredOutput,
 )
-from em_backend.agent.types import AgentState
+from em_backend.agent.types import AgentState, WebSource
 from em_backend.agent.types import WebSource
 from em_backend.database.models import Election, Party
 from em_backend.models.chunks import (
@@ -188,6 +188,44 @@ def format_web_sources_for_prompt(sources: Sequence[WebSource]) -> str:
     return "\n".join(lines)
 
 
+def format_party_web_sources_for_prompt(
+    parties: Sequence[Party],
+    sources: Iterable[WebSource],
+    summaries: Mapping[str, str],
+) -> str:
+    lines: list[str] = []
+    sources_by_party: dict[str, list[WebSource]] = {}
+    for source in sources:
+        identifier = source.get("party") or ""
+        sources_by_party.setdefault(identifier, []).append(source)
+
+    for party in parties:
+        party_key = party.shortname
+        party_sources = sources_by_party.get(party_key, [])
+        summary = summaries.get(party_key, "")
+
+        lines.append(f"Party: {party.fullname} ({party.shortname})")
+        if summary:
+            lines.append(f"Summary: {summary}")
+
+        if not party_sources:
+            lines.append("Sources:\n  (no live web findings)")
+            continue
+
+        lines.append("Sources:")
+        for idx, source in enumerate(party_sources, start=1):
+            title = source.get("title") or "Unbenannte Quelle"
+            url = source.get("url") or ""
+            snippet = (source.get("snippet") or "").strip()
+            lines.append(f"  {idx}. {title}")
+            if url:
+                lines.append(f"     URL: {url}")
+            if snippet:
+                lines.append(f"     Snippet: {snippet}")
+
+    return "\n".join(lines)
+
+
 def convert_documents_to_web_sources(
     documents: Sequence[DocumentChunk],
     *,
@@ -211,7 +249,14 @@ def convert_documents_to_web_sources(
             url = f"{base_url}#{anchor}"
         else:
             url = f"https://opendemocracy.ai/documents/{party or 'generic'}/{idx}"
-        sources.append({"title": title, "url": url, "snippet": snippet})
+        entry: WebSource = {
+            "title": title,
+            "url": url,
+            "snippet": snippet,
+        }
+        if party:
+            entry["party"] = party
+        sources.append(entry)
     return sources
 
 
@@ -256,7 +301,12 @@ async def process_lc_stream(
                     )
 
                 for node, update in update_chunk.items():
-                    if node.startswith("generate_single_party_answer"):
+                    # Handle both direct generate_single_party_answer and perplexity_single_party_search nodes
+                    # that now call generate_single_party_answer internally
+                    if node.startswith("generate_single_party_answer") or (
+                        node.startswith("perplexity_single_party_search") and 
+                        update and "messages" in update and "party_tag" in update
+                    ):
                         msg = convert_from_lc_message(update["messages"])[-1]
                         yield PartyMessageChunk(
                             id=msg.id or str(uuid4()),

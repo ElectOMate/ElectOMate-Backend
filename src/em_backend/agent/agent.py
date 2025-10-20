@@ -51,6 +51,7 @@ from em_backend.agent.types import (
 from em_backend.agent.utils import (
     convert_documents_to_web_sources,
     convert_to_lc_message,
+    format_party_web_sources_for_prompt,
     format_web_sources_for_prompt,
     generate_perplexity_query,
     normalize_perplexity_sources,
@@ -405,69 +406,63 @@ class Agent:
                 "perplexity_generic_summary": answer,
             }
 
-        async def perplexity_comparison_search(
-            state: AgentState, runtime: Runtime[AgentContext]
-        ) -> dict[str, Any]:
-            if not state["use_web_search"]:
-                return {
-                    "perplexity_comparison_sources": [],
-                    "perplexity_comparison_summary": "",
-                }
-
+        async def _run_party_perplexity_search(
+            party: Party,
+            state: AgentState,
+            runtime: Runtime[AgentContext],
+        ) -> tuple[str, list[WebSource]]:
             client = runtime.context.get("perplexity_client")
             if client is None:
-                logger.info("Perplexity client unavailable; skipping comparison web search")
-                return {
-                    "perplexity_comparison_sources": [],
-                    "perplexity_comparison_summary": "",
-                }
+                logger.info(
+                    "Perplexity client unavailable; skipping comparison search for %s",
+                    party.shortname,
+                )
+                return "", []
 
             query_language = _language_name_from_state(state)
-            party_list = ", ".join(
-                f"{party.shortname} ({party.fullname})"
-                for party in state["selected_parties"]
-            )
             prompt_input = {
                 "election_name": state["election"].name,
                 "election_year": state["election"].year,
                 "country_name": getattr(state["country"], "name", "Unknown Country"),
-                "party_list": party_list,
+                "party_fullname": party.fullname,
+                "party_shortname": party.shortname,
                 "query_language": query_language,
                 "messages": state["messages"],
                 "date": date.today().strftime("%B %d, %Y"),
             }
+
             try:
                 query = await generate_perplexity_query(
-                    "PerplexityComparisonQuery",
-                    PERPLEXITY_COMPARISON_QUERY,
+                    f"PerplexityComparisonPartyQuery[{party.shortname}]",
+                    PERPLEXITY_SINGLE_PARTY_QUERY,
                     prompt_input,
                     runtime.context["chat_model"],
                 )
             except Exception:  # pragma: no cover
-                logger.exception("Failed to build Perplexity query for comparison flow")
-                return {
-                    "perplexity_comparison_sources": [],
-                    "perplexity_comparison_summary": "",
-                }
+                logger.exception(
+                    "Failed to build Perplexity query for comparison party %s",
+                    party.shortname,
+                )
+                return "", []
 
             if not query:
-                logger.warning("Empty Perplexity query for comparison flow; skipping web search")
-                return {
-                    "perplexity_comparison_sources": [],
-                    "perplexity_comparison_summary": "",
-                }
+                logger.warning(
+                    "Empty Perplexity query for comparison party %s; skipping web search",
+                    party.shortname,
+                )
+                return "", []
 
             latest_user = state["messages"][-1]
             user_question = _format_message_content(getattr(latest_user, "content", ""))
             system_prompt = (
-                "You are a political analyst comparing party positions using live web search. "
-                "Focus on factual differences backed by reputable sources."
+                "You are researching a political party using live web search. "
+                "Report concrete commitments or statements from trustworthy media or official sources."
             )
             user_prompt = (
                 f"User question:\n{user_question}\n\n"
-                f"Parties: {party_list}\n"
+                f"Party: {party.fullname} ({party.shortname})\n"
                 f"Search query:\n{query}\n\n"
-                "Summarise the latest points of comparison in up to four bullet points. "
+                "Provide up to three bullet points with the latest findings about this party. "
                 "Cite each bullet with the source URL."
             )
 
@@ -480,27 +475,78 @@ class Agent:
                     temperature=0.0,
                 )
             except Exception:  # pragma: no cover
-                logger.exception("Perplexity comparison search request failed")
-                return {
-                    "perplexity_comparison_sources": [],
-                    "perplexity_comparison_summary": "",
-                }
+                logger.exception(
+                    "Perplexity comparison search request failed for %s",
+                    party.shortname,
+                )
+                return "", []
 
             answer, sources = normalize_perplexity_sources(raw_response)
             logger.info(
-                "Perplexity comparison search returned %s sources", len(sources)
+                "Perplexity comparison search returned %s sources for %s",
+                len(sources),
+                party.shortname,
             )
+            return answer, sources
+
+        async def perplexity_comparison_search(
+            state: AgentState, runtime: Runtime[AgentContext]
+        ) -> dict[str, Any]:
+            if not state["use_web_search"]:
+                return {
+                    "perplexity_party_sources": {},
+                    "perplexity_party_summaries": {},
+                }
+
+            if not state["selected_parties"]:
+                return {
+                    "perplexity_party_sources": {},
+                    "perplexity_party_summaries": {},
+                }
+
+            party_summaries: dict[str, str] = {}
+            party_sources: dict[str, list[WebSource]] = {}
+            comparison_sources: list[WebSource] = []
+
+            results: dict[str, tuple[str, list[WebSource]]] = {}
+
+            async with TaskGroup() as tg:
+                async def run_for_party(p: Party) -> None:
+                    summary, sources = await _run_party_perplexity_search(
+                        p,
+                        state,
+                        runtime,
+                    )
+                    results[p.shortname] = (summary, sources)
+
+                for party in state["selected_parties"]:
+                    tg.create_task(run_for_party(party))
+
+            for party in state["selected_parties"]:
+                summary, sources = results.get(party.shortname, ("", []))
+                if summary:
+                    party_summaries[party.shortname] = summary
+                if sources:
+                    party_sources[party.shortname] = sources
+                    comparison_sources.extend(sources)
 
             return {
-                "perplexity_comparison_sources": sources,
-                "perplexity_comparison_summary": answer,
+                "perplexity_party_sources": party_sources,
+                "perplexity_party_summaries": party_summaries,
+                "perplexity_comparison_sources": comparison_sources,
+                "perplexity_comparison_summary": "",
             }
 
         async def perplexity_single_party_search(
             state: NonComparisonQuestionState, runtime: Runtime[AgentContext]
         ) -> dict[str, Any]:
             if not state["use_web_search"]:
-                return {}
+                # If web search is disabled, proceed directly to answer generation
+                answer_result = await generate_single_party_answer(state, runtime)
+                return {
+                    "messages": answer_result.get("messages", []),
+                    "party_tag": answer_result.get("party_tag", [state["party"]]),
+                }
 
             client = runtime.context.get("perplexity_client")
             if client is None:
@@ -508,7 +554,12 @@ class Agent:
                     "Perplexity client unavailable; skipping web search for party %s",
                     state["party"].shortname,
                 )
-                return {}
+                # Still proceed to answer generation without web sources
+                answer_result = await generate_single_party_answer(state, runtime)
+                return {
+                    "messages": answer_result.get("messages", []),
+                    "party_tag": answer_result.get("party_tag", [state["party"]]),
+                }
 
             query_language = _language_name_from_state(state)
             prompt_input = {
@@ -533,14 +584,24 @@ class Agent:
                     "Failed to build Perplexity query for party %s",
                     state["party"].shortname,
                 )
-                return {}
+                # Proceed to answer generation without web sources
+                answer_result = await generate_single_party_answer(state, runtime)
+                return {
+                    "messages": answer_result.get("messages", []),
+                    "party_tag": answer_result.get("party_tag", [state["party"]]),
+                }
 
             if not query:
                 logger.warning(
                     "Empty Perplexity query for party %s; skipping web search",
                     state["party"].shortname,
                 )
-                return {}
+                # Proceed to answer generation without web sources
+                answer_result = await generate_single_party_answer(state, runtime)
+                return {
+                    "messages": answer_result.get("messages", []),
+                    "party_tag": answer_result.get("party_tag", [state["party"]]),
+                }
 
             latest_user = state["messages"][-1]
             user_question = _format_message_content(getattr(latest_user, "content", ""))
@@ -569,7 +630,12 @@ class Agent:
                     "Perplexity single-party search failed for %s",
                     state["party"].shortname,
                 )
-                return {}
+                # Proceed to answer generation without web sources
+                answer_result = await generate_single_party_answer(state, runtime)
+                return {
+                    "messages": answer_result.get("messages", []),
+                    "party_tag": answer_result.get("party_tag", [state["party"]]),
+                }
 
             answer, sources = normalize_perplexity_sources(raw_response)
             logger.info(
@@ -578,16 +644,28 @@ class Agent:
                 state["party"].shortname,
             )
 
+            # Update the shared state with this party's sources
             updated_sources = dict(state["perplexity_party_sources"])
             updated_sources[state["party"].shortname] = sources
             updated_summaries = dict(state["perplexity_party_summaries"])
             updated_summaries[state["party"].shortname] = answer
 
-            return {
-                # Ensure downstream nodes keep the scoped party context.
-                "party": state["party"],
+            # Create updated state for this party's answer generation
+            updated_state = {
+                **state,
                 "perplexity_party_sources": updated_sources,
                 "perplexity_party_summaries": updated_summaries,
+            }
+
+            # Directly call generate_single_party_answer to avoid state merging issues
+            answer_result = await generate_single_party_answer(updated_state, runtime)
+            
+            # Return the answer result along with the sources for LangGraph streaming
+            return {
+                "perplexity_party_sources": updated_sources,
+                "perplexity_party_summaries": updated_summaries,
+                "messages": answer_result.get("messages", []),
+                "party_tag": answer_result.get("party_tag", [state["party"]]),
             }
 
         def route_after_rephrase(
@@ -807,7 +885,29 @@ class Agent:
                     )
                 )
 
-            web_sources_block = format_web_sources_for_prompt(combined_web_sources)
+            for party in state["selected_parties"]:
+                party_sources = [
+                    source
+                    for source in combined_web_sources
+                    if source.get("party") == party.shortname
+                ]
+                if party_sources:
+                    runtime.stream_writer(
+                        PerplexitySourcesChunk(
+                            scope="party",
+                            party=party.shortname,
+                            sources=party_sources,
+                            summary=state["perplexity_party_summaries"].get(
+                                party.shortname, ""
+                            ),
+                        )
+                    )
+
+            web_sources_block = format_party_web_sources_for_prompt(
+                state["selected_parties"],
+                combined_web_sources,
+                state["perplexity_party_summaries"],
+            )
             web_search_enabled = bool(combined_web_sources)
 
             model = COMPARISON_PARTY_ANSWER | runtime.context["chat_model"].bind(
@@ -1061,9 +1161,9 @@ class Agent:
         workflow.add_node("generate_single_party_answer", generate_single_party_answer)
         workflow.add_edge("perplexity_generic_search", "generate_generic_answer")
         workflow.add_edge("perplexity_comparison_search", "generate_comparison_answer")
-        workflow.add_edge(
-            "perplexity_single_party_search", "generate_single_party_answer"
-        )
+        # Note: perplexity_single_party_search directly calls generate_single_party_answer
+        # to avoid LangGraph state merging issues with concurrent Send tasks
+        workflow.add_edge("perplexity_single_party_search", "generate_title_and_replies")
         workflow.add_edge("generate_generic_answer", "generate_title_and_replies")
         workflow.add_edge("generate_comparison_answer", "generate_title_and_replies")
         workflow.add_edge("generate_single_party_answer", "generate_title_and_replies")

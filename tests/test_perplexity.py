@@ -1,7 +1,11 @@
 import pytest
 
 from em_backend.agent.agent import Agent
-from em_backend.agent.utils import format_web_sources_for_prompt, normalize_perplexity_sources
+from em_backend.agent.utils import (
+    format_party_web_sources_for_prompt,
+    format_web_sources_for_prompt,
+    normalize_perplexity_sources,
+)
 from em_backend.models.chunks import PerplexitySourcesChunk
 
 
@@ -85,3 +89,21 @@ def test_perplexity_sources_chunk_serializes_summary() -> None:
     assert dumped["type"] == "web_response_sources"
     assert dumped["summary"] == "Two bullet summary"
     assert dumped["sources"][0]["title"] == "Example"
+
+
+def test_format_party_web_sources_for_prompt_groups_sources_by_party() -> None:
+    parties = [
+        type("Party", (), {"fullname": "Party A", "shortname": "PA"})(),
+        type("Party", (), {"fullname": "Party B", "shortname": "PB"})(),
+    ]
+    sources = [
+        {"title": "A1", "url": "https://example.com/a1", "party": "PA", "snippet": "foo"},
+        {"title": "B1", "url": "https://example.com/b1", "party": "PB", "snippet": "bar"},
+    ]
+    summaries = {"PA": "Summary A", "PB": "Summary B"}
+
+    rendered = format_party_web_sources_for_prompt(parties, sources, summaries)
+
+    assert "Party: Party A (PA)" in rendered
+    assert "Summary: Summary A" in rendered
+    assert "https://example.com/b1" in rendered

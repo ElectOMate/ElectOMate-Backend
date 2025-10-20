@@ -67,6 +67,7 @@ class WebSourceModel(BaseModel):
     title: str
     url: str
     snippet: str | None = None
+    party: str | None = None
 
 
 class PerplexitySourcesChunk(BaseChunk):

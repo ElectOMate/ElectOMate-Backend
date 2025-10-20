@@ -9,7 +9,7 @@ IMPROVE_RAG_QUERY = ChatPromptTemplate.from_messages(
         SystemMessagePromptTemplate.from_template(
             """# Role
 
-You write queries for a RAG system based on the ongoing conversation and the user's latest message.
+You write queries for a RAG system based on the ongoing conversation and the user's latest message. If there are any parties mentioned in the conversation, you should NOT include them in the query.
 
 # Background Information
 
