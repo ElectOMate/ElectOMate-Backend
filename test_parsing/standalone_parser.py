@@ -546,73 +546,73 @@ class StandaloneDocumentParser:
 
     def chunk_document(self, doc: DoclingDocument) -> Generator[dict[str, Any]]:
         """
-        Chunk document while preserving page numbers from provenance.
+        Chunk document using HybridChunker while preserving page numbers.
         
-        NOTE: HybridChunker chunks don't have 'prov' attribute!
-        We must extract page numbers from DoclingDocument items directly.
+        Uses HybridChunker for intelligent chunking, then extracts page numbers
+        from the chunk's metadata which links back to source items with provenance.
         """
         chunk_index = 0
-        all_debug_info = []
         all_chunks = []
+        all_metadata_analysis = []
         
-        logger.info("🧩 STARTING DOCUMENT CHUNKING (PROPER METHOD)...")
+        logger.info("🧩 STARTING DOCUMENT CHUNKING (USING HYBRIDCHUNKER)...")
         logger.info("=" * 80)
         
-        # ✅ CORRECT APPROACH: Get items from DoclingDocument collections
-        # These items HAVE provenance information!
-        items_with_provenance = []
-        
-        logger.info("📚 Collecting document items with provenance...")
-        
-        if hasattr(doc, 'texts') and doc.texts:
-            items_with_provenance.extend(doc.texts)
-            logger.info(f"   ✅ Found {len(doc.texts)} text items")
-        
-        if hasattr(doc, 'tables') and doc.tables:
-            items_with_provenance.extend(doc.tables)
-            logger.info(f"   ✅ Found {len(doc.tables)} table items")
-        
-        if hasattr(doc, 'pictures') and doc.pictures:
-            items_with_provenance.extend(doc.pictures)
-            logger.info(f"   ✅ Found {len(doc.pictures)} picture items")
-        
-        logger.info(f"📊 Total items to process: {len(items_with_provenance)}")
-        logger.info("=" * 80)
-        
-        # Process each item
-        for item_idx, item in enumerate(items_with_provenance):
-            logger.debug(f"Processing item {item_idx}/{len(items_with_provenance)}")
+        # Use HybridChunker to get properly-sized chunks
+        for chunk in self.chunker.chunk(doc):
+            logger.debug(f"Processing chunk {chunk_index}")
             
-            # Extract page number from item's provenance
+            # Get the contextualized text
+            contextualized = self.chunker.contextualize(chunk)
+            logger.debug(f"   📝 Contextualized text length: {len(contextualized)} characters")
+            
+            # Extract page number from chunk metadata
             page_number = None
-            if hasattr(item, 'prov') and item.prov and len(item.prov) > 0:
-                first_prov = item.prov[0]
-                page_number = getattr(first_prov, 'page_no', None)
+            chunk_meta_info = {"chunk_index": chunk_index, "has_meta": False, "meta_structure": {}}
+            
+            # Analyze chunk metadata
+            if hasattr(chunk, 'meta') and chunk.meta is not None:
+                chunk_meta_info["has_meta"] = True
+                logger.debug(f"   ✅ Chunk has metadata")
+                logger.debug(f"   📋 Metadata type: {type(chunk.meta)}")
+                logger.debug(f"   📋 Metadata attributes: {[attr for attr in dir(chunk.meta) if not attr.startswith('_')]}")
                 
-                logger.debug(f"   ✅ Extracted page number: {page_number}")
-                logger.debug(f"   📍 Provenance count: {len(item.prov)}")
+                # Get the doc_items that this chunk came from
+                if hasattr(chunk.meta, 'doc_items') and chunk.meta.doc_items:
+                    source_items = chunk.meta.doc_items
+                    chunk_meta_info["doc_items_count"] = len(source_items)
+                    logger.info(f"   ✅ Found {len(source_items)} source doc_items in metadata")
+                    
+                    if len(source_items) > 0:
+                        # The source item IS the actual object (not a string reference!)
+                        source_item = source_items[0]
+                        chunk_meta_info["first_item_ref"] = str(source_item)[:200]  # Truncate for logging
+                        chunk_meta_info["first_item_type"] = type(source_item).__name__
+                        logger.debug(f"   📦 First item type: {type(source_item).__name__}")
+                        
+                        # Extract page number directly from the item's provenance
+                        if hasattr(source_item, 'prov') and source_item.prov:
+                            if len(source_item.prov) > 0:
+                                first_prov = source_item.prov[0]
+                                page_number = getattr(first_prov, 'page_no', None)
+                                chunk_meta_info["page_number"] = page_number
+                                logger.info(f"   🎉 SUCCESS: Extracted page {page_number} from {type(source_item).__name__}")
+                        else:
+                            logger.warning(f"   ❌ Source item has no provenance")
+                else:
+                    logger.warning(f"   ❌ Metadata has no doc_items attribute")
             else:
-                logger.warning(f"   ❌ No provenance for item {item_idx}")
+                logger.warning(f"   ❌ Chunk has no metadata")
             
-            # Extract text from item (different item types have different text fields)
-            text = None
-            if hasattr(item, 'text') and item.text:
-                text = item.text
-            elif hasattr(item, 'orig') and item.orig:
-                text = item.orig
-            elif hasattr(item, 'caption') and hasattr(item.caption, 'text'):
-                text = item.caption.text
+            all_metadata_analysis.append(chunk_meta_info)
             
-            # Skip items without text
-            if not text:
-                logger.debug(f"   ⚠️ Skipping item {item_idx} (no text content)")
-                continue
+            # If metadata approach didn't work
+            if page_number is None:
+                logger.warning(f"   💥 FAILED to extract page number for chunk {chunk_index}")
             
-            logger.debug(f"   📝 Item text length: {len(text)} characters")
-            
-            # Chunk this item's text
+            # Split contextualized text into token budget
             segment_index = 0
-            for text_segment in self._split_to_token_budget(text):
+            for text_segment in self._split_to_token_budget(contextualized):
                 token_count = len(self._encoding.encode(text_segment))
                 
                 # Create preview of text (truncate if too long)
@@ -625,10 +625,10 @@ class StandaloneDocumentParser:
                     "page_number": page_number,
                     "chunk_index": chunk_index,
                     "segment_index": segment_index,
-                    "item_index": item_idx,
                     "token_count": token_count,
                     "char_count": len(text_segment),
                     "word_count": len(text_segment.split()),
+                    "metadata_info": chunk_meta_info if self.debug_mode else None
                 }
                 
                 all_chunks.append(chunk_data)
@@ -652,30 +652,45 @@ class StandaloneDocumentParser:
         logger.info("🎉 DOCUMENT CHUNKING COMPLETE!")
         self._log_chunking_summary(all_chunks)
         
-        # Save debug information
+        # Save metadata analysis
         if self.debug_mode:
-            debug_file = Path(__file__).parent / "results" / "items_analysis.json"
-            debug_file.parent.mkdir(exist_ok=True)
+            metadata_file = Path(__file__).parent / "results" / "chunk_metadata_analysis.json"
+            metadata_file.parent.mkdir(exist_ok=True)
             try:
-                item_summary = []
-                for item in items_with_provenance[:10]:  # Save first 10 items
-                    has_prov = hasattr(item, 'prov') and item.prov and len(item.prov) > 0
-                    page_no = None
-                    if has_prov:
-                        page_no = getattr(item.prov[0], 'page_no', None)
-                    
-                    item_summary.append({
-                        "type": type(item).__name__,
-                        "has_prov": has_prov,
-                        "page_no": page_no,
-                        "text_preview": str(getattr(item, 'text', getattr(item, 'orig', '')))[:100]
-                    })
-                
-                with open(debug_file, "w") as f:
-                    json.dump(item_summary, f, indent=2, default=str)
-                logger.info(f"✅ SUCCESS: Item analysis saved to {debug_file}")
+                with open(metadata_file, "w") as f:
+                    json.dump(all_metadata_analysis, f, indent=2, default=str)
+                logger.info(f"✅ SUCCESS: Metadata analysis saved to {metadata_file}")
             except Exception as e:
-                logger.error(f"❌ FAILED: Could not save item analysis: {e}")
+                logger.error(f"❌ FAILED: Could not save metadata analysis: {e}")
+    
+    def _resolve_item_reference(self, doc: DoclingDocument, ref: str) -> Any:
+        """
+        Resolve a JSON reference like '#/texts/0' to the actual document item.
+        """
+        try:
+            # Reference format is "#/collection_name/index"
+            if ref.startswith('#/'):
+                parts = ref.lstrip('#/').split('/')
+                if len(parts) == 2:
+                    collection_name, index_str = parts
+                    index = int(index_str)
+                    
+                    logger.debug(f"      Resolving: {collection_name}[{index}]")
+                    
+                    # Get the collection from the document
+                    if hasattr(doc, collection_name):
+                        collection = getattr(doc, collection_name)
+                        if collection and isinstance(collection, list) and index < len(collection):
+                            logger.debug(f"      ✅ Found item in {collection_name}[{index}]")
+                            return collection[index]
+                        else:
+                            logger.debug(f"      ❌ Index {index} out of range for {collection_name}")
+                    else:
+                        logger.debug(f"      ❌ Collection {collection_name} not found in document")
+        except Exception as e:
+            logger.debug(f"      ❌ Error resolving reference {ref}: {e}")
+        
+        return None
 
     def _log_chunk_preview(self, chunk_data: dict[str, Any], chunk_index: int, segment_index: int) -> None:
         """Log detailed preview of a chunk."""

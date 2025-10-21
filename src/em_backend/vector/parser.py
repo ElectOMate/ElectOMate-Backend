@@ -65,61 +65,47 @@ class DocumentParser:
 
     def chunk_document(self, doc: DoclingDocument) -> Generator[dict[str, Any]]:
         """
-        Chunk document while preserving page numbers from provenance.
+        Chunk document using HybridChunker while preserving page numbers.
         
-        The HybridChunker doesn't preserve provenance on chunks, so we need to
-        extract page numbers from the original DoclingDocument items which DO
-        have provenance information.
+        Uses HybridChunker for intelligent chunking, then extracts page numbers
+        from the chunk's metadata which links back to source items with provenance.
         """
         chunk_index = 0
         
-        # Collect all items from the document that have text content
-        # These items have provenance with page numbers
-        items_with_provenance = []
-        
-        # Get text items (paragraphs, headers, etc.)
-        if hasattr(doc, 'texts') and doc.texts:
-            items_with_provenance.extend(doc.texts)
-        
-        # Get table items
-        if hasattr(doc, 'tables') and doc.tables:
-            items_with_provenance.extend(doc.tables)
-        
-        # Get picture captions
-        if hasattr(doc, 'pictures') and doc.pictures:
-            items_with_provenance.extend(doc.pictures)
-        
-        logger.debug(f"Found {len(items_with_provenance)} items with potential provenance")
-        
-        # Process each item
-        for item in items_with_provenance:
-            # Extract page number from item's provenance
+        # Use HybridChunker to get properly-sized chunks
+        for chunk in self.chunker.chunk(doc):
+            # Get the contextualized text
+            contextualized = self.chunker.contextualize(chunk)
+            
+            # Extract page number from chunk metadata
             page_number = None
-            if hasattr(item, 'prov') and item.prov and len(item.prov) > 0:
-                first_prov = item.prov[0]
-                page_number = getattr(first_prov, 'page_no', None)
-                
-                logger.debug(
-                    f"Item {chunk_index}: page_number={page_number}, "
-                    f"prov_count={len(item.prov)}"
-                )
             
-            # Extract text from item (different items have different text fields)
-            text = None
-            if hasattr(item, 'text') and item.text:
-                text = item.text
-            elif hasattr(item, 'orig') and item.orig:
-                text = item.orig
-            elif hasattr(item, 'caption') and hasattr(item.caption, 'text'):
-                text = item.caption.text
+            # HybridChunker chunks have metadata linking to source doc items
+            if hasattr(chunk, 'meta') and chunk.meta is not None:
+                # Get the doc_items that this chunk came from
+                if hasattr(chunk.meta, 'doc_items') and chunk.meta.doc_items:
+                    # Get the first source item
+                    source_items = chunk.meta.doc_items
+                    if len(source_items) > 0:
+                        # The source item IS the actual item object (not a string reference!)
+                        source_item = source_items[0]
+                        
+                        # Extract page number directly from the item's provenance
+                        if hasattr(source_item, 'prov') and source_item.prov:
+                            if len(source_item.prov) > 0:
+                                first_prov = source_item.prov[0]
+                                page_number = getattr(first_prov, 'page_no', None)
+                                
+                                logger.debug(
+                                    f"Chunk {chunk_index}: Extracted page {page_number} from source item"
+                                )
             
-            # Skip items without text
-            if not text:
-                logger.debug(f"Skipping item without text content")
-                continue
+            # If metadata approach didn't work
+            if page_number is None:
+                logger.debug(f"Chunk {chunk_index}: Could not extract page from metadata")
             
-            # Chunk this item's text
-            for text_segment in self._split_to_token_budget(text):
+            # Split contextualized text into token budget
+            for text_segment in self._split_to_token_budget(contextualized):
                 token_count = len(self._encoding.encode(text_segment))
                 
                 # Create preview of text (truncate if too long)
