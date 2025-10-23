@@ -1,4 +1,4 @@
-.PHONY: help dev dev-logs dev-shell db-migrate migration load-chile-data prod-deploy prod-logs prod-shell down clean local
+.PHONY: help dev dev-logs dev-shell db-migrate migration load-chile-data load-germany-data prod-deploy prod-logs prod-shell down clean local
 
 # Default target
 help:
@@ -9,6 +9,7 @@ help:
 	@echo "  db-migrate       - Run database migrations in development container"
 	@echo "  migration        - Create new migration (use: make migration message='your message')"
 	@echo "  load-chile-data  - Load Chile election data into the database"
+	@echo "  load-germany-data- Load Germany election data into the database"
 	@echo "  prod             - Start production stack (requires external database)"
 	@echo "  prod-logs        - View production application logs"
 	@echo "  prod-shell       - Access production container shell"
@@ -54,6 +55,15 @@ load-chile-data:
 	sleep 10
 	docker compose run --build app python scripts/load_chile_data.py
 	@echo "Chile data loaded successfully!"
+
+# Load Germany election data (starts services and runs data loading script)
+load-germany-data:
+	@echo "Starting database and loading Germany election data..."
+	docker compose up -d postgres
+	@echo "Waiting for database to be ready..."
+	sleep 10
+	docker compose run --build app python scripts/load_germany_data.py
+	@echo "Germany data loaded successfully!"
 
 # Start production stack (requires external database configuration)
 prod-deploy:
