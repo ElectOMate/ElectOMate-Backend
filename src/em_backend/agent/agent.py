@@ -861,15 +861,25 @@ class Agent:
                 "latest_user_message": latest_user_message,
                 "messages": state["messages"],
             }
-            response = await model.ainvoke(
+            # Use streaming for real-time token updates
+            response_stream = model.astream(
                 prompt_input,
                 config={"tags": ["stream", "generic"]},
             )
+            
+            # Collect the complete response while streaming tokens
+            complete_response = None
+            async for token in response_stream:
+                complete_response = token
+            
+            if complete_response is None:
+                raise ValueError("No response received from model")
+                
             logger.info(
                 "✅ Chat response (generic) preview: %s",
-                _format_content_preview(response),
+                _format_content_preview(complete_response),
             )
-            return {"messages": [response]}
+            return {"messages": [complete_response]}
 
         async def generate_comparison_answer(
             state: AgentState, runtime: Runtime[AgentContext]
@@ -1007,12 +1017,25 @@ class Agent:
                 "latest_user_message": latest_user_message,
                 "messages": state["messages"],
             }
-            response = await model.ainvoke(prompt_input)
+            # Use streaming for real-time token updates
+            response_stream = model.astream(
+                prompt_input,
+                config={"tags": ["stream", "comparison"]},
+            )
+            
+            # Collect the complete response while streaming tokens
+            complete_response = None
+            async for token in response_stream:
+                complete_response = token
+            
+            if complete_response is None:
+                raise ValueError("No response received from model")
+                
             logger.info(
                 "✅ Chat response (comparison) preview: %s",
-                _format_content_preview(response),
+                _format_content_preview(complete_response),
             )
-            return {"messages": [response]}
+            return {"messages": [complete_response]}
 
         async def generate_single_party_answer(
             state: NonComparisonQuestionState, runtime: Runtime[AgentContext]
@@ -1111,13 +1134,24 @@ class Agent:
                 "messages": state["messages"],
             }
             try:
-                response = await model.ainvoke(
+                # Use streaming for real-time token updates
+                response_stream = model.astream(
                     prompt_input,
+                    config={"tags": ["stream", f"party_{state['party'].shortname}"]},
                 )
+                
+                # Collect the complete response while streaming tokens
+                complete_response = None
+                async for token in response_stream:
+                    complete_response = token
+                
+                if complete_response is None:
+                    raise ValueError("No response received from model")
+                    
                 logger.info(
                     "✅ Chat response (party=%s) preview: %s",
                     state["party"].shortname,
-                    _format_content_preview(response),
+                    _format_content_preview(complete_response),
                 )
             except OpenAIRefusalError as exc:
                 logger.warning(
@@ -1125,7 +1159,7 @@ class Agent:
                     state["party"].shortname,
                     exc,
                 )
-                response = AIMessage(
+                complete_response = AIMessage(
                     content=(
                         "I could not find enough context to answer this question right now. "
                         "Please try rephrasing or ask about another topic."
@@ -1136,13 +1170,13 @@ class Agent:
                     "Unexpected error while generating single party answer for %s",
                     state["party"].shortname,
                 )
-                response = AIMessage(
+                complete_response = AIMessage(
                     content=(
                         "Sorry, I ran into an internal issue while gathering the answer. "
                         "Please try again in a moment."
                     )
                 )
-            return {"messages": [response], "party_tag": [state["party"]]}
+            return {"messages": [complete_response], "party_tag": [state["party"]]}
 
         async def generate_title_and_replies(
             state: AgentState, runtime: Runtime[AgentContext]

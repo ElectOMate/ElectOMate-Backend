@@ -301,27 +301,30 @@ async def process_lc_stream(
                     )
 
                 for node, update in update_chunk.items():
-                    # Handle both direct generate_single_party_answer and perplexity_single_party_search nodes
-                    # that now call generate_single_party_answer internally
-                    if node.startswith("generate_single_party_answer") or (
-                        node.startswith("perplexity_single_party_search") and 
-                        update and "messages" in update and "party_tag" in update
-                    ):
-                        msg = convert_from_lc_message(update["messages"])[-1]
-                        yield PartyMessageChunk(
-                            id=msg.id or str(uuid4()),
-                            message=msg,
-                            party=cast("list[Party]", update.get("party_tag"))[
-                                -1
-                            ].shortname,
-                        )
+                    # Skip complete message chunks since we now have proper token streaming
+                    # This prevents duplication of content that was already streamed as tokens
+                    
+                    # DISABLED: Complete message chunks cause duplication with token streaming
+                    # if node.startswith("generate_single_party_answer") or (
+                    #     node.startswith("perplexity_single_party_search") and 
+                    #     update and "messages" in update and "party_tag" in update
+                    # ):
+                    #     msg = convert_from_lc_message(update["messages"])[-1]
+                    #     yield PartyMessageChunk(
+                    #         id=msg.id or str(uuid4()),
+                    #         message=msg,
+                    #         party=cast("list[Party]", update.get("party_tag"))[
+                    #             -1
+                    #         ].shortname,
+                    #     )
 
-                    if node.startswith("generate_comparison_answer"):
-                        msg = convert_from_lc_message(update["messages"])[-1]
-                        yield ComparisonMessageChunk(
-                            id=msg.id or str(uuid4()),
-                            message=msg,
-                        )
+                    # if node.startswith("generate_comparison_answer"):
+                    #     msg = convert_from_lc_message(update["messages"])[-1]
+                    #     yield ComparisonMessageChunk(
+                    #         id=msg.id or str(uuid4()),
+                    #         message=msg,
+                    #     )
+                    pass
 
             case "messages":
                 # Messages means a token from an LLM call in one of the nodes
