@@ -330,3 +330,6 @@ This is the correct way to use Docling according to their official documentation
 
 **Page numbers are now properly extracted and will be stored in Weaviate!** 🚀
 
+
+
+

@@ -13,6 +13,9 @@ from langgraph.runtime import Runtime
 from langgraph.types import Send
 from sqlalchemy.ext.asyncio import AsyncSession
 
+
+
+
 from em_backend.agent.prompts.comparison_party_answer import COMPARISON_PARTY_ANSWER
 from em_backend.agent.prompts.decide_generic_web_search import (
     DECIDE_GENERIC_WEB_SEARCH,
@@ -80,6 +83,25 @@ from langchain_openai.chat_models.base import OpenAIRefusalError
 logger = logging.getLogger(__name__)
 
 
+def deduplicate_party_list(parties: list[Party]) -> list[Party]:
+    """Return parties with duplicate shortnames removed, preserving order."""
+
+    seen: set[str] = set()
+    unique_parties: list[Party] = []
+
+    for party in parties:
+        shortname = getattr(party, "shortname", None)
+        if not shortname:
+            unique_parties.append(party)
+            continue
+
+        if shortname not in seen:
+            seen.add(shortname)
+            unique_parties.append(party)
+
+    return unique_parties
+
+
 COUNTRY_LANGUAGE_MAP: dict[str, dict[str, str]] = {
     "DE": {"name": "Deutsch", "code": "de"},
     "CL": {"name": "Español", "code": "es"},
@@ -119,6 +141,23 @@ def _language_name_from_state(state: AgentState) -> str:
             if match := COUNTRY_LANGUAGE_MAP.get(str(code).upper()):
                 return match["name"]
     return "English"
+
+
+async def _get_candidate_name_or_fallback(party: "Party") -> str:
+    """Get candidate name or fallback if no candidate exists for the party."""
+    try:
+        candidate = await party.awaitable_attrs.candidate
+        if candidate is not None:
+            given_name = getattr(candidate, "given_name", "").strip()
+            family_name = getattr(candidate, "family_name", "").strip()
+            if given_name or family_name:
+                return f"{given_name} {family_name}".strip()
+    except Exception:
+        # Handle any async/database errors gracefully
+        pass
+    
+    # Fallback: use party name or indicate no candidate
+    return f"Representative from {party.shortname}"
 
 
 class Agent:
@@ -254,9 +293,17 @@ class Agent:
                 "Party selection prompt result: %s",
                 selected_parties_response.selected_parties,
             )
+            unique_party_names: list[str] = []
+            seen_party_names: set[str] = set()
+            for party_name in selected_parties_response.selected_parties:
+                if party_name not in seen_party_names:
+                    unique_party_names.append(party_name)
+                    seen_party_names.add(party_name)
+
             selected_parties = await get_party_from_name_list(
-                runtime.context["session"], selected_parties_response.selected_parties
+                runtime.context["session"], unique_party_names
             )
+            selected_parties = deduplicate_party_list(selected_parties)
             logger.info(
                 "Auto-selection completed with parties=%s",
                 [party.shortname for party in selected_parties],
@@ -910,9 +957,7 @@ class Agent:
             )
             web_search_enabled = bool(combined_web_sources)
 
-            model = COMPARISON_PARTY_ANSWER | runtime.context["chat_model"].bind(
-                tags=(runtime.context["chat_model"].tags or []) + ["stream"]
-            )
+            model = COMPARISON_PARTY_ANSWER | runtime.context["chat_model"]
             parties_data = "\n".join(
                 [
                     "<party>"
@@ -920,8 +965,7 @@ class Agent:
                     f"Full name: {party.fullname}\n"
                     f"Description: {party.description}\n"
                     f"Top Candidate: "
-                    f"{(await party.awaitable_attrs.candidate).given_name} "
-                    f"{(await party.awaitable_attrs.candidate).family_name}\n"
+                    f"{await _get_candidate_name_or_fallback(party)}\n"
                     f"Website: {party.url}\n"
                     f"### Party Documents\n"
                     + "\n".join(
@@ -1030,10 +1074,8 @@ class Agent:
             web_sources_block = format_web_sources_for_prompt(combined_web_sources)
             web_search_enabled = bool(combined_web_sources)
 
-            model = SINGLE_PARTY_ANSWER | runtime.context["chat_model"].bind(
-                tags=(runtime.context["chat_model"].tags or []) + [f"party_{state['party'].shortname}", "stream"]
-            )
-            party_candidate = await state["party"].awaitable_attrs.candidate
+            model = SINGLE_PARTY_ANSWER | runtime.context["chat_model"]
+            party_candidate_name = await _get_candidate_name_or_fallback(state["party"])
             latest_user_message = ""
             for msg in reversed(state["messages"]):
                 if getattr(msg, "type", None) == "human":
@@ -1049,7 +1091,7 @@ class Agent:
                 "party_fullname": state["party"].fullname,
                 "party_description": state["party"].description,
                 "party_url": state["party"].url,
-                "party_candidate": f"{party_candidate.given_name} {party_candidate.family_name}",
+                "party_candidate": party_candidate_name,
                 "sources": "\n".join(
                     [
                         "<document>\n"
@@ -1071,7 +1113,6 @@ class Agent:
             try:
                 response = await model.ainvoke(
                     prompt_input,
-                    config={"tags": ["stream", f"party_{state['party'].shortname}"]},
                 )
                 logger.info(
                     "✅ Chat response (party=%s) preview: %s",

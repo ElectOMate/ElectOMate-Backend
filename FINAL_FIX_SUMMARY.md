@@ -229,3 +229,6 @@ docker-compose logs -f electomate-backend | grep "Generated chunk"
 
 Everything is ready! 🎉
 
+
+
+

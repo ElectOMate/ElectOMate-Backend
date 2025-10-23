@@ -215,3 +215,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+.READMe_Docker_Problems_on_MacOS.md

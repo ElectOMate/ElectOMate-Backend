@@ -117,3 +117,6 @@ if __name__ == "__main__":
     print("1. Edit the pdf_path variables in the functions above")
     print("2. Run this script again")
     print("3. Or use the interactive runner: python run_test.py")
+
+
+

@@ -257,3 +257,6 @@ Each item in these collections has:
 
 The key insight: **DON'T rely on chunks having provenance - get it from the DoclingDocument items directly!**
 
+
+
+
