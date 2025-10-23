@@ -1,8 +1,8 @@
-from em_backend.statics.prompts import realtime_session_instructions
-from em_backend.statics.tools import realtime_session_tools
 from httpx import AsyncClient
 
 from em_backend.core.config import settings
+from em_backend.statics.prompts import realtime_session_instructions
+from em_backend.statics.tools import realtime_session_tools
 from em_backend.v1.old_models import SupportedLanguages
 
 

@@ -1,9 +1,9 @@
+import logging
 from collections.abc import AsyncGenerator, AsyncIterator, Iterable, Mapping, Sequence
-from typing import Any, Iterable, Mapping, cast
+from textwrap import shorten
+from typing import Any, cast
 from uuid import uuid4
 
-import logging
-from textwrap import shorten
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_core.messages import AnyMessage as AnyLcMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -16,7 +16,6 @@ from em_backend.agent.prompts.rerank_documents import (
     RerankDocumentsStructuredOutput,
 )
 from em_backend.agent.types import AgentState, WebSource
-from em_backend.agent.types import WebSource
 from em_backend.database.models import Election, Party
 from em_backend.models.chunks import (
     AnyChunk,
@@ -24,15 +23,14 @@ from em_backend.models.chunks import (
     ComparisonSourcesChunk,
     ComparisonTokenChunk,
     FollowUpQuestionsChunk,
-    PerplexitySourcesChunk,
     PartyMessageChunk,
     PartySourcesChunk,
     PartyTokenChunk,
+    PerplexitySourcesChunk,
     TitleChunk,
 )
 from em_backend.models.messages import AnyMessage, AssistantMessage, UserMessage
 from em_backend.vector.db import DocumentChunk, VectorDatabase
-
 
 logger = logging.getLogger(__name__)
 

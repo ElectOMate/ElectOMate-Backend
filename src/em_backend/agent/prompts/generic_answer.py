@@ -4,7 +4,6 @@ from langchain_core.prompts import (
     SystemMessagePromptTemplate,
 )
 
-
 # Generic answer prompt used when no specific parties are selected.
 # Mirrors the style and construction of other prompt modules in this folder.
 GENERIC_ANSWER = ChatPromptTemplate.from_messages(

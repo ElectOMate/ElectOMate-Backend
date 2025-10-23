@@ -1,10 +1,9 @@
-from langchain_core.messages import AIMessage, HumanMessage
-
 from em_backend.agent.language import (
     LanguageContextPayload,
     LanguageDescriptor,
     initialize_language_state,
 )
+from langchain_core.messages import AIMessage, HumanMessage
 
 
 def _make_messages(*contents: str) -> list[HumanMessage | AIMessage]:

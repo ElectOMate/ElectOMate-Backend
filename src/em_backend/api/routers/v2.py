@@ -1,8 +1,8 @@
+import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from typing import Any, cast
 
-import logging
 from fastapi import APIRouter, Request
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -12,7 +12,6 @@ from em_backend.database.utils import create_database_sessionmaker
 from em_backend.llm.perplexity import PerplexityClient
 from em_backend.vector.db import VectorDatabase
 from em_backend.vector.parser import DocumentParser
-
 
 logger = logging.getLogger(__name__)
 

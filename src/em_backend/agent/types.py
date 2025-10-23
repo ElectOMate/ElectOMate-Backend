@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 from operator import add
-from typing import Annotated, TypedDict, TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated, TypedDict
 
 from langchain_core.messages import AnyMessage as AnyLcMessage
 from langchain_openai import ChatOpenAI

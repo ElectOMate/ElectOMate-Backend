@@ -1,6 +1,6 @@
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import AsyncGenerator, Awaitable, Callable, Generator
 from contextlib import asynccontextmanager
-from typing import Any, Awaitable, Callable, Self, TypedDict, TypeVar
+from typing import Any, Self, TypedDict, TypeVar
 
 import weaviate
 from weaviate.classes.config import Configure, DataType, Property
