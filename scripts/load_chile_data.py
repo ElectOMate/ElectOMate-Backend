@@ -5,7 +5,6 @@ from pprint import pprint
 from uuid import UUID
 
 from fastapi.testclient import TestClient
-from sqlalchemy import desc
 
 from em_backend.models.crud import (
     CandidateCreate,

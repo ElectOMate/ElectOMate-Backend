@@ -5,15 +5,16 @@ Revises: 614de782e806
 Create Date: 2025-10-12 16:40:12.227679
 """
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 import sqlalchemy as sa
+
 from alembic import op
 
 revision: str = "130527b089b1"
-down_revision: Union[str, Sequence[str], None] = "614de782e806"
-branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+down_revision: str | Sequence[str] | None = "614de782e806"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
 
 OLD_ENUM_NAME = "parsingquality"
 NEW_ENUM_NAME = f"{OLD_ENUM_NAME}_new"

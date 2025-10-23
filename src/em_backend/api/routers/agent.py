@@ -1,5 +1,5 @@
-from collections.abc import AsyncGenerator
 import logging
+from collections.abc import AsyncGenerator
 from typing import Annotated
 from uuid import UUID
 
@@ -17,7 +17,6 @@ from em_backend.database.utils import (
     get_party_from_name_list,
 )
 from em_backend.models.messages import AnyMessage
-
 
 logger = logging.getLogger(__name__)
 
