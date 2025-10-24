@@ -14,8 +14,6 @@ from langgraph.types import Send
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
-
-
 from em_backend.agent.prompts.comparison_party_answer import COMPARISON_PARTY_ANSWER
 from em_backend.agent.prompts.decide_generic_web_search import (
     DECIDE_GENERIC_WEB_SEARCH,
@@ -66,6 +64,7 @@ from em_backend.database.utils import (
     get_missing_party_shortnames,
     get_parties_enum,
     get_party_from_name_list,
+    get_party_fullname_from_name_list,
 )
 from em_backend.llm.openai import get_openai_model
 from em_backend.llm.perplexity import PerplexityClient
@@ -81,26 +80,6 @@ from langchain_openai.chat_models.base import OpenAIRefusalError
 
 
 logger = logging.getLogger(__name__)
-
-
-def deduplicate_party_list(parties: list[Party]) -> list[Party]:
-    """Return parties with duplicate shortnames removed, preserving order."""
-
-    seen: set[str] = set()
-    unique_parties: list[Party] = []
-
-    for party in parties:
-        shortname = getattr(party, "shortname", None)
-        if not shortname:
-            unique_parties.append(party)
-            continue
-
-        if shortname not in seen:
-            seen.add(shortname)
-            unique_parties.append(party)
-
-    return unique_parties
-
 
 COUNTRY_LANGUAGE_MAP: dict[str, dict[str, str]] = {
     "DE": {"name": "Deutsch", "code": "de"},
@@ -155,7 +134,7 @@ async def _get_candidate_name_or_fallback(party: "Party") -> str:
     except Exception:
         # Handle any async/database errors gracefully
         pass
-    
+
     # Fallback: use party name or indicate no candidate
     return f"Representative from {party.shortname}"
 
@@ -203,14 +182,12 @@ class Agent:
         fallback_language = COUNTRY_LANGUAGE_MAP.get(
             getattr(country, "code", "").upper(), {"name": "English", "code": "en"}
         )
-        response_language_name = (
-            (language_ctx.get("selected_language") or {}).get("name")
-            or fallback_language["name"]
-        )
-        manifesto_language_name = (
-            (language_ctx.get("manifesto_language") or {}).get("name")
-            or fallback_language["name"]
-        )
+        response_language_name = (language_ctx.get("selected_language") or {}).get(
+            "name"
+        ) or fallback_language["name"]
+        manifesto_language_name = (language_ctx.get("manifesto_language") or {}).get(
+            "name"
+        ) or fallback_language["name"]
 
         chunk_stream = self.graph.astream(
             {
@@ -300,10 +277,9 @@ class Agent:
                     unique_party_names.append(party_name)
                     seen_party_names.add(party_name)
 
-            selected_parties = await get_party_from_name_list(
+            selected_parties = await get_party_fullname_from_name_list(
                 runtime.context["session"], unique_party_names
             )
-            selected_parties = deduplicate_party_list(selected_parties)
             logger.info(
                 "Auto-selection completed with parties=%s",
                 [party.shortname for party in selected_parties],
@@ -343,13 +319,16 @@ class Agent:
                 return {}
 
             if runtime.context.get("perplexity_client") is None:
-                logger.info("Perplexity client unavailable; skipping web search decision")
+                logger.info(
+                    "Perplexity client unavailable; skipping web search decision"
+                )
                 return {}
 
             prompt_input = {
                 "election_name": state["election"].name,
                 "election_year": state["election"].year,
-                "response_language_name": state.get("response_language_name") or "English",
+                "response_language_name": state.get("response_language_name")
+                or "English",
                 "date": date.today().strftime("%B %d, %Y"),
                 "messages": state["messages"],
             }
@@ -371,12 +350,20 @@ class Agent:
             state: AgentState, runtime: Runtime[AgentContext]
         ) -> dict[str, Any]:
             if not state["use_web_search"]:
-                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+                return {
+                    "perplexity_generic_sources": [],
+                    "perplexity_generic_summary": "",
+                }
 
             client = runtime.context.get("perplexity_client")
             if client is None:
-                logger.info("Perplexity client unavailable; skipping generic web search")
-                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+                logger.info(
+                    "Perplexity client unavailable; skipping generic web search"
+                )
+                return {
+                    "perplexity_generic_sources": [],
+                    "perplexity_generic_summary": "",
+                }
 
             query_language = _language_name_from_state(state)
             prompt_input = {
@@ -395,11 +382,19 @@ class Agent:
                 )
             except Exception:  # pragma: no cover - network/LLM errors
                 logger.exception("Failed to build Perplexity query for generic flow")
-                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+                return {
+                    "perplexity_generic_sources": [],
+                    "perplexity_generic_summary": "",
+                }
 
             if not query:
-                logger.warning("Empty Perplexity query for generic flow; skipping web search")
-                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+                logger.warning(
+                    "Empty Perplexity query for generic flow; skipping web search"
+                )
+                return {
+                    "perplexity_generic_sources": [],
+                    "perplexity_generic_summary": "",
+                }
 
             latest_user = state["messages"][-1]
             user_question = _format_message_content(getattr(latest_user, "content", ""))
@@ -432,12 +427,13 @@ class Agent:
                 )
             except Exception:  # pragma: no cover - network/LLM errors
                 logger.exception("Perplexity generic search request failed")
-                return {"perplexity_generic_sources": [], "perplexity_generic_summary": ""}
+                return {
+                    "perplexity_generic_sources": [],
+                    "perplexity_generic_summary": "",
+                }
 
             answer, sources = normalize_perplexity_sources(raw_response)
-            logger.info(
-                "Perplexity generic search returned %s sources", len(sources)
-            )
+            logger.info("Perplexity generic search returned %s sources", len(sources))
 
             if sources:
                 runtime.stream_writer(
@@ -558,6 +554,7 @@ class Agent:
             results: dict[str, tuple[str, list[WebSource]]] = {}
 
             async with TaskGroup() as tg:
+
                 async def run_for_party(p: Party) -> None:
                     summary, sources = await _run_party_perplexity_search(
                         p,
@@ -706,7 +703,7 @@ class Agent:
 
             # Directly call generate_single_party_answer to avoid state merging issues
             answer_result = await generate_single_party_answer(updated_state, runtime)
-            
+
             # Return the answer result along with the sources for LangGraph streaming
             return {
                 "perplexity_party_sources": updated_sources,
@@ -717,14 +714,17 @@ class Agent:
 
         def route_after_rephrase(
             state: AgentState,
-        ) -> list[Send] | Literal[
-            "decide_generic_web_search",
-            "generate_generic_answer",
-            "perplexity_comparison_search",
-            "generate_comparison_answer",
-            "perplexity_single_party_search",
-            "generate_single_party_answer",
-        ]:
+        ) -> (
+            list[Send]
+            | Literal[
+                "decide_generic_web_search",
+                "generate_generic_answer",
+                "perplexity_comparison_search",
+                "generate_comparison_answer",
+                "perplexity_single_party_search",
+                "generate_single_party_answer",
+            ]
+        ):
             def _single_party_payload(party: Party) -> dict[str, Any]:
                 return {
                     "messages": state["messages"],
@@ -743,11 +743,17 @@ class Agent:
                         "conversation_follow_up_questions"
                     ],
                     "selected_parties": state["selected_parties"],
-                    "should_use_generic_web_search": state["should_use_generic_web_search"],
+                    "should_use_generic_web_search": state[
+                        "should_use_generic_web_search"
+                    ],
                     "perplexity_generic_sources": state["perplexity_generic_sources"],
                     "perplexity_generic_summary": state["perplexity_generic_summary"],
-                    "perplexity_comparison_sources": state["perplexity_comparison_sources"],
-                    "perplexity_comparison_summary": state["perplexity_comparison_summary"],
+                    "perplexity_comparison_sources": state[
+                        "perplexity_comparison_sources"
+                    ],
+                    "perplexity_comparison_summary": state[
+                        "perplexity_comparison_summary"
+                    ],
                     "perplexity_party_sources": state["perplexity_party_sources"],
                     "perplexity_party_summaries": state["perplexity_party_summaries"],
                     "party_tag": state["party_tag"],
@@ -759,9 +765,7 @@ class Agent:
                         "Routing to generic web search decision (no parties selected)"
                     )
                     return "decide_generic_web_search"
-                logger.info(
-                    "Routing directly to generic answer (web search disabled)"
-                )
+                logger.info("Routing directly to generic answer (web search disabled)")
                 return "generate_generic_answer"
 
             if state["is_comparison_question"] and len(state["selected_parties"]) > 1:
@@ -813,13 +817,17 @@ class Agent:
                 parties = await election.awaitable_attrs.parties
             except Exception:  # pragma: no cover - defensive in case of lazy loading
                 parties = []
-            parties_overview = "\n".join(
-                [
-                    f"- {p.shortname} ({p.fullname})"
-                    for p in parties
-                    if getattr(p, "shortname", None) and getattr(p, "fullname", None)
-                ]
-            ) or "(Keine Parteien geladen)"
+            parties_overview = (
+                "\n".join(
+                    [
+                        f"- {p.shortname} ({p.fullname})"
+                        for p in parties
+                        if getattr(p, "shortname", None)
+                        and getattr(p, "fullname", None)
+                    ]
+                )
+                or "(Keine Parteien geladen)"
+            )
 
             project_about = (
                 "Open Democracy is an open research project (Open Source, Non Profit) focused on political information and elections. "
@@ -832,11 +840,15 @@ class Agent:
             latest_user_message = ""
             for msg in reversed(state["messages"]):
                 if getattr(msg, "type", None) == "human":
-                    latest_user_message = _format_message_content(getattr(msg, "content", ""))
+                    latest_user_message = _format_message_content(
+                        getattr(msg, "content", "")
+                    )
                     break
 
             generic_sources = state.get("perplexity_generic_sources", [])
-            web_summary = state.get("perplexity_generic_summary", "") if generic_sources else ""
+            web_summary = (
+                state.get("perplexity_generic_summary", "") if generic_sources else ""
+            )
             web_sources_block = (
                 format_web_sources_for_prompt(generic_sources)
                 if generic_sources
@@ -853,8 +865,7 @@ class Agent:
                 "parties_overview": parties_overview,
                 "project_about": project_about,
                 "date": date.today().strftime("%B %d, %Y"),
-                "response_language_name": state.get("response_language_name")
-                or "",
+                "response_language_name": state.get("response_language_name") or "",
                 "web_search_enabled": web_search_enabled,
                 "web_summary": web_summary,
                 "web_sources": web_sources_block,
@@ -866,15 +877,15 @@ class Agent:
                 prompt_input,
                 config={"tags": ["stream", "generic"]},
             )
-            
+
             # Collect the complete response while streaming tokens
             complete_response = None
             async for token in response_stream:
                 complete_response = token
-            
+
             if complete_response is None:
                 raise ValueError("No response received from model")
-                
+
             logger.info(
                 "✅ Chat response (generic) preview: %s",
                 _format_content_preview(complete_response),
@@ -893,6 +904,7 @@ class Agent:
             }
 
             if state["use_vector_database"]:
+
                 async def add_documents(party: Party) -> None:
                     documents[
                         party.shortname
@@ -931,7 +943,9 @@ class Agent:
             if not web_summary and vector_web_sources:
                 first_snippet = vector_web_sources[0].get("snippet", "") or ""
                 if first_snippet:
-                    web_summary = textwrap.shorten(first_snippet, width=200, placeholder="…")
+                    web_summary = textwrap.shorten(
+                        first_snippet, width=200, placeholder="…"
+                    )
 
             if combined_web_sources:
                 runtime.stream_writer(
@@ -997,7 +1011,9 @@ class Agent:
             latest_user_message = ""
             for msg in reversed(state["messages"]):
                 if getattr(msg, "type", None) == "human":
-                    latest_user_message = _format_message_content(getattr(msg, "content", ""))
+                    latest_user_message = _format_message_content(
+                        getattr(msg, "content", "")
+                    )
                     break
             prompt_input = {
                 "election_name": state["election"].name,
@@ -1009,8 +1025,7 @@ class Agent:
                     for party in state["selected_parties"]
                 ),
                 "parties_data": parties_data,
-                "response_language_name": state.get("response_language_name")
-                or "",
+                "response_language_name": state.get("response_language_name") or "",
                 "web_search_enabled": web_search_enabled,
                 "web_summary": web_summary,
                 "web_sources": web_sources_block,
@@ -1022,15 +1037,15 @@ class Agent:
                 prompt_input,
                 config={"tags": ["stream", "comparison"]},
             )
-            
+
             # Collect the complete response while streaming tokens
             complete_response = None
             async for token in response_stream:
                 complete_response = token
-            
+
             if complete_response is None:
                 raise ValueError("No response received from model")
-                
+
             logger.info(
                 "✅ Chat response (comparison) preview: %s",
                 _format_content_preview(complete_response),
@@ -1080,7 +1095,9 @@ class Agent:
             if not web_summary and vector_web_sources:
                 first_snippet = vector_web_sources[0].get("snippet", "") or ""
                 if first_snippet:
-                    web_summary = textwrap.shorten(first_snippet, width=180, placeholder="…")
+                    web_summary = textwrap.shorten(
+                        first_snippet, width=180, placeholder="…"
+                    )
                 else:
                     web_summary = "Context extracted from party documents."
 
@@ -1102,7 +1119,9 @@ class Agent:
             latest_user_message = ""
             for msg in reversed(state["messages"]):
                 if getattr(msg, "type", None) == "human":
-                    latest_user_message = _format_message_content(getattr(msg, "content", ""))
+                    latest_user_message = _format_message_content(
+                        getattr(msg, "content", "")
+                    )
                     break
             prompt_input = {
                 "election_name": state["election"].name,
@@ -1125,8 +1144,7 @@ class Agent:
                         for i, doc in enumerate(documents)
                     ]
                 ),
-                "response_language_name": state.get("response_language_name")
-                or "",
+                "response_language_name": state.get("response_language_name") or "",
                 "web_search_enabled": web_search_enabled,
                 "web_summary": web_summary,
                 "web_sources": web_sources_block,
@@ -1139,15 +1157,15 @@ class Agent:
                     prompt_input,
                     config={"tags": ["stream", f"party_{state['party'].shortname}"]},
                 )
-                
+
                 # Collect the complete response while streaming tokens
                 complete_response = None
                 async for token in response_stream:
                     complete_response = token
-                
+
                 if complete_response is None:
                     raise ValueError("No response received from model")
-                    
+
                 logger.info(
                     "✅ Chat response (party=%s) preview: %s",
                     state["party"].shortname,
@@ -1217,7 +1235,9 @@ class Agent:
         workflow.add_node("decide_generic_web_search", decide_generic_web_search)
         workflow.add_node("perplexity_generic_search", perplexity_generic_search)
         workflow.add_node("perplexity_comparison_search", perplexity_comparison_search)
-        workflow.add_node("perplexity_single_party_search", perplexity_single_party_search)
+        workflow.add_node(
+            "perplexity_single_party_search", perplexity_single_party_search
+        )
         workflow.add_conditional_edges(
             "rephrase_question",
             route_after_rephrase,
@@ -1242,7 +1262,9 @@ class Agent:
         workflow.add_edge("perplexity_comparison_search", "generate_comparison_answer")
         # Note: perplexity_single_party_search directly calls generate_single_party_answer
         # to avoid LangGraph state merging issues with concurrent Send tasks
-        workflow.add_edge("perplexity_single_party_search", "generate_title_and_replies")
+        workflow.add_edge(
+            "perplexity_single_party_search", "generate_title_and_replies"
+        )
         workflow.add_edge("generate_generic_answer", "generate_title_and_replies")
         workflow.add_edge("generate_comparison_answer", "generate_title_and_replies")
         workflow.add_edge("generate_single_party_answer", "generate_title_and_replies")

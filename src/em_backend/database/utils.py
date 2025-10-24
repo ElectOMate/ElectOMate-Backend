@@ -19,7 +19,7 @@ async def create_database_sessionmaker() -> AsyncGenerator[async_sessionmaker]:
 
 async def get_parties_enum(session: AsyncSession, election: Election) -> type[StrEnum]:
     # Get all party shortnames for the country
-    party_stmt = select(Party.shortname).where(Party.election == election)
+    party_stmt = select(Party.fullname).where(Party.election == election)
     party_result = await session.execute(party_stmt)
     all_party_shortnames = [row[0] for row in party_result.fetchall()]
 
@@ -73,5 +73,13 @@ async def get_party_from_name_list(
     session: AsyncSession, party_name: list[str]
 ) -> list[Party]:
     party_stmt = select(Party).where(Party.shortname.in_(party_name))
+    party_result = await session.execute(party_stmt)
+    return list(party_result.scalars().all())
+
+
+async def get_party_fullname_from_name_list(
+    session: AsyncSession, party_name: list[str]
+) -> list[Party]:
+    party_stmt = select(Party).where(Party.fullname.in_(party_name))
     party_result = await session.execute(party_stmt)
     return list(party_result.scalars().all())
