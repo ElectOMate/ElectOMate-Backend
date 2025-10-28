@@ -136,7 +136,7 @@ def add_middleware(app: FastAPI) -> None:
     # CORS middleware for frontend requests
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173"],
+        allow_origins=["http://localhost:5173", "https://opendemocracy.ai", "https://www.opendemocracy.ai"],
         allow_credentials=False,
         allow_methods=["OPTIONS", "POST"],
         allow_headers=["*"],

@@ -110,6 +110,7 @@ def _format_content_preview(message: AIMessage) -> str:
 
 
 def _language_name_from_state(state: AgentState) -> str:
+    """Get language name for queries (prioritizes manifesto language)."""
     if name := state.get("manifesto_language_name"):
         return cast(str, name)
     if name := state.get("response_language_name"):
@@ -865,7 +866,6 @@ class Agent:
                 "parties_overview": parties_overview,
                 "project_about": project_about,
                 "date": date.today().strftime("%B %d, %Y"),
-                "response_language_name": state.get("response_language_name") or "",
                 "web_search_enabled": web_search_enabled,
                 "web_summary": web_summary,
                 "web_sources": web_sources_block,
@@ -1015,6 +1015,7 @@ class Agent:
                         getattr(msg, "content", "")
                     )
                     break
+
             prompt_input = {
                 "election_name": state["election"].name,
                 "election_year": state["election"].year,
@@ -1024,13 +1025,16 @@ class Agent:
                     f"{party.shortname} ({party.fullname})"
                     for party in state["selected_parties"]
                 ),
+                "parties_being_compared": ", ".join(
+                    f"{party.shortname}" for party in state["selected_parties"]
+                ),
                 "parties_data": parties_data,
-                "response_language_name": state.get("response_language_name") or "",
                 "web_search_enabled": web_search_enabled,
                 "web_summary": web_summary,
                 "web_sources": web_sources_block,
                 "latest_user_message": latest_user_message,
                 "messages": state["messages"],
+                "election_url": state["election"].url,
             }
             # Use streaming for real-time token updates
             response_stream = model.astream(
@@ -1123,6 +1127,7 @@ class Agent:
                         getattr(msg, "content", "")
                     )
                     break
+
             prompt_input = {
                 "election_name": state["election"].name,
                 "election_year": state["election"].year,
@@ -1144,7 +1149,6 @@ class Agent:
                         for i, doc in enumerate(documents)
                     ]
                 ),
-                "response_language_name": state.get("response_language_name") or "",
                 "web_search_enabled": web_search_enabled,
                 "web_summary": web_summary,
                 "web_sources": web_sources_block,
