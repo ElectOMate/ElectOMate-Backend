@@ -1,5 +1,6 @@
 .PHONY: help dev dev-logs dev-shell db-migrate migration load-chile-data load-germany-data prod-deploy prod-logs prod-shell down clean local
 
+
 # Default target
 help:
 	@echo "Available commands:"
