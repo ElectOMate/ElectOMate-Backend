@@ -39,7 +39,7 @@ class Country(Base, CreatedAtMixin):
     code: Mapped[str] = mapped_column(CHAR(2), unique=True)
 
     elections: Mapped[list["Election"]] = relationship(
-        default_factory=list, back_populates="country"
+        default_factory=list, back_populates="country", cascade="all, delete-orphan"
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
@@ -57,11 +57,11 @@ class Election(Base, CreatedAtMixin):
     url: Mapped[str]
     wv_collection: Mapped[str]
 
-    country_id: Mapped[UUID] = mapped_column(ForeignKey("country_table.id"))
+    country_id: Mapped[UUID] = mapped_column(ForeignKey("country_table.id", ondelete="CASCADE"))
     country: Mapped[Country] = relationship(default=None)
 
     parties: Mapped[list["Party"]] = relationship(
-        default_factory=list, back_populates="election"
+        default_factory=list, back_populates="election", cascade="all, delete-orphan"
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
@@ -81,17 +81,17 @@ class Party(Base, CreatedAtMixin):
     description: Mapped[str | None]
     url: Mapped[str | None]
 
-    election_id: Mapped[UUID] = mapped_column(ForeignKey("election_table.id"))
+    election_id: Mapped[UUID] = mapped_column(ForeignKey("election_table.id", ondelete="CASCADE"))
     election: Mapped[Election] = relationship(default=None)
 
-    candidate: Mapped["Candidate"] = relationship(default=None, back_populates="party")
+    candidate: Mapped["Candidate"] = relationship(default=None, back_populates="party", cascade="all, delete-orphan")
 
     documents: Mapped[list["Document"]] = relationship(
-        default_factory=list, back_populates="party"
+        default_factory=list, back_populates="party", cascade="all, delete-orphan"
     )
 
     proposed_questions: Mapped[list["ProposedQuestion"]] = relationship(
-        default_factory=list, back_populates="party"
+        default_factory=list, back_populates="party", cascade="all, delete-orphan"
     )
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
@@ -111,7 +111,7 @@ class Candidate(Base, CreatedAtMixin):
     description: Mapped[str | None]
     url: Mapped[str | None]
 
-    party_id: Mapped[UUID] = mapped_column(ForeignKey("party_table.id"))
+    party_id: Mapped[UUID] = mapped_column(ForeignKey("party_table.id", ondelete="CASCADE"))
     party: Mapped[Party] = relationship(default=None)
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
@@ -129,7 +129,7 @@ class Document(Base, CreatedAtMixin):
     title: Mapped[str]
     type: Mapped[SupportedDocumentFormats]
 
-    party_id: Mapped[UUID] = mapped_column(ForeignKey("party_table.id"))
+    party_id: Mapped[UUID] = mapped_column(ForeignKey("party_table.id", ondelete="CASCADE"))
     party: Mapped[Party] = relationship(default=None)
 
     content: Mapped[str | None] = mapped_column(default=None)
@@ -154,7 +154,7 @@ class ProposedQuestion(Base, CreatedAtMixin):
 
     question: Mapped[str]
 
-    party_id: Mapped[UUID] = mapped_column(ForeignKey("party_table.id"))
+    party_id: Mapped[UUID] = mapped_column(ForeignKey("party_table.id", ondelete="CASCADE"))
     party: Mapped[Party] = relationship(default=None)
 
     cached_answer: Mapped[str | None] = mapped_column(default=None)

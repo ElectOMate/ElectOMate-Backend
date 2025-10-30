@@ -1,5 +1,6 @@
 from typing import Annotated
 from uuid import UUID
+import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,8 +12,11 @@ from em_backend.models.crud import (
     ElectionCreate,
     ElectionResponse,
     ElectionUpdate,
+    _generate_hybrid_wv_collection_name,
 )
 from em_backend.vector.db import VectorDatabase
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/elections", tags=["elections"])
 
@@ -29,13 +33,20 @@ async def create_election(
     if country is None:
         raise HTTPException(status_code=404, detail="Country not found.")
 
+    # Generate hybrid collection name if not provided
+    election_data = election_in.model_dump()
+    if not election_data.get("wv_collection"):
+        election_data["wv_collection"] = _generate_hybrid_wv_collection_name(election_data)
+        logger.info(f"Generated Weaviate collection name: {election_data['wv_collection']} for election '{election_data['name']}'")
+
     election = await election_crud.create(
-        db, obj_in=election_in.model_dump() | {"country": country}
+        db, obj_in=election_data | {"country": country}
     )
 
     # Create election documents
     if not await weaviate_database.has_election_collection(election):
         await weaviate_database.create_election_collection(election)
+        logger.info(f"Created Weaviate collection: {election.wv_collection}")
 
     return ElectionResponse.model_validate(election)
 

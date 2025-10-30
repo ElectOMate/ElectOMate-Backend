@@ -9,6 +9,8 @@ from starlette_context import context
 def add_validation_error_handler(app: FastAPI) -> None:
     """Adds a validation handler for logging."""
 
+    
+    
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(
         request: Request, exc: RequestValidationError

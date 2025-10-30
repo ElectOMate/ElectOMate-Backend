@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Annotated, cast
 from uuid import UUID
 
+import httpx
 from docling.datamodel.base_models import QualityGrade
 from fastapi import (
     APIRouter,
@@ -69,6 +70,9 @@ async def process_document(
     sessionmaker: async_sessionmaker[AsyncSession],
     weaviate_database: VectorDatabase,
     document_parser: DocumentParser,
+    callback_url: str | None = None,
+    country_code: str | None = None,
+    party_name: str | None = None,
 ) -> None:
     logger.info(f"Started processing document {document_id}")
 
@@ -129,6 +133,26 @@ async def process_document(
 
         logger.info(f"Finished chunking {document_id}")
 
+        # Send callback to AutoCreate backend if provided
+        if callback_url and country_code and party_name:
+            try:
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    callback_payload = {
+                        "country_code": country_code,
+                        "document_id": str(document_id),
+                        "party_name": party_name,
+                    }
+                    response = await client.post(callback_url, json=callback_payload)
+                    logger.info(
+                        f"Sent chunking progress callback for {document_id}: "
+                        f"status={response.status_code}"
+                    )
+            except Exception as callback_error:
+                logger.error(
+                    f"Failed to send chunking progress callback for {document_id}: "
+                    f"{str(callback_error)}"
+                )
+
 
 router = APIRouter(prefix="/documents", tags=["documents"])
 
@@ -149,6 +173,9 @@ async def create_document(
     ],
     background_tasks: BackgroundTasks,
     is_document_already_parsed: Annotated[bool, Form()] = False,
+    autocreate_callback_url: Annotated[str | None, Form()] = None,
+    country_code: Annotated[str | None, Form()] = None,
+    party_name: Annotated[str | None, Form()] = None,
 ) -> DocumentResponse:
     """Create a new document from uploaded file."""
     if not file.filename:
@@ -188,6 +215,9 @@ async def create_document(
         sessionmaker,
         weaviate_database,
         document_parser,
+        autocreate_callback_url,
+        country_code,
+        party_name,
     )
 
     response = DocumentResponse.model_validate(document)
@@ -216,6 +246,76 @@ async def read_document(
     if document is None:
         raise HTTPException(status_code=404, detail="Document not found")
     return DocumentResponseWithContent.model_validate(document)
+
+
+@router.get("/{document_id}/status")
+async def get_document_indexing_status(
+    document_id: UUID,
+    db: Annotated[AsyncSession, Depends(get_database_session)],
+) -> dict:
+    """
+    Get the indexing status of a document.
+
+    Returns:
+        - parsing_quality: UNSPECIFIED | LOW | MEDIUM | HIGH | FAILED
+        - indexing_success: NO_INDEXING | SUCCESS | FAILED
+        - error_message: Optional error message if indexing failed
+    """
+    document = await document_crud.get(db, id=document_id)
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    return {
+        "document_id": str(document.id),
+        "parsing_quality": document.parsing_quality.value,
+        "indexing_success": document.indexing_success.value,
+        "error_message": None,  # Could be extended to store error messages in DB
+    }
+
+
+@router.post("/batch-status")
+async def get_documents_batch_status(
+    document_ids: list[UUID],
+    db: Annotated[AsyncSession, Depends(get_database_session)],
+) -> dict:
+    """
+    Get the indexing status of multiple documents in one request.
+
+    Returns a summary with counts of documents by status.
+    """
+    from sqlalchemy import select
+    from em_backend.database.models import Document
+
+    # Fetch all documents in one query
+    result = await db.execute(
+        select(Document).where(Document.id.in_(document_ids))
+    )
+    documents = result.scalars().all()
+
+    # Build response
+    statuses = []
+    for doc in documents:
+        statuses.append({
+            "document_id": str(doc.id),
+            "parsing_quality": doc.parsing_quality.value,
+            "indexing_success": doc.indexing_success.value,
+        })
+
+    # Calculate summary counts
+    total = len(statuses)
+    indexed_success = sum(1 for s in statuses if s["indexing_success"] == "SUCCESS")
+    indexed_failed = sum(1 for s in statuses if s["indexing_success"] == "FAILED")
+    indexing_pending = sum(1 for s in statuses if s["indexing_success"] == "NO_INDEXING")
+
+    return {
+        "documents": statuses,
+        "summary": {
+            "total": total,
+            "indexed_success": indexed_success,
+            "indexed_failed": indexed_failed,
+            "indexing_pending": indexing_pending,
+        }
+    }
 
 
 @router.put("/{document_id}")

@@ -1,4 +1,5 @@
 import string
+import uuid as uuid_lib
 from datetime import datetime
 from uuid import UUID
 
@@ -9,6 +10,30 @@ from em_backend.models.enums import (
     ParsingQuality,
     SupportedDocumentFormats,
 )
+
+
+def _generate_hybrid_wv_collection_name(election_data: dict) -> str:
+    """
+    Generate hybrid Weaviate collection name with format: D{year}_{name_letters}_{uuid8}
+
+    This ensures uniqueness while maintaining some readability.
+
+    Example: D2025_bundestagswahl_a3f7b2c1
+    """
+    year = election_data.get("year", 2025)
+    name = election_data.get("name", "election")
+
+    # Extract only letters from election name, convert to lowercase
+    name_letters = "".join(ch for ch in name.lower() if ch in string.ascii_lowercase)
+
+    # Truncate to max 30 chars for readability
+    if len(name_letters) > 30:
+        name_letters = name_letters[:30]
+
+    # Generate short UUID suffix (8 chars)
+    uuid_suffix = uuid_lib.uuid4().hex[:8]
+
+    return f"D{year}_{name_letters}_{uuid_suffix}"
 
 
 # Base schemas
@@ -39,12 +64,7 @@ class ElectionBase(BaseModel):
     year: int
     date: datetime
     url: str = Field(max_length=500)
-    wv_collection: str = Field(
-        default_factory=lambda data: "D"
-        + str(data["year"])
-        + "".join(ch for ch in data["name"].lower() if ch in string.ascii_lowercase),
-        pattern=r"[A-Za-z0-9]+",
-    )
+    wv_collection: str | None = None  # Will be set in ElectionCreate if not provided
 
 
 class ElectionCreate(ElectionBase):
@@ -63,8 +83,13 @@ class ElectionUpdate(BaseModel):
     )
 
 
-class ElectionResponse(ElectionBase):
+class ElectionResponse(BaseModel):
     id: UUID
+    name: str
+    year: int
+    date: datetime
+    url: str
+    wv_collection: str  # Always present in response
     country_id: UUID
     created_at: datetime
 
