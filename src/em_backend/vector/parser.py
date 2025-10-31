@@ -75,9 +75,10 @@ class DocumentParser:
         
         # Use HybridChunker to get properly-sized chunks
         for chunk in self.chunker.chunk(doc):
-            # Get the contextualized text
-            contextualized = self.chunker.contextualize(chunk)
-            
+            # Get the actual text content from the chunk
+            # Note: chunk.text contains the actual content, not contextualize()
+            chunk_text = chunk.text if hasattr(chunk, 'text') else str(chunk)
+
             # Extract page number from chunk metadata
             page_number = None
             
@@ -104,9 +105,9 @@ class DocumentParser:
             # If metadata approach didn't work
             if page_number is None:
                 logger.debug(f"Chunk {chunk_index}: Could not extract page from metadata")
-            
-            # Split contextualized text into token budget
-            for text_segment in self._split_to_token_budget(contextualized):
+
+            # Split chunk text into token budget
+            for text_segment in self._split_to_token_budget(chunk_text):
                 token_count = len(self._encoding.encode(text_segment))
                 
                 # Create preview of text (truncate if too long)
