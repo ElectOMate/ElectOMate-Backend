@@ -563,10 +563,12 @@ class StandaloneDocumentParser:
         # Use HybridChunker to get properly-sized chunks
         for chunk in self.chunker.chunk(doc):
             logger.debug(f"Processing chunk {chunk_index}")
-            
-            # Get the contextualized text
-            contextualized = self.chunker.contextualize(chunk)
-            logger.debug(f"   📝 Contextualized text length: {len(contextualized)} characters")
+
+            # Get the actual text content from the chunk
+            # Note: chunk.text contains the actual content, not contextualize()
+            # Using contextualize() returns internal gid references instead of text!
+            chunk_text = chunk.text if hasattr(chunk, 'text') else str(chunk)
+            logger.debug(f"   📝 Chunk text length: {len(chunk_text)} characters")
             
             # Extract page number from chunk metadata
             page_number = None
@@ -611,10 +613,10 @@ class StandaloneDocumentParser:
             # If metadata approach didn't work
             if page_number is None:
                 logger.warning(f"   💥 FAILED to extract page number for chunk {chunk_index}")
-            
-            # Split contextualized text into token budget
+
+            # Split chunk text into token budget
             segment_index = 0
-            for text_segment in self._split_to_token_budget(contextualized):
+            for text_segment in self._split_to_token_budget(chunk_text):
                 token_count = len(self._encoding.encode(text_segment))
                 
                 # Create preview of text (truncate if too long)

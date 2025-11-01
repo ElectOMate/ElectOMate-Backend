@@ -29,11 +29,14 @@ class DocumentParser:
 
     def __init__(self) -> None:
         # Setup Document converter
+        # Note: Not setting artifacts_path allows automatic model downloads
+        # OCR is disabled for faster processing - most PDFs have embedded text
         self.doc_converter = DocumentConverter(
             format_options={
                 InputFormat.PDF: PdfFormatOption(
                     pipeline_options=PdfPipelineOptions(
-                        artifacts_path=Path.home() / ".cache" / "docling" / "models"
+                        do_ocr=False,  # Disable OCR for faster processing
+                        do_table_structure=True,  # Enable table detection
                     )
                 )
             }
