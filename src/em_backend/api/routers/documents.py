@@ -74,66 +74,99 @@ async def process_document(
     country_code: str | None = None,
     party_name: str | None = None,
 ) -> None:
-    logger.info(f"Started processing document {document_id}")
+    logger.info(f"Processing document {document_id}")
 
-    sleep_seconds = 1
-    async with sessionmaker() as session:
-        document_view: Document | None = None
-        while document_view is None:
-            document_view = await session.get(Document, document_id)
-            if document_view is None:
-                if sleep_seconds > 32:
-                    raise ValueError("Could not fetch document in the database.")
-                await asyncio.sleep(sleep_seconds)
-                sleep_seconds *= 2
+    try:
+        # Step 1: Wait for document to appear in database and mark as processing
+        # Keep this connection short - just for initial setup
+        sleep_seconds = 1
+        async with sessionmaker() as session:
+            document_view: Document | None = None
+            while document_view is None:
+                document_view = await session.get(Document, document_id)
+                if document_view is None:
+                    if sleep_seconds > 32:
+                        raise ValueError("Could not fetch document in the database.")
+                    await asyncio.sleep(sleep_seconds)
+                    sleep_seconds *= 2
 
-        document_view.parsing_quality = ParsingQuality.FAILED
-        document_view.indexing_success = IndexingSuccess.NO_INDEXING
-        await session.commit()
-        await session.refresh(document_view)
-
-        parsed_document, confidence = document_parser.parse_document(
-            document_view.title, file_content
-        )
-        document_content = document_parser.serialize_document(parsed_document)
-
-        document_view.parsing_quality = PARSING_QUALITY_MAPPING[confidence.mean_grade]
-        document_view.content = document_content
-        document_view.indexing_success = IndexingSuccess.FAILED
-
-        try:
-            await session.commit()
-            await session.refresh(document_view)
-        except Exception:
-            await session.rollback()
             document_view.parsing_quality = ParsingQuality.FAILED
             document_view.indexing_success = IndexingSuccess.NO_INDEXING
             await session.commit()
-            raise
 
-        logger.info(f"Finished parsing {document_id}")
+            # Refresh object to load all attributes before session closes
+            await session.refresh(document_view)
 
+            # Get document title before closing session
+            document_title = document_view.title
+        # ← DB connection closed after ~30 seconds max
+
+        # Step 2: Parse document (LONG operation - 6+ minutes!)
+        # No DB connection held during this time!
+        logger.info(f"Parsing {document_id}...")
+        parsed_document, confidence = document_parser.parse_document(
+            document_title, file_content
+        )
+        document_content = document_parser.serialize_document(parsed_document)
+        logger.info(f"Parsed {document_id}")
+
+        # Step 3: Update database with parsing results
+        # Open new short-lived connection just for this update
+        async with sessionmaker() as session:
+            document_view = await session.get(Document, document_id)
+            if document_view is None:
+                raise ValueError(f"Document {document_id} disappeared from database")
+
+            document_view.parsing_quality = PARSING_QUALITY_MAPPING[confidence.mean_grade]
+            document_view.content = document_content
+            document_view.indexing_success = IndexingSuccess.FAILED
+
+            try:
+                await session.commit()
+            except Exception:
+                await session.rollback()
+                document_view.parsing_quality = ParsingQuality.FAILED
+                document_view.indexing_success = IndexingSuccess.NO_INDEXING
+                await session.commit()
+                raise
+
+            # Load party and election relationships AND all attributes before closing connection
+            party = cast("Party", await document_view.awaitable_attrs.party)
+            election = await party.awaitable_attrs.election
+
+            # These objects are now in memory - they'll stay accessible after session closes
+        # ← DB connection closed after quick update
+
+        # Step 4: Chunk and insert to Weaviate (LONG operation - 3-6+ minutes!)
+        # No DB connection held during this time!
+        logger.info(f"Chunking {document_id}...")
         try:
             document_chunks = document_parser.chunk_document(parsed_document)
-            party = cast("Party", await document_view.awaitable_attrs.party)
+
+            # Use the loaded objects (they're detached but have all attributes in memory)
             indexing_success = weaviate_database.insert_chunks(
-                await party.awaitable_attrs.election,
-                party,
-                document_view,
+                election,       # Use the full loaded Election object
+                party,          # Use the full loaded Party object
+                document_view,  # Use document_view (has id and title)
                 document_chunks,
             )
-        except Exception:
-            await session.rollback()
-            document_view.indexing_success = IndexingSuccess.FAILED
+        except Exception as e:
+            logger.error(f"Chunking error for {document_id}: {e}")
+            indexing_success = IndexingSuccess.FAILED
+
+        logger.info(f"Indexed {document_id}")
+
+        # Step 5: Final update - only takes a few milliseconds
+        async with sessionmaker() as session:
+            document_view = await session.get(Document, document_id)
+            if document_view is None:
+                raise ValueError(f"Document {document_id} disappeared from database")
+
+            document_view.indexing_success = indexing_success
             await session.commit()
-            raise
+        # ← DB connection closed after quick update
 
-        document_view.indexing_success = indexing_success
-        await session.commit()
-
-        logger.info(f"Finished chunking {document_id}")
-
-        # Send callback to AutoCreate backend if provided
+        # Step 6: Send callback to AutoCreate (outside DB session)
         if callback_url and country_code and party_name:
             try:
                 async with httpx.AsyncClient(timeout=30.0) as client:
@@ -143,15 +176,15 @@ async def process_document(
                         "party_name": party_name,
                     }
                     response = await client.post(callback_url, json=callback_payload)
-                    logger.info(
-                        f"Sent chunking progress callback for {document_id}: "
-                        f"status={response.status_code}"
-                    )
+                    if response.status_code != 200:
+                        logger.warning(f"Callback returned {response.status_code} for {document_id}")
             except Exception as callback_error:
-                logger.error(
-                    f"Failed to send chunking progress callback for {document_id}: "
-                    f"{str(callback_error)}"
-                )
+                logger.warning(f"Callback failed for {document_id}: {str(callback_error)}")
+
+        logger.info(f"Completed {document_id}")
+    except Exception as e:
+        logger.error(f"Failed processing {document_id}: {str(e)}")
+        raise
 
 
 router = APIRouter(prefix="/documents", tags=["documents"])

@@ -21,6 +21,9 @@ class DocumentChunk(TypedDict, total=False):
     chunk_id: str
     page_number: int | None
     chunk_index: int
+    token_count: int | None
+    char_count: int | None
+    word_count: int | None
 
 T = TypeVar("T")
 
@@ -110,6 +113,21 @@ class VectorDatabase:
                         data_type=DataType.INT,
                         skip_vectorization=True,
                     ),
+                    Property(
+                        name="token_count",
+                        data_type=DataType.INT,
+                        skip_vectorization=True,
+                    ),
+                    Property(
+                        name="char_count",
+                        data_type=DataType.INT,
+                        skip_vectorization=True,
+                    ),
+                    Property(
+                        name="word_count",
+                        data_type=DataType.INT,
+                        skip_vectorization=True,
+                    ),
                 ],
             )
         )
@@ -135,6 +153,7 @@ class VectorDatabase:
         country_docs = self.sync_client.collections.use(election.wv_collection)
         errors: list[dict[str, Any]] = []
         processed = 0
+        # Use dynamic batch for automatic error handling
         with country_docs.batch.dynamic() as batch:
             for chunk in chunks:
                 batch.add_object(
@@ -146,6 +165,9 @@ class VectorDatabase:
                         "chunk_id": chunk["chunk_id"],
                         "page_number": chunk["page_number"],
                         "chunk_index": chunk["chunk_index"],
+                        "token_count": chunk.get("token_count"),
+                        "char_count": chunk.get("char_count"),
+                        "word_count": chunk.get("word_count"),
                     }
                 )
                 processed += 1
@@ -204,6 +226,9 @@ class VectorDatabase:
                     chunk_id=properties.get("chunk_id"),
                     page_number=properties.get("page_number"),
                     chunk_index=properties.get("chunk_index"),
+                    token_count=properties.get("token_count"),
+                    char_count=properties.get("char_count"),
+                    word_count=properties.get("word_count"),
                 )
             )
         return documents

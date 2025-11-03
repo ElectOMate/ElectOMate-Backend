@@ -11,14 +11,21 @@ Usage:
 """
 
 import argparse
+import base64
 import json
 import logging
+import os
+import re
 import sys
-from collections.abc import Generator, Iterable
+import textwrap
+import time
+from collections import Counter
+from collections.abc import Generator, Iterable, Sequence
+from dataclasses import dataclass
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, Dict, Optional
 from uuid import uuid4
 
 import tiktoken
@@ -30,6 +37,11 @@ from docling_core.transforms.chunker.tokenizer.openai import OpenAITokenizer
 from docling_core.transforms.serializer.markdown import MarkdownDocSerializer
 from docling_core.types.doc.document import DoclingDocument
 from docling_core.types.io import DocumentStream
+
+try:  # Optional improved extraction / rendering
+    import fitz  # type: ignore[import]
+except ImportError:  # pragma: no cover
+    fitz = None
 
 # Use standalone configuration - no backend dependencies
 OPENAI_MODEL = "gpt-4o"  # Default model for testing
@@ -63,6 +75,211 @@ logging.basicConfig(
 
 logger = logging.getLogger("standalone_parser")
 
+
+@dataclass
+class PageExtraction:
+    page_number: int
+    text: str
+    method: str
+    needs_vision: bool = False
+
+
+@dataclass
+class OpenAIVisionConfig:
+    enabled: bool
+    model: str
+    max_retries: int
+    system_prompt: str
+    user_prompt_template: str
+    max_output_tokens: Optional[int]
+    retry_backoff_seconds: float
+
+
+def build_openai_vision_config() -> OpenAIVisionConfig:
+    enabled = os.getenv("VISION_ENABLED", "false").lower() in {"1", "true", "yes", "on"}
+    model = os.getenv("VISION_MODEL", "gpt-4o-mini")
+    max_retries = int(os.getenv("VISION_MAX_RETRIES", "2"))
+    max_output_tokens_env = os.getenv("VISION_MAX_OUTPUT_TOKENS")
+    max_output_tokens = int(max_output_tokens_env) if max_output_tokens_env else None
+    retry_backoff_seconds = float(os.getenv("VISION_RETRY_BACKOFF", "2.0"))
+
+    default_system_prompt = (
+        "You are an assistant that transcribes textual content from scanned document pages. "
+        "Return clean plain text in the original language, preserving headings and structure. "
+        "If you cannot read the page, respond exactly with 'UNREADABLE'."
+    )
+    system_prompt = os.getenv("VISION_SYSTEM_PROMPT", default_system_prompt)
+
+    default_user_prompt = (
+        "This is page {page_number} of the document '{doc_name}'. Extract all readable text "
+        "and present it as plain text. Preserve headings, bullet points, and paragraph breaks. "
+        "If you cannot read the page, respond with 'UNREADABLE'."
+    )
+    user_prompt_template = os.getenv("VISION_USER_PROMPT_TEMPLATE", default_user_prompt)
+
+    return OpenAIVisionConfig(
+        enabled=enabled,
+        model=model,
+        max_retries=max_retries,
+        system_prompt=system_prompt,
+        user_prompt_template=user_prompt_template,
+        max_output_tokens=max_output_tokens,
+        retry_backoff_seconds=retry_backoff_seconds,
+    )
+
+
+def text_requires_ocr(text: str) -> bool:
+    stripped = text.strip()
+    if not stripped:
+        return True
+    alpha_chars = sum(ch.isalpha() for ch in stripped)
+    if alpha_chars >= 30:
+        return False
+    lower = stripped.lower()
+    if "/gid" in lower or "gid" in lower:
+        return True
+    gid_hits = lower.count("gid")
+    word_count = max(1, len(stripped.split()))
+    gid_ratio = gid_hits / word_count
+    if gid_ratio > 0.2:
+        return True
+    alpha_ratio = alpha_chars / max(len(stripped), 1)
+    return alpha_ratio < 0.05
+def render_pages_to_images(pdf_path: Path, page_numbers: Sequence[int], dpi: int = 300) -> Dict[int, bytes]:
+    if fitz is None:
+        logger.error("PyMuPDF is required to render pages for vision fallback.")
+        return {}
+
+    images: Dict[int, bytes] = {}
+    try:
+        doc = fitz.open(str(pdf_path))  # type: ignore[operator]
+    except Exception as exc:
+        logger.exception("Unable to open PDF with PyMuPDF for rendering: %s", exc)
+        return {}
+
+    try:
+        scale = dpi / 72.0
+        matrix = fitz.Matrix(scale, scale)
+        for page_number in page_numbers:
+            try:
+                page = doc.load_page(page_number - 1)
+                pix = page.get_pixmap(matrix=matrix)
+                images[page_number] = pix.tobytes("png")
+            except Exception as exc:  # pragma: no cover
+                logger.exception("Failed to render page %s for vision fallback: %s", page_number, exc)
+    finally:
+        doc.close()
+
+    return images
+
+
+def recover_pages_with_openai(
+    pdf_path: Path,
+    page_numbers: Sequence[int],
+    vision_config: OpenAIVisionConfig,
+) -> Dict[int, str]:
+    if not vision_config.enabled:
+        logger.info("Vision fallback disabled via configuration.")
+        return {}
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        logger.warning("OPENAI_API_KEY not set; skipping vision fallback.")
+        return {}
+
+    try:
+        from openai import OpenAI  # type: ignore[import]
+    except ImportError:  # pragma: no cover
+        logger.error("OpenAI python client not installed. Cannot use vision fallback.")
+        return {}
+
+    images = render_pages_to_images(pdf_path, page_numbers)
+    if not images:
+        logger.warning("No images rendered for vision fallback; skipping.")
+        return {}
+
+    client = OpenAI()
+    recovered: Dict[int, str] = {}
+
+    for page_number in page_numbers:
+        image_bytes = images.get(page_number)
+        if not image_bytes:
+            continue
+
+        prompt = vision_config.user_prompt_template.format(
+            doc_name=pdf_path.name,
+            page_number=page_number,
+        )
+
+        payload = base64.b64encode(image_bytes).decode("utf-8")
+        attempt = 0
+        while attempt <= vision_config.max_retries:
+            try:
+                messages = [
+                    {
+                        "role": "system",
+                        "content": vision_config.system_prompt,
+                    },
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": f"data:image/png;base64,{payload}", "detail": "auto"},
+                            },
+                        ],
+                    },
+                ]
+
+                response = client.chat.completions.create(
+                    model=vision_config.model,
+                    messages=messages,
+                    max_tokens=vision_config.max_output_tokens,
+                )
+            except Exception as exc:  # pragma: no cover
+                attempt += 1
+                logger.exception(
+                    "Vision API call failed for page %s (attempt %s/%s): %s",
+                    page_number,
+                    attempt,
+                    vision_config.max_retries,
+                    exc,
+                )
+                if attempt > vision_config.max_retries:
+                    logger.error("Max retries exceeded for page %s vision fallback", page_number)
+                    break
+                time.sleep(vision_config.retry_backoff_seconds * attempt)
+                continue
+
+            text = ""
+            try:
+                for choice in getattr(response, "choices", []) or []:
+                    message = getattr(choice, "message", None)
+                    content = getattr(message, "content", None)
+                    if content:
+                        text = content.strip()
+                        if text:
+                            break
+            except Exception:  # pragma: no cover
+                text = ""
+
+            text = (text or "").strip()
+            if not text:
+                logger.warning("Vision model returned empty text for page %s", page_number)
+            elif text.upper() == "UNREADABLE":
+                logger.warning("Vision model reported page %s as unreadable", page_number)
+            else:
+                recovered[page_number] = text
+                logger.info(
+                    "Vision model recovered %s characters for page %s",
+                    len(text),
+                    page_number,
+                )
+            break
+
+    return recovered
+
 # Also configure docling loggers to be more verbose
 docling_logger = logging.getLogger("docling")
 docling_logger.setLevel(logging.DEBUG)
@@ -86,6 +303,9 @@ class StandaloneDocumentParser:
     MAX_CHUNK_TOKENS = 2000
     MIN_CHUNK_TOKENS = 1500  # Ensure chunks have at least 1500 tokens
     CHUNK_OVERLAP_TOKENS = 150
+    _PLACEHOLDER_MARKERS = {"<!-- missing-text -->"}
+    _GID_TOKEN = "/gid"
+    MAX_DEBUG_ITEMS = 5
 
     def __init__(self, debug_mode: bool = True) -> None:
         logger.info("🚀 INITIALIZING StandaloneDocumentParser...")
@@ -126,16 +346,17 @@ class StandaloneDocumentParser:
             if len(model_files) > 5:
                 logger.debug(f"   ... and {len(model_files) - 5} more")
         
+        self._model_cache_path = cache_path
         try:
-            # Use standard pipeline with full models (recommended)
-            logger.info("🔧 Initializing DocumentConverter with standard pipeline...")
-            
+            # Use standard pipeline without docling OCR; rely on external vision fallback instead
+            logger.info("🔧 Initializing DocumentConverter with standard pipeline (OCR disabled)...")
+
             pipeline_options = PdfPipelineOptions(
                 artifacts_path=cache_path,
-                do_ocr=False,  # Disable OCR for faster processing
-                do_table_structure=True,  # Enable table detection
+                do_ocr=False,
+                do_table_structure=True,
             )
-            
+
             self.doc_converter = DocumentConverter(
                 format_options={
                     InputFormat.PDF: PdfFormatOption(
@@ -143,10 +364,26 @@ class StandaloneDocumentParser:
                     )
                 }
             )
-            logger.info("✅ SUCCESS: DocumentConverter initialized with full docling pipeline")
+            logger.info("✅ SUCCESS: DocumentConverter initialized with OCR disabled")
             logger.info(f"   Using models from: {cache_path}")
-            logger.info("   Features: Layout detection ✅, Table structure ✅, OCR ❌")
-            
+            logger.info("   Features: Layout detection ✅, Table structure ✅, OCR ❌ (handled by OpenAI vision fallback)")
+
+        except FileNotFoundError as e:
+            logger.warning("⚠️ OCR models missing (%s). Falling back to text-only pipeline.", e)
+            logger.warning("   Run `docling-tools models download` to enable OCR.")
+            pipeline_options = PdfPipelineOptions(
+                artifacts_path=cache_path,
+                do_ocr=False,
+                do_table_structure=True,
+            )
+            self.doc_converter = DocumentConverter(
+                format_options={
+                    InputFormat.PDF: PdfFormatOption(
+                        pipeline_options=pipeline_options
+                    )
+                }
+            )
+            logger.info("✅ SUCCESS: DocumentConverter initialized without OCR fallback")
         except Exception as e:
             logger.error(f"❌ FAILED: DocumentConverter initialization error: {e}")
             logger.error(f"   Exception type: {type(e)}")
@@ -195,6 +432,10 @@ class StandaloneDocumentParser:
         logger.info(f"   ✅ Chunk overlap tokens: {self.CHUNK_OVERLAP_TOKENS}")
         logger.info(f"   ✅ Debug mode: {debug_mode}")
         logger.info("🎉 SUCCESS: StandaloneDocumentParser initialization COMPLETE!")
+        self._current_pdf_path: Path | None = None
+        self._fitz_doc = None
+        self._model_cache_path = cache_path
+        self.vision_config = build_openai_vision_config()
 
     def parse_document_from_file(self, file_path: Path) -> tuple[DoclingDocument, ConfidenceReport]:
         """Parse a document from a file path."""
@@ -231,6 +472,10 @@ class StandaloneDocumentParser:
             logger.error(f"❌ Failed to read file: {e}")
             raise
         
+        # Remember path for fallbacks
+        self._current_pdf_path = file_path
+        self._fitz_doc = self._load_fitz_document(file_path)
+
         # Create BytesIO stream
         logger.debug("🔄 Creating BytesIO stream...")
         file_stream = BytesIO(file_content)
@@ -246,6 +491,11 @@ class StandaloneDocumentParser:
         try:
             result = self.doc_converter.convert(doc_stream)
             logger.info("✅ Document conversion completed successfully!")
+        except FileNotFoundError as e:
+            logger.warning("⚠️ OCR resources missing during conversion (%s). Retrying without OCR.", e)
+            self._initialize_converter_without_ocr()
+            result = self.doc_converter.convert(doc_stream)
+            logger.info("✅ Document conversion completed after retry without OCR.")
         except Exception as e:
             logger.error(f"❌ Document conversion failed: {e}")
             logger.error(f"Exception type: {type(e)}")
@@ -550,79 +800,58 @@ class StandaloneDocumentParser:
         """
         Chunk document using HybridChunker while preserving page numbers.
         
-        Uses HybridChunker for intelligent chunking, then extracts page numbers
-        from the chunk's metadata which links back to source items with provenance.
+        Adds detailed logging of placeholder removal and fallback extraction so we can
+        inspect problematic PDFs.
         """
-        chunk_index = 0
-        all_chunks = []
-        all_metadata_analysis = []
-        
+        serializer = MarkdownDocSerializer(doc=doc)
+        placeholder_summary = {
+            "chunks": 0,
+            "segments": 0,
+            "removed_segments": 0,
+            "fallback_used": 0,
+            "fallback_failed": 0,
+        }
+
         logger.info("🧩 STARTING DOCUMENT CHUNKING (USING HYBRIDCHUNKER)...")
         logger.info("=" * 80)
-        
-        # Use HybridChunker to get properly-sized chunks
-        for chunk in self.chunker.chunk(doc):
+
+        chunk_index = 0
+        collected_chunks: list[dict[str, Any]] = []
+        for raw_chunk in self.chunker.chunk(doc):
+            placeholder_summary["chunks"] += 1
             logger.debug(f"Processing chunk {chunk_index}")
 
-            # Get the actual text content from the chunk
-            # Note: chunk.text contains the actual content, not contextualize()
-            # Using contextualize() returns internal gid references instead of text!
-            chunk_text = chunk.text if hasattr(chunk, 'text') else str(chunk)
-            logger.debug(f"   📝 Chunk text length: {len(chunk_text)} characters")
-            
-            # Extract page number from chunk metadata
-            page_number = None
-            chunk_meta_info = {"chunk_index": chunk_index, "has_meta": False, "meta_structure": {}}
-            
-            # Analyze chunk metadata
-            if hasattr(chunk, 'meta') and chunk.meta is not None:
-                chunk_meta_info["has_meta"] = True
-                logger.debug(f"   ✅ Chunk has metadata")
-                logger.debug(f"   📋 Metadata type: {type(chunk.meta)}")
-                logger.debug(f"   📋 Metadata attributes: {[attr for attr in dir(chunk.meta) if not attr.startswith('_')]}")
-                
-                # Get the doc_items that this chunk came from
-                if hasattr(chunk.meta, 'doc_items') and chunk.meta.doc_items:
-                    source_items = chunk.meta.doc_items
-                    chunk_meta_info["doc_items_count"] = len(source_items)
-                    logger.info(f"   ✅ Found {len(source_items)} source doc_items in metadata")
-                    
-                    if len(source_items) > 0:
-                        # The source item IS the actual object (not a string reference!)
-                        source_item = source_items[0]
-                        chunk_meta_info["first_item_ref"] = str(source_item)[:200]  # Truncate for logging
-                        chunk_meta_info["first_item_type"] = type(source_item).__name__
-                        logger.debug(f"   📦 First item type: {type(source_item).__name__}")
-                        
-                        # Extract page number directly from the item's provenance
-                        if hasattr(source_item, 'prov') and source_item.prov:
-                            if len(source_item.prov) > 0:
-                                first_prov = source_item.prov[0]
-                                page_number = getattr(first_prov, 'page_no', None)
-                                chunk_meta_info["page_number"] = page_number
-                                logger.info(f"   🎉 SUCCESS: Extracted page {page_number} from {type(source_item).__name__}")
-                        else:
-                            logger.warning(f"   ❌ Source item has no provenance")
-                else:
-                    logger.warning(f"   ❌ Metadata has no doc_items attribute")
-            else:
-                logger.warning(f"   ❌ Chunk has no metadata")
-            
-            all_metadata_analysis.append(chunk_meta_info)
-            
-            # If metadata approach didn't work
-            if page_number is None:
-                logger.warning(f"   💥 FAILED to extract page number for chunk {chunk_index}")
+            (
+                combined_text,
+                page_number,
+                stats,
+                diagnostic,
+            ) = self._extract_markdown_segment(
+                raw_chunk,
+                serializer,
+                self.chunker,
+                doc,
+                debug_chunk_index=chunk_index,
+            )
 
-            # Split chunk text into token budget
+            placeholder_summary["segments"] += stats["total_segments"]
+            placeholder_summary["removed_segments"] += stats["removed_segments"]
+            placeholder_summary["fallback_used"] += 1 if stats["fallback_used"] else 0
+            placeholder_summary["fallback_failed"] += 1 if stats["fallback_failed"] else 0
+
+            if not combined_text.strip():
+                logger.warning(
+                    "   ⚠️ Chunk %s produced no usable text after placeholder filtering; skipping.",
+                    chunk_index,
+                )
+                chunk_index += 1
+                continue
+
             segment_index = 0
-            for text_segment in self._split_to_token_budget(chunk_text):
+            for text_segment in self._split_to_token_budget(combined_text):
                 token_count = len(self._encoding.encode(text_segment))
-                
-                # Create preview of text (truncate if too long)
-                text_preview = text_segment[:100] if len(text_segment) > 100 else text_segment
-                text_preview = repr(text_preview)  # Show escaped characters
-                
+                preview = repr(text_segment[:100] if len(text_segment) > 100 else text_segment)
+
                 chunk_data = {
                     "chunk_id": str(uuid4()),
                     "text": text_segment,
@@ -632,40 +861,519 @@ class StandaloneDocumentParser:
                     "token_count": token_count,
                     "char_count": len(text_segment),
                     "word_count": len(text_segment.split()),
-                    "metadata_info": chunk_meta_info if self.debug_mode else None
+                    "diagnostic": diagnostic if self.debug_mode else None,
+                    "extraction_method": "docling",
                 }
-                
-                all_chunks.append(chunk_data)
-                
-                # Log chunk generation with text preview
+
                 if page_number is not None:
-                    logger.info(f"✅ SUCCESS: Generated chunk {chunk_index}.{segment_index}: {token_count} tokens, page {page_number}, text: {text_preview}")
+                    logger.info("✅ Chunk %s.%s (page %s) tokens=%s preview=%s",
+                                chunk_index, segment_index, page_number, token_count, preview)
                 else:
-                    logger.warning(f"❌ PARTIAL: Generated chunk {chunk_index}.{segment_index}: {token_count} tokens, page UNKNOWN, text: {text_preview}")
-                
-                # Show detailed preview for first few chunks
+                    logger.warning("⚠️ Chunk %s.%s has unknown page, tokens=%s preview=%s",
+                                   chunk_index, segment_index, token_count, preview)
+
                 if chunk_index < 5:
                     self._log_chunk_preview(chunk_data, chunk_index, segment_index)
-                
-                yield chunk_data
+
+                collected_chunks.append(chunk_data)
                 segment_index += 1
                 chunk_index += 1
-        
-        # Final summary
+
         logger.info("=" * 80)
         logger.info("🎉 DOCUMENT CHUNKING COMPLETE!")
-        self._log_chunking_summary(all_chunks)
-        
-        # Save metadata analysis
-        if self.debug_mode:
-            metadata_file = Path(__file__).parent / "results" / "chunk_metadata_analysis.json"
-            metadata_file.parent.mkdir(exist_ok=True)
+        logger.info(
+            "📊 Placeholder summary: chunks=%s segments=%s removed=%s fallback_used=%s fallback_failed=%s",
+            placeholder_summary["chunks"],
+            placeholder_summary["segments"],
+            placeholder_summary["removed_segments"],
+            placeholder_summary["fallback_used"],
+            placeholder_summary["fallback_failed"],
+        )
+        fallback_needed = (
+            placeholder_summary["fallback_used"] > 0
+            and placeholder_summary["fallback_failed"] == placeholder_summary["fallback_used"]
+        )
+
+        if (fallback_needed or not collected_chunks) and self._current_pdf_path is not None:
+            logger.warning(
+                "Docling chunking left unresolved placeholders; attempting OpenAI vision fallback."
+            )
+            placeholder_pages = self._placeholder_pages_from_chunks(collected_chunks)
+            fallback_chunks = self._chunk_with_openai_vision(placeholder_pages)
+            if fallback_chunks:
+                for chunk in fallback_chunks:
+                    yield chunk
+                return
+            logger.warning("OpenAI vision fallback produced no usable chunks; using original output.")
+
+        for chunk in collected_chunks:
+            yield chunk
+
+    def _extract_markdown_segment(
+        self,
+        chunk: Any,
+        serializer: MarkdownDocSerializer,
+        chunker: HybridChunker,
+        doc: Optional[DoclingDocument],
+        debug_chunk_index: int,
+    ) -> tuple[str, Optional[int], dict[str, int | bool], dict[str, Any]]:
+        text_parts: list[str] = []
+        page_candidates: list[int] = []
+        placeholder_removed = 0
+        inspected = 0
+
+        diagnostic: dict[str, Any] = {
+            "chunk_index": debug_chunk_index,
+            "doc_items": [],
+            "fallback_candidates": [],
+        }
+
+        doc_items = getattr(getattr(chunk, "meta", None), "doc_items", None) or []
+
+        for idx, item in enumerate(doc_items):
+            inspected += 1
+            resolved_item = self._resolve_doc_item(doc, item)
+            resolved_text = self._serialize_doc_item(serializer, resolved_item)
+            raw_text = self._serialize_doc_item(serializer, item)
+            diagnostic_entry = {
+                "item_index": idx,
+                "resolved_len": len(resolved_text),
+                "raw_len": len(raw_text),
+                "resolved_preview": resolved_text[:120],
+                "raw_preview": raw_text[:120],
+                "resolved_placeholder": self._is_placeholder_text(resolved_text),
+                "raw_placeholder": self._is_placeholder_text(raw_text),
+            }
+
+            if self._is_placeholder_text(resolved_text):
+                placeholder_removed += 1
+            else:
+                text_parts.append(resolved_text.strip())
+
+            page = self._first_page_number(resolved_item) or self._first_page_number(item)
+            if page is not None:
+                page_candidates.append(page)
+
+            if idx < self.MAX_DEBUG_ITEMS:
+                diagnostic["doc_items"].append(diagnostic_entry)
+
+        if not text_parts:
             try:
-                with open(metadata_file, "w") as f:
-                    json.dump(all_metadata_analysis, f, indent=2, default=str)
-                logger.info(f"✅ SUCCESS: Metadata analysis saved to {metadata_file}")
-            except Exception as e:
-                logger.error(f"❌ FAILED: Could not save metadata analysis: {e}")
+                contextualized = chunker.contextualize(chunk)
+            except Exception as exc:
+                logger.warning("Failed to contextualize chunk %s: %s", debug_chunk_index, exc)
+                contextualized = ""
+
+            diagnostic["contextualized_preview"] = contextualized[:200]
+            if contextualized and not self._is_placeholder_text(contextualized):
+                text_parts.append(contextualized.strip())
+                page = (
+                    self._first_page_number(chunk.meta.doc_items[0])
+                    if getattr(chunk, "meta", None) and getattr(chunk.meta, "doc_items", None)
+                    else None
+                )
+                if page is not None:
+                    page_candidates.append(page)
+            else:
+                if contextualized:
+                    placeholder_removed += 1
+
+        combined_text = "\n\n".join(part for part in text_parts if part)
+        fallback_used = False
+        fallback_failed = False
+
+        if self._contains_gid(combined_text) or not combined_text:
+            fallback_used = True
+            fallback_text, candidates = self._attempt_fallback(chunk, chunker, page_candidates)
+            diagnostic["fallback_candidates"] = candidates
+            if fallback_text and not self._contains_gid(fallback_text):
+                combined_text = fallback_text
+            else:
+                fallback_failed = True
+
+        page_number = page_candidates[0] if page_candidates else None
+        stats = {
+            "total_segments": inspected,
+            "removed_segments": placeholder_removed,
+            "fallback_used": fallback_used,
+            "fallback_failed": fallback_failed,
+        }
+        diagnostic["page_number"] = page_number
+        diagnostic["combined_text_preview"] = combined_text[:200]
+
+        return combined_text, page_number, stats, diagnostic
+
+    def _attempt_fallback(
+        self,
+        chunk: Any,
+        chunker: HybridChunker,
+        page_candidates: list[int],
+    ) -> tuple[str, list[dict[str, Any]]]:
+
+        candidates_info: list[dict[str, Any]] = []
+        candidate_texts: list[str] = []
+
+        serialize_fn = getattr(chunker, "serialize", None)
+        if callable(serialize_fn):
+            try:
+                serialized = serialize_fn(chunk)
+                if isinstance(serialized, str) and serialized.strip():
+                    candidate_texts.append(serialized.strip())
+                    candidates_info.append(
+                        {"source": "chunker.serialize", "len": len(serialized.strip()), "preview": serialized[:120]}
+                    )
+            except Exception as exc:
+                logger.debug("Fallback serialize() failed: %s", exc)
+                candidates_info.append({"source": "chunker.serialize", "error": str(exc)})
+
+        try:
+            contextualized = chunker.contextualize(chunk)
+            if isinstance(contextualized, str) and contextualized.strip():
+                candidate_texts.append(contextualized.strip())
+                candidates_info.append(
+                    {"source": "chunker.contextualize", "len": len(contextualized.strip()), "preview": contextualized[:120]}
+                )
+        except Exception as exc:
+            logger.debug("Fallback contextualize() failed: %s", exc)
+            candidates_info.append({"source": "chunker.contextualize", "error": str(exc)})
+
+        page_no = page_candidates[0] if page_candidates else None
+        fitz_text = self._extract_text_with_fitz(page_no)
+        if fitz_text:
+            candidate_texts.append(fitz_text)
+            candidates_info.append(
+                {"source": "pymupdf", "len": len(fitz_text), "preview": fitz_text[:120], "page": page_no}
+            )
+
+        for candidate in candidate_texts:
+            if candidate and not self._contains_gid(candidate) and not self._is_placeholder_text(candidate):
+                return candidate, candidates_info
+        return "", candidates_info
+
+    @staticmethod
+    def _is_placeholder_text(value: str) -> bool:
+        if not value:
+            return True
+        normalized = value.strip()
+        if not normalized:
+            return True
+        lowered = normalized.lower()
+        if lowered in StandaloneDocumentParser._PLACEHOLDER_MARKERS:
+            return True
+        if StandaloneDocumentParser._contains_gid(lowered):
+            return True
+        stripped = lowered.lstrip(" -*•\u2022\t")
+        if StandaloneDocumentParser._contains_gid(stripped):
+            return True
+        return False
+
+    @staticmethod
+    def _contains_gid(value: str) -> bool:
+        return StandaloneDocumentParser._GID_TOKEN in value.lower()
+
+    @staticmethod
+    def _placeholder_pages_from_chunks(
+        chunks: Sequence[dict[str, Any]]
+    ) -> set[int]:
+        pages: set[int] = set()
+        for chunk in chunks:
+            page_number = chunk.get("page_number")
+            if page_number is None:
+                continue
+            text = chunk.get("text", "")
+            if StandaloneDocumentParser._is_placeholder_text(text):
+                pages.add(int(page_number))
+        return pages
+
+    def _chunk_with_openai_vision(
+        self,
+        placeholder_pages: Optional[set[int]] = None,
+    ) -> list[dict[str, Any]]:
+        pdf_path = self._current_pdf_path
+        if pdf_path is None:
+            logger.error("Cannot run vision fallback without original PDF path.")
+            return []
+
+        if not self.vision_config.enabled:
+            logger.info("Vision fallback disabled via configuration.")
+            return []
+
+        all_pages = self._list_pdf_pages(pdf_path)
+        if not all_pages:
+            logger.error("Unable to enumerate PDF pages for vision fallback.")
+            return []
+
+        fallback_candidates = (
+            sorted(set(placeholder_pages or set()).intersection(all_pages))
+            if placeholder_pages
+            else list(all_pages)
+        )
+        if not fallback_candidates:
+            fallback_candidates = list(all_pages)
+
+        recovered = recover_pages_with_openai(pdf_path, fallback_candidates, self.vision_config)
+
+        missing_pages = set(fallback_candidates) - set(recovered.keys())
+        if missing_pages:
+            logger.warning(
+                "Vision fallback returned no text for pages: %s",
+                sorted(missing_pages),
+            )
+
+        if not recovered:
+            logger.warning("Vision fallback did not recover any text.")
+            return []
+
+        report_pages: list[PageExtraction] = []
+        usable_pages: list[PageExtraction] = []
+
+        for page_number in fallback_candidates:
+            recovered_text = (recovered.get(page_number) or "").strip()
+            method = f"vision:{self.vision_config.model}"
+            if not recovered_text:
+                report_pages.append(
+                    PageExtraction(
+                        page_number=page_number,
+                        text="",
+                        method=method,
+                        needs_vision=True,
+                    )
+                )
+                continue
+
+            words = recovered_text.replace("\n", " ").split()
+            snippet = " ".join(words[:200])
+            logger.info(
+                "[Vision] Page %s recovered text (first %s words): %s",
+                page_number,
+                min(200, len(words)),
+                snippet,
+            )
+
+            page_entry = PageExtraction(
+                page_number=page_number,
+                text=recovered_text,
+                method=method,
+                needs_vision=False,
+            )
+            report_pages.append(page_entry)
+            usable_pages.append(page_entry)
+
+        chunks: list[dict[str, Any]] = []
+        chunk_index = 0
+        for page in usable_pages:
+            text = page.text.strip()
+            if not text:
+                logger.warning("Page %s still has no extractable text; skipping.", page.page_number)
+                continue
+
+            for segment_index, text_segment in enumerate(self._split_to_token_budget(text), start=1):
+                text_segment = text_segment.strip()
+                if not text_segment:
+                    continue
+
+                chunk_index += 1
+                token_count = len(self._encoding.encode(text_segment))
+                chunk_data = {
+                    "chunk_id": str(uuid4()),
+                    "text": text_segment,
+                    "page_number": page.page_number,
+                    "chunk_index": chunk_index,
+                    "segment_index": segment_index - 1,
+                    "token_count": token_count,
+                    "char_count": len(text_segment),
+                    "word_count": len(text_segment.split()),
+                    "extraction_method": page.method,
+                }
+                if chunk_index <= 5:
+                    logger.debug("Fallback chunk %s preview: %s", chunk_index, repr(text_segment[:100]))
+                chunks.append(chunk_data)
+
+        if not chunks:
+            logger.error("OpenAI vision fallback yielded no chunks.")
+            return []
+
+        self._write_fallback_report(pdf_path, report_pages, chunks)
+        logger.info("OpenAI vision fallback produced %s chunks.", len(chunks))
+        return chunks
+
+    def _list_pdf_pages(self, pdf_path: Path) -> list[int]:
+        if fitz is None:
+            logger.error("PyMuPDF is required to enumerate PDF pages for vision fallback.")
+            return []
+
+        try:
+            document = fitz.open(str(pdf_path))  # type: ignore[operator]
+        except Exception as exc:
+            logger.exception("Unable to open PDF with PyMuPDF: %s", exc)
+            return []
+
+        try:
+            return list(range(1, document.page_count + 1))
+        finally:
+            document.close()
+
+    def _write_fallback_report(
+        self,
+        pdf_path: Path,
+        pages: list[PageExtraction],
+        chunks: list[dict[str, Any]],
+    ) -> None:
+        reports_dir = Path(__file__).parent / "results"
+        reports_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        report_path = reports_dir / f"fallback_chunks_{timestamp}.md"
+
+        lines: list[str] = []
+        lines.append(f"# OpenAI Vision Fallback Report for {pdf_path.name}")
+        lines.append("")
+        lines.append(f"Generated: {datetime.now().isoformat(timespec='seconds')}")
+        lines.append(f"Total fallback chunks: {len(chunks)}")
+        lines.append("")
+
+        for page in pages:
+            lines.append(f"## Page {page.page_number} (method={page.method})")
+            lines.append("")
+            snippet = page.text.strip()
+            if len(snippet) > 2000:
+                snippet = snippet[:2000] + " …"
+            lines.append("```text")
+            lines.append(snippet)
+            lines.append("```")
+            lines.append("")
+
+        try:
+            report_path.write_text("\n".join(lines), encoding="utf-8")
+            logger.info("Fallback markdown report written to %s", report_path)
+        except Exception as exc:
+            logger.warning("Failed to write fallback report: %s", exc)
+
+    @staticmethod
+    def _serialize_doc_item(
+        serializer: MarkdownDocSerializer, item: Optional[Any]
+    ) -> str:
+        if item is None:
+            return ""
+        try:
+            result = serializer.serialize(item=item)
+            return (result.text or "").strip()
+        except Exception as exc:
+            logger.debug("Doc item serialization failed: %s", exc)
+            return (
+                getattr(item, "text", "")
+                or getattr(item, "orig", "")
+                or getattr(item, "markdown", "")
+            )
+
+    @staticmethod
+    def _first_page_number(item: Any) -> Optional[int]:
+        if hasattr(item, "prov") and item.prov:
+            for provenance in item.prov:
+                page = getattr(provenance, "page_no", None)
+                if page is not None:
+                    return page
+        return None
+
+    @staticmethod
+    def _resolve_doc_item(
+        doc: Optional[DoclingDocument], item: Optional[Any]
+    ) -> Optional[Any]:
+        if item is None or doc is None:
+            return item
+
+        resolver = getattr(item, "resolve", None)
+        if callable(resolver):
+            try:
+                resolved = resolver(doc)
+                if resolved is not None:
+                    return resolved
+            except Exception as exc:
+                logger.debug("Doc item resolve() failed: %s", exc)
+
+        reference = getattr(item, "self_ref", None) or getattr(item, "cref", None)
+        if isinstance(reference, str):
+            resolved_ref = StandaloneDocumentParser._resolve_doc_reference(doc, reference)
+            if resolved_ref is not None:
+                return resolved_ref
+
+        return item
+
+    @staticmethod
+    def _resolve_doc_reference(doc: DoclingDocument, reference: str) -> Optional[Any]:
+        if not reference or not reference.startswith("#/"):
+            return None
+
+        target: Any = doc
+        for component in reference.lstrip("#/").split("/"):
+            if target is None:
+                return None
+            if isinstance(target, list):
+                if not component.isdigit():
+                    return None
+                index = int(component)
+                if index < 0 or index >= len(target):
+                    return None
+                target = target[index]
+                continue
+            if isinstance(target, dict):
+                target = target.get(component)
+                continue
+            if hasattr(target, component):
+                target = getattr(target, component)
+                continue
+            return None
+
+        return target
+
+    def _initialize_converter_without_ocr(self) -> None:
+        cache_path = self._model_cache_path
+        logger.info("🔄 Reinitializing DocumentConverter without OCR...")
+        pipeline_options = PdfPipelineOptions(
+            artifacts_path=cache_path,
+            do_ocr=False,
+            do_table_structure=True,
+        )
+        self.doc_converter = DocumentConverter(
+            format_options={
+                InputFormat.PDF: PdfFormatOption(
+                    pipeline_options=pipeline_options
+                )
+            }
+        )
+        logger.info("✅ DocumentConverter ready (OCR disabled)")
+
+    def _load_fitz_document(self, file_path: Path):
+        try:
+            import fitz  # type: ignore
+        except ImportError:
+            logger.info("PyMuPDF not available; skipping PDF text fallback.")
+            return None
+
+        try:
+            return fitz.open(file_path)
+        except Exception as exc:
+            logger.warning("Failed to open PDF with PyMuPDF: %s", exc)
+            return None
+
+    def _extract_text_with_fitz(self, page_number: Optional[int]) -> str:
+        if self._fitz_doc is None or page_number is None:
+            return ""
+        try:
+            page_index = max(0, page_number - 1)
+            if page_index >= self._fitz_doc.page_count:
+                return ""
+            page = self._fitz_doc.load_page(page_index)
+            text = page.get_text("text")
+            logger.debug(
+                "PyMuPDF fallback extracted %s chars from page %s",
+                len(text),
+                page_number,
+            )
+            return text.strip()
+        except Exception as exc:
+            logger.debug("PyMuPDF extraction failed for page %s: %s", page_number, exc)
+            return ""
+
     
     def _resolve_item_reference(self, doc: DoclingDocument, ref: str) -> Any:
         """

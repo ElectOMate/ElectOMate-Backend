@@ -139,3 +139,12 @@ def setup_logging() -> None:
         handler.setFormatter(ExtraFormatter("%(levelname)s [%(name)s] %(message)s"))
         logger.setLevel(logging.INFO)
     logger.addHandler(handler)
+
+    # Reduce verbosity of third-party libraries
+    logging.getLogger("uvicorn").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.error").setLevel(logging.WARNING)
+    logging.getLogger("sqlalchemy").setLevel(logging.WARNING)
+    logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+    logging.getLogger("sqlalchemy.pool").setLevel(logging.WARNING)
+    logging.getLogger("httpx").setLevel(logging.WARNING)
