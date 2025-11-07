@@ -116,7 +116,7 @@ class OpenAIVisionConfig:
 
 def build_openai_vision_config() -> OpenAIVisionConfig:
     enabled = os.getenv("VISION_ENABLED", "false").lower() in {"1", "true", "yes", "on"}
-    model = os.getenv("VISION_MODEL", "gpt-4o-mini")
+    model = os.getenv("VISION_MODEL", "gpt-4o")
     max_retries = int(os.getenv("VISION_MAX_RETRIES", "2"))
     max_output_tokens_env = os.getenv("VISION_MAX_OUTPUT_TOKENS")
     max_output_tokens = int(max_output_tokens_env) if max_output_tokens_env else None
