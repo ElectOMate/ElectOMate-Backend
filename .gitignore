@@ -230,3 +230,8 @@ append_db.py
 db_backups/
 
 .READMe_Docker_Problems_on_MacOS.md
+
+
+
+scripts/append-db-to-azure.sh
+scripts/sync-db-to-azure.sh
