@@ -216,5 +216,17 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Database exports and backups
+*.sql
+*.csv
+*.dump
+em_dev_data.sql
+documents.csv
+countries.json
+elections.json
+parties.json
+import_db.py
+append_db.py
+db_backups/
 
 .READMe_Docker_Problems_on_MacOS.md

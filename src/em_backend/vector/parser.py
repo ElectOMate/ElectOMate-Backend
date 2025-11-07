@@ -67,15 +67,28 @@ def build_openai_vision_config() -> OpenAIVisionConfig:
     retry_backoff_seconds = float(os.getenv("VISION_RETRY_BACKOFF", "2.0"))
 
     default_system_prompt = (
-        "You are an assistant that transcribes textual content from scanned document pages. "
-        "Return clean plain text in the original language, preserving headings and structure. "
+        "Extract all text from this document page and format it as Markdown. "
+        "Preserve ALL formatting:\n"
+        "- Headings with ## or ###\n"
+        "- **Bold text**\n"
+        "- *Italic text*\n"
+        "- Bullet points with -\n"
+        "- Numbered lists with 1. 2. 3.\n"
+        "- Tables in markdown format\n"
+        "- Paragraph breaks (double newlines)\n\n"
+        "IMPORTANT:\n"
+        "- Do NOT include image URLs or links\n"
+        "- Do NOT use markdown image syntax like ![...](https://...)\n"
+        "- Skip images completely, only extract TEXT\n"
+        "- Do NOT add any explanations or metadata\n\n"
+        "Return ONLY the formatted text content as markdown. "
         "If you cannot read the page, respond exactly with 'UNREADABLE'."
     )
     system_prompt = os.getenv("VISION_SYSTEM_PROMPT", default_system_prompt)
 
     default_user_prompt = (
-        "This is page {page_number} of the document '{doc_name}'. Extract all readable text "
-        "and present it as plain text. Preserve headings, bullet points, and paragraph breaks. "
+        "Extract and format page {page_number} of '{doc_name}' as markdown. "
+        "Preserve all formatting including headings, bold, italic, lists, and tables. "
         "If you cannot read the page, respond with 'UNREADABLE'."
     )
     user_prompt_template = os.getenv("VISION_USER_PROMPT_TEMPLATE", default_user_prompt)
@@ -190,7 +203,7 @@ def recover_pages_with_openai(
                             {"type": "text", "text": prompt},
                             {
                                 "type": "image_url",
-                                "image_url": {"url": f"data:image/png;base64,{payload}", "detail": "auto"},
+                                "image_url": {"url": f"data:image/png;base64,{payload}", "detail": "high"},  # Use high detail for better formatting detection
                             },
                         ],
                     },
@@ -199,7 +212,7 @@ def recover_pages_with_openai(
                 response = client.chat.completions.create(
                     model=vision_config.model,
                     messages=messages,
-                    max_tokens=vision_config.max_output_tokens,
+                    max_tokens=vision_config.max_output_tokens or 2000,  # Increase for markdown
                 )
             except Exception as exc:  # pragma: no cover - defensive
                 attempt += 1
@@ -248,9 +261,9 @@ def recover_pages_with_openai(
 class DocumentParser:
     """Parse PDF files."""
 
-    MAX_CHUNK_TOKENS = 500  # Maximum tokens per chunk
+    MAX_CHUNK_TOKENS = 1000  # Maximum tokens per chunk
     MIN_CHUNK_TOKENS = 400   # Minimum tokens per chunk when re-splitting
-    CHUNK_OVERLAP_TOKENS = 75  # Token overlap between chunks
+    CHUNK_OVERLAP_TOKENS = 150  # Token overlap between chunks
     MIN_INDEXABLE_TOKENS = 10  # Minimum tokens required for a chunk to be indexed
     _PLACEHOLDER_MARKERS = {"<!-- missing-text -->"}
     _GID_TOKEN = "/gid"
@@ -326,25 +339,427 @@ class DocumentParser:
         ser_result = serializer.serialize()
         return ser_result.text
 
+    def _chunk_document_markdown_aware(self, doc: DoclingDocument) -> list[tuple[str, Optional[int]]]:
+        """
+        Chunk document using markdown-aware processing.
+        Returns list of (text, page_number) tuples where text includes ## headers and [...] markers.
+        """
+        try:
+            # Export full document as markdown
+            full_markdown = doc.export_to_markdown()
+        except Exception as e:
+            logger.warning(f"Failed to export markdown, using fallback: {e}")
+            return []
+
+        if not full_markdown or self._contains_gid(full_markdown):
+            logger.warning("Document has gid markers or empty markdown content")
+            return []
+
+        # Build a mapping of text content to page numbers from document structure
+        page_mapping = self._build_page_mapping(doc)
+
+        # Parse markdown into sections with heading hierarchy
+        sections = self._parse_markdown_sections(full_markdown, doc)
+        logger.info(f"📑 Parsed {len(sections)} sections from markdown")
+
+        # Enhance sections with page numbers from mapping
+        sections = self._enhance_sections_with_pages(sections, page_mapping)
+        logger.info(f"📍 Enhanced sections with page numbers")
+
+        # Chunk each section with context markers (adds ## headers and [...])
+        chunks = []
+        for section in sections:
+            section_chunks = self._chunk_section_with_context(section)
+            chunks.extend(section_chunks)
+
+        logger.info(f"✂️ Generated {len(chunks)} chunks from {len(sections)} sections")
+        return chunks
+
+    def _build_page_mapping(self, doc: DoclingDocument) -> dict[str, int]:
+        """
+        Build a mapping from text content to page numbers by analyzing document structure.
+        Returns dict mapping text snippets to their page numbers.
+        """
+        page_mapping = {}
+
+        # Iterate through document elements to build text -> page mapping
+        if hasattr(doc, 'texts') and doc.texts:
+            for text_item in doc.texts:
+                # Extract text
+                text_content = getattr(text_item, 'text', None) or getattr(text_item, 'orig', '')
+                if not text_content or len(text_content.strip()) < 10:
+                    continue
+
+                # Extract page number from provenance
+                page_num = self._first_page_number(text_item)
+                if page_num:
+                    # Use first ~50 chars as key (enough to match sections)
+                    key = text_content.strip()[:50].lower()
+                    page_mapping[key] = page_num
+
+        logger.debug(f"Built page mapping with {len(page_mapping)} entries")
+        return page_mapping
+
+    def _enhance_sections_with_pages(
+        self,
+        sections: list[dict[str, Any]],
+        page_mapping: dict[str, int]
+    ) -> list[dict[str, Any]]:
+        """
+        Enhance sections with page numbers from the page mapping.
+        Tries to match section content against mapped text to find page numbers.
+        """
+        import re
+
+        for section in sections:
+            # Try to find page number by matching section content
+            content_text = "\n".join(section["content"])
+
+            # Strip markdown formatting for matching (remove ##, -, *, etc.)
+            clean_content = re.sub(r'^#{1,6}\s+', '', content_text, flags=re.MULTILINE)
+            clean_content = re.sub(r'^\s*[-*]\s+', '', clean_content, flags=re.MULTILINE)
+            clean_content = clean_content.strip()
+
+            # Try exact match with different lengths
+            matched = False
+            for length in [50, 100, 150, 30, 20]:
+                key = clean_content[:length].lower()
+                if key in page_mapping:
+                    section["page_number"] = page_mapping[key]
+                    logger.debug(f"Matched section to page {section['page_number']}")
+                    matched = True
+                    break
+
+            # If no match found, try matching just the title (cleaned)
+            if not matched and section["title"]:
+                title_clean = section["title"].strip().lower()
+                # Try to find this title in any mapped text
+                for mapped_text, page_num in page_mapping.items():
+                    if title_clean in mapped_text or mapped_text[:len(title_clean)] == title_clean:
+                        section["page_number"] = page_num
+                        logger.debug(f"Title matched section to page {page_num}")
+                        matched = True
+                        break
+
+        # Fill gaps: if we have some page numbers, interpolate missing ones
+        for i in range(1, len(sections)):
+            if sections[i]["page_number"] == 1 and sections[i-1]["page_number"] > 1:
+                # Likely continuation of previous page or next page
+                sections[i]["page_number"] = sections[i-1]["page_number"]
+                logger.debug(f"Interpolated page {sections[i]['page_number']} for section")
+
+        return sections
+
+    def _parse_markdown_sections(self, markdown_text: str, doc: DoclingDocument) -> list[dict[str, Any]]:
+        """
+        Parse markdown text into sections with heading hierarchy.
+        Returns list of sections with: {title, level, content, page_number, heading_stack}
+        """
+        import re
+
+        sections = []
+        lines = markdown_text.split("\n")
+
+        current_section = {
+            "title": "",
+            "level": 0,
+            "content": [],
+            "page_number": 1,
+            "heading_stack": []
+        }
+
+        for line in lines:
+            # Check for markdown heading (##, ###, etc.)
+            heading_match = re.match(r"^(#{1,6})\s+(.+)$", line)
+
+            if heading_match:
+                # Save previous section if it has content
+                if current_section["content"]:
+                    sections.append(current_section.copy())
+
+                # Start new section
+                level = len(heading_match.group(1))
+                title = heading_match.group(2).strip()
+
+                # Update heading stack (track hierarchy)
+                heading_stack = current_section["heading_stack"][:level-1]
+                heading_stack.append(title)
+
+                current_section = {
+                    "title": title,
+                    "level": level,
+                    "content": [line],  # Include heading in content
+                    "page_number": current_section["page_number"],
+                    "heading_stack": heading_stack
+                }
+            else:
+                current_section["content"].append(line)
+
+        # Add final section
+        if current_section["content"]:
+            sections.append(current_section)
+
+        return sections
+
+    def _chunk_section_with_context(self, section: dict[str, Any]) -> list[tuple[str, Optional[int]]]:
+        """
+        Chunk a section while preserving markdown and adding context.
+        Adds section title hierarchy and [...] markers for split content.
+        Returns list of (text, page_number) tuples.
+        """
+        content_text = "\n".join(section["content"])
+        tokens = self._encoding.encode(content_text)
+        token_count = len(tokens)
+
+        # If section fits in one chunk, return as-is
+        if token_count <= self.MAX_CHUNK_TOKENS:
+            return [(content_text, section["page_number"])]
+
+        # Section needs to be split - add context markers
+        chunks = []
+        section_header = self._format_section_header(section)
+
+        # Calculate header overhead
+        header_tokens = len(self._encoding.encode(section_header + "\n\n"))
+        marker_tokens = len(self._encoding.encode("[...]\n\n"))
+
+        # Adjust chunk size to account for header overhead
+        effective_chunk_size = self.MAX_CHUNK_TOKENS - header_tokens - (2 * marker_tokens)
+
+        # Split content into token-sized chunks
+        char_positions = []
+        for i in range(len(tokens)):
+            char_pos = len(self._encoding.decode(tokens[:i]))
+            char_positions.append(char_pos)
+        char_positions.append(len(content_text))
+
+        start_token = 0
+
+        while start_token < token_count:
+            end_token = min(start_token + effective_chunk_size, token_count)
+
+            # Get character positions
+            start_char = char_positions[start_token]
+            end_char = char_positions[end_token]
+
+            chunk_text = content_text[start_char:end_char]
+
+            # Add section header and continuation markers
+            is_first = (start_token == 0)
+            is_last = (end_token >= token_count)
+
+            formatted_chunk = self._format_chunk_with_context(
+                chunk_text=chunk_text,
+                section_header=section_header,
+                is_first=is_first,
+                is_last=is_last
+            )
+
+            chunks.append((formatted_chunk, section["page_number"]))
+
+            # Move to next chunk with overlap
+            if end_token >= token_count:
+                break
+
+            start_token = end_token - self.CHUNK_OVERLAP_TOKENS
+
+        return chunks
+
+    def _format_section_header(self, section: dict[str, Any]) -> str:
+        """Format section header with full heading hierarchy."""
+        heading_stack = section.get("heading_stack", [section["title"]])
+
+        # Build hierarchical header
+        lines = []
+        for i, heading in enumerate(heading_stack):
+            level = i + 1
+            lines.append(f"{'#' * level} {heading}")
+
+        return "\n".join(lines)
+
+    def _format_chunk_with_context(
+        self,
+        chunk_text: str,
+        section_header: str,
+        is_first: bool,
+        is_last: bool
+    ) -> str:
+        """
+        Format chunk with section header and continuation markers.
+
+        Format:
+        ## Section Title
+
+        [...]
+
+        Content here...
+
+        [...]
+        """
+        parts = []
+
+        # Add section header
+        parts.append(section_header)
+        parts.append("")  # Empty line
+
+        # Add leading continuation marker if not first chunk
+        if not is_first:
+            parts.append("[...]")
+            parts.append("")
+
+        # Add content
+        parts.append(chunk_text.strip())
+
+        # Add trailing continuation marker if not last chunk
+        if not is_last:
+            parts.append("")
+            parts.append("[...]")
+
+        return "\n".join(parts)
+
+    def _parse_markdown_sections_simple(self, markdown_text: str, page_number: int) -> list[dict[str, Any]]:
+        """
+        Simplified markdown parser for vision-extracted text (per-page).
+        Returns list of sections with: {title, level, content, page_number}
+        """
+        import re
+
+        sections = []
+        lines = markdown_text.split("\n")
+
+        current_section = {
+            "title": "",
+            "level": 0,
+            "content": [],
+            "page_number": page_number,
+            "heading_stack": []
+        }
+
+        for line in lines:
+            # Check for markdown heading
+            heading_match = re.match(r"^(#{1,6})\s+(.+)$", line)
+
+            if heading_match:
+                # Save previous section if it has content
+                if current_section["content"]:
+                    sections.append(current_section.copy())
+
+                # Start new section
+                level = len(heading_match.group(1))
+                title = heading_match.group(2).strip()
+
+                # Update heading stack (track hierarchy)
+                heading_stack = current_section["heading_stack"][:level-1]
+                heading_stack.append(title)
+
+                current_section = {
+                    "title": title,
+                    "level": level,
+                    "content": [line],  # Include heading in content
+                    "page_number": page_number,
+                    "heading_stack": heading_stack
+                }
+            else:
+                current_section["content"].append(line)
+
+        # Add final section
+        if current_section["content"]:
+            sections.append(current_section)
+
+        # If no sections found (no headings), create one section with all content
+        if not sections:
+            sections.append({
+                "title": f"Page {page_number}",
+                "level": 1,
+                "content": lines,
+                "page_number": page_number,
+                "heading_stack": [f"Page {page_number}"]
+            })
+
+        return sections
+
     def chunk_document(self, doc: DoclingDocument) -> Generator[dict[str, Any]]:
         """
-        Chunk document using HybridChunker while preserving page numbers.
+        Chunk document using markdown export with section parsing.
 
-        Uses contextualize() to get clean text from each chunk and extracts
-        page numbers from chunk metadata.
+        Falls back to HybridChunker if markdown export fails or contains placeholders.
+        Uses vision fallback for problematic pages.
         """
+        # Try markdown export + section parsing first (to get section headers)
+        try:
+            full_markdown = doc.export_to_markdown()
+            logger.info(f"Markdown export length: {len(full_markdown) if full_markdown else 0} chars")
+
+            if full_markdown and not self._contains_gid(full_markdown):
+                logger.info("Using markdown export with section parsing...")
+                markdown_chunks = self._chunk_document_markdown_aware(doc)
+                logger.info(f"Markdown-aware chunking produced {len(markdown_chunks)} chunks")
+
+                if markdown_chunks:
+                    collected_chunks: list[dict[str, Any]] = []
+                    chunk_index = 0
+
+                    for chunk_text, page_number in markdown_chunks:
+                        if not chunk_text.strip():
+                            continue
+
+                        token_count = len(self._encoding.encode(chunk_text))
+
+                        if token_count < self.MIN_INDEXABLE_TOKENS:
+                            continue
+
+                        text_preview = chunk_text[:100] if len(chunk_text) > 100 else chunk_text
+
+                        chunk_data = {
+                            "chunk_id": str(uuid4()),
+                            "text": chunk_text,
+                            "page_number": page_number,
+                            "chunk_index": chunk_index,
+                            "token_count": token_count,
+                        }
+
+                        logger.info(
+                            f"Generated chunk {chunk_index}: {token_count} tokens, page {page_number}, text: {repr(text_preview)}"
+                        )
+
+                        collected_chunks.append(chunk_data)
+                        chunk_index += 1
+
+                    # Yield chunks and write summary
+                    for chunk in collected_chunks:
+                        yield chunk
+
+                    self._write_summary_report(
+                        chunks=collected_chunks,
+                        total_chunks=len(collected_chunks),
+                        attempted=0,
+                        succeeded=0,
+                        failed=0,
+                    )
+                    return
+                else:
+                    logger.warning("Markdown-aware chunking produced no chunks, falling back to HybridChunker")
+            else:
+                has_gid = self._contains_gid(full_markdown) if full_markdown else False
+                logger.warning(f"Markdown export check failed (empty={not full_markdown}, has_gid={has_gid}), falling back to HybridChunker")
+        except Exception as e:
+            logger.warning(f"Markdown export failed: {e}, falling back to HybridChunker")
+
+        # Fallback: Use HybridChunker
+        logger.info("Using HybridChunker fallback...")
         serializer = MarkdownDocSerializer(doc=doc)
         encoding = self._encoding
-        separator_text = "\n\n"
-        separator_tokens = encoding.encode(separator_text) if separator_text else []
 
-        segments: list[tuple[str, Optional[int]]] = []
+        collected_chunks = []
+        chunk_index = 0
+
         stats_summary = {
             "placeholder_segments": 0,
             "fallback_used": 0,
             "fallback_failed": 0,
         }
 
+        # Use HybridChunker to get chunks
         for raw_chunk in self.chunker.chunk(doc):
             segment_text, segment_page, segment_stats = self._extract_markdown_segment(
                 raw_chunk, serializer, self.chunker, doc
@@ -354,161 +769,74 @@ class DocumentParser:
                 stats_summary["fallback_used"] += 1
             if segment_stats["fallback_failed"]:
                 stats_summary["fallback_failed"] += 1
+
             if not segment_text.strip():
-                continue
-            segments.append((segment_text, segment_page))
-
-        if not segments:
-            logger.warning("No chunk segments produced from document; skipping chunking")
-            return
-
-        if any(stats_summary.values()):
-            logger.info(
-                "Placeholder filtering summary: removed=%s, fallback_used=%s, fallback_failed=%s",
-                stats_summary["placeholder_segments"],
-                stats_summary["fallback_used"],
-                stats_summary["fallback_failed"],
-            )
-
-        tokens: list[int] = []
-        token_pages: list[Optional[int]] = []
-        for idx, (segment_text, segment_page) in enumerate(segments):
-            segment_tokens = encoding.encode(segment_text)
-            if not segment_tokens:
-                continue
-            tokens.extend(segment_tokens)
-            token_pages.extend([segment_page] * len(segment_tokens))
-
-            if idx < len(segments) - 1 and separator_tokens:
-                tokens.extend(separator_tokens)
-                token_pages.extend([segment_page] * len(separator_tokens))
-
-        if not tokens:
-            logger.warning("Chunk tokenisation produced no tokens; skipping chunk generation")
-            return
-
-        step = max(self.MAX_CHUNK_TOKENS - self.CHUNK_OVERLAP_TOKENS, 1)
-        max_start = max(len(tokens) - self.MAX_CHUNK_TOKENS, 0)
-        # Initialize summary tracking
-        all_chunks: list[dict[str, Any]] = []
-        fallback_attempted = False
-        fallback_placeholder_count = 0
-        fallback_success_count = 0
-        fallback_failed_count = 0
-        start_positions: set[int] = {0, max_start}
-
-        current = step
-        while current <= max_start:
-            start_positions.add(current)
-            current += step
-
-        chunk_index = 0
-        last_chunk_tokens: Optional[list[int]] = None
-        collected_chunks: list[dict[str, Any]] = []
-
-        for start in sorted(start_positions):
-            end = min(start + self.MAX_CHUNK_TOKENS, len(tokens))
-            chunk_tokens = tokens[start:end]
-            if not chunk_tokens:
+                chunk_index += 1
                 continue
 
-            if last_chunk_tokens is not None and chunk_tokens == last_chunk_tokens:
-                continue
+            # Split segment into token-sized chunks
+            for text_segment in self._split_to_token_budget(segment_text):
+                token_count = len(encoding.encode(text_segment))
 
-            chunk_text = encoding.decode(chunk_tokens)
-            # Skip chunks containing placeholder markers
-            if any(marker in chunk_text for marker in self._PLACEHOLDER_MARKERS):
-                logger.info(
-                    "Skipping placeholder chunk %s: contains marker", chunk_index
-                )
-                continue
-            page_candidates = [
-                page for page in token_pages[start:end] if page is not None
-            ]
-            page_number = page_candidates[0] if page_candidates else None
+                if token_count < self.MIN_INDEXABLE_TOKENS:
+                    continue
 
-            token_count = len(chunk_tokens)
-            # Skip tiny chunks to avoid indexing trivial content
-            if token_count < 10:
-                logger.info("Skipping small chunk %s: %s tokens", chunk_index, token_count)
-                continue
-            text_preview_raw = chunk_text[:100] if len(chunk_text) > 100 else chunk_text
-            text_preview = repr(text_preview_raw)
+                text_preview = text_segment[:100] if len(text_segment) > 100 else text_segment
 
-            logger.info(
-                "Generated chunk %s: %s tokens, page %s, text: %s",
-                chunk_index,
-                token_count,
-                page_number if page_number is not None else "unknown",
-                text_preview,
-            )
-
-            collected_chunks.append(
-                {
+                chunk_data = {
                     "chunk_id": str(uuid4()),
-                    "text": chunk_text,
-                    "page_number": page_number,
+                    "text": text_segment,
+                    "page_number": segment_page,
                     "chunk_index": chunk_index,
                     "token_count": token_count,
                 }
-            )
 
-            last_chunk_tokens = chunk_tokens
-            chunk_index += 1
-
-        gid_remaining = any(self._contains_gid(chunk["text"]) for chunk in collected_chunks)
-        fallback_needed = stats_summary["fallback_failed"] > 0 or gid_remaining
-
-        if fallback_needed or not collected_chunks:
-            if self._current_pdf_bytes:
-                logger.warning(
-                    "Docling chunking left unresolved placeholders; attempting OpenAI vision fallback."
-                )
-                # Determine pages needing OCR
-                placeholder_pages = self._placeholder_pages_from_chunks(collected_chunks)
-                # Track fallback metrics
-                fallback_attempted = True
-                fallback_placeholder_count = len(placeholder_pages)
-                # Run vision fallback
-                fallback_chunks = self._chunk_with_openai_vision(placeholder_pages)
-                # Count successes/failures
-                fallback_success_count = len(fallback_chunks)
-                fallback_failed_count = fallback_placeholder_count - fallback_success_count
-                if fallback_chunks:
-                    # Yield recovered chunks and write summary
-                    for chunk in fallback_chunks:
-                        yield chunk
-                    self._write_summary_report(
-                        chunks=fallback_chunks,
-                        total_chunks=fallback_success_count,
-                        attempted=fallback_placeholder_count,
-                        succeeded=fallback_success_count,
-                        failed=fallback_failed_count,
-                    )
-                    return
-                logger.warning("OpenAI vision fallback produced no usable chunks; using original output.")
-            else:
-                logger.warning(
-                    "Fallback needed but original PDF bytes unavailable; skipping OpenAI vision attempt."
+                logger.info(
+                    f"Generated chunk {chunk_index}: {token_count} tokens, page {segment_page}, text: {repr(text_preview)}"
                 )
 
-        # Yield all collected chunks and gather for reporting
-        for chunk in collected_chunks:
-            all_chunks.append(chunk)
-            yield {
-                "chunk_id": chunk["chunk_id"],
-                "text": chunk["text"],
-                "page_number": chunk["page_number"],
-                "chunk_index": chunk["chunk_index"],
-            }
-        # Write a markdown summary report after chunking
-        self._write_summary_report(
-            chunks=all_chunks,
-            total_chunks=len(all_chunks),
-            attempted=fallback_placeholder_count,
-            succeeded=fallback_success_count,
-            failed=fallback_failed_count,
+                collected_chunks.append(chunk_data)
+                chunk_index += 1
+
+        # Check if we need vision fallback
+        fallback_needed = (
+            stats_summary["fallback_failed"] > 0
+            or not collected_chunks
+            or any(self._contains_gid(c["text"]) for c in collected_chunks)
         )
+
+        if fallback_needed and self._current_pdf_bytes:
+            logger.warning(
+                "Docling chunking left unresolved placeholders; attempting OpenAI vision fallback"
+            )
+            placeholder_pages = self._placeholder_pages_from_chunks(collected_chunks)
+            fallback_chunks = self._chunk_with_openai_vision(placeholder_pages)
+
+            if fallback_chunks:
+                for chunk in fallback_chunks:
+                    yield chunk
+                self._write_summary_report(
+                    chunks=fallback_chunks,
+                    total_chunks=len(fallback_chunks),
+                    attempted=len(placeholder_pages),
+                    succeeded=len(fallback_chunks),
+                    failed=len(placeholder_pages) - len(fallback_chunks),
+                )
+                return
+            logger.warning("OpenAI vision fallback produced no usable chunks; using original output")
+
+        # Yield all collected chunks
+        for chunk in collected_chunks:
+            yield chunk
+
+        self._write_summary_report(
+            chunks=collected_chunks,
+            total_chunks=len(collected_chunks),
+            attempted=0,
+            succeeded=0,
+            failed=0,
+        )
+
     def _write_summary_report(
         self,
         chunks: list[dict[str, Any]],
@@ -729,6 +1057,7 @@ class DocumentParser:
 
     @staticmethod
     def _first_page_number(item: Any) -> Optional[int]:
+        """Extract first page number from item provenance."""
         if hasattr(item, "prov") and item.prov:
             for provenance in item.prov:
                 page = getattr(provenance, "page_no", None)
@@ -869,21 +1198,34 @@ class DocumentParser:
                 logger.warning("Page %s still has no extractable text; skipping.", page.page_number)
                 continue
 
-            for text_segment in self._split_to_token_budget(text):
-                text_segment = text_segment.strip()
-                if not text_segment:
-                    continue
-                token_count = len(encoding.encode(text_segment))
-                chunk_data = {
-                    "chunk_id": str(uuid4()),
-                    "text": text_segment,
+            # Parse recovered text as markdown sections
+            try:
+                sections = self._parse_markdown_sections_simple(text, page.page_number)
+            except Exception as e:
+                logger.warning(f"Failed to parse markdown for page {page.page_number}: {e}")
+                sections = [{
+                    "title": f"Page {page.page_number}",
+                    "level": 1,
+                    "content": text.split("\n"),
                     "page_number": page.page_number,
-                    "chunk_index": chunk_index,
-                    "token_count": token_count,
-                    "extraction_method": page.method,
-                }
-                chunks.append(chunk_data)
-                chunk_index += 1
+                    "heading_stack": [f"Page {page.page_number}"]
+                }]
+
+            # Chunk each section with context
+            for section in sections:
+                section_chunks = self._chunk_section_with_context(section)
+                for chunk_text, chunk_page in section_chunks:
+                    token_count = len(encoding.encode(chunk_text))
+                    chunk_data = {
+                        "chunk_id": str(uuid4()),
+                        "text": chunk_text,
+                        "page_number": chunk_page or page.page_number,
+                        "chunk_index": chunk_index,
+                        "token_count": token_count,
+                        "extraction_method": page.method,
+                    }
+                    chunks.append(chunk_data)
+                    chunk_index += 1
 
         if not chunks:
             logger.error("OpenAI vision fallback yielded no chunks.")
