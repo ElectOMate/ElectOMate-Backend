@@ -137,15 +137,13 @@ def build_openai_vision_config() -> OpenAIVisionConfig:
         "- Do NOT use markdown image syntax like ![...](https://...)\n"
         "- Skip images completely, only extract TEXT\n"
         "- Do NOT add any explanations or metadata\n\n"
-        "Return ONLY the formatted text content as markdown. "
-        "If you cannot read the page, respond exactly with 'UNREADABLE'."
+        "Return ONLY the formatted text content as markdown."
     )
     system_prompt = os.getenv("VISION_SYSTEM_PROMPT", default_system_prompt)
 
     default_user_prompt = (
-        "Extract and format page {page_number} of '{doc_name}' as markdown. "
-        "Preserve all formatting including headings, bold, italic, lists, and tables. "
-        "If you cannot read the page, respond with 'UNREADABLE'."
+        "Extract and format page {page_number} as markdown. "
+        "Preserve all formatting including headings, bold, italic, lists, and tables."
     )
     user_prompt_template = os.getenv("VISION_USER_PROMPT_TEMPLATE", default_user_prompt)
 
@@ -239,7 +237,6 @@ def recover_pages_with_openai(
             continue
 
         prompt = vision_config.user_prompt_template.format(
-            doc_name=pdf_path.name,
             page_number=page_number,
         )
 
