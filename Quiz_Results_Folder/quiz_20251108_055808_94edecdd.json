@@ -1,0 +1,44 @@
+{
+  "submission_id": "94edecdd-2eb0-4634-9397-1cdb8854ad9e",
+  "submitted_at": "2025-11-08T05:58:08.695397",
+  "score": 20,
+  "correct_count": 1,
+  "total_questions": 5,
+  "answers": [
+    {
+      "question_number": 1,
+      "question_text": "What is the main legislative body in Germany?",
+      "selected_answer": "C",
+      "selected_answer_text": "The Federal Constitutional Court",
+      "is_correct": false
+    },
+    {
+      "question_number": 2,
+      "question_text": "Who elects the German Chancellor?",
+      "selected_answer": "C",
+      "selected_answer_text": "The Bundesrat",
+      "is_correct": false
+    },
+    {
+      "question_number": 3,
+      "question_text": "How many federal states (Bundesländer) does Germany have?",
+      "selected_answer": "C",
+      "selected_answer_text": "16",
+      "is_correct": true
+    },
+    {
+      "question_number": 4,
+      "question_text": "What is the minimum percentage a party needs to enter the Bundestag?",
+      "selected_answer": "C",
+      "selected_answer_text": "7%",
+      "is_correct": false
+    },
+    {
+      "question_number": 5,
+      "question_text": "Which institution represents the federal states at the national level?",
+      "selected_answer": "B",
+      "selected_answer_text": "The Federal Constitutional Court",
+      "is_correct": false
+    }
+  ]
+}

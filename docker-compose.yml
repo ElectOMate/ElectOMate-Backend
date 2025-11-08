@@ -26,6 +26,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        PRELOAD_DOCLING_MODELS: "false"
     command: [ "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "/app/src/em_backend/main.py" ]
     environment:
       # Database Configuration
@@ -52,7 +54,9 @@ services:
       - electomate-network
     volumes:
       - ./alembic/versions:/app/alembic/versions
-      - ./ElectOMate-Backend/.cache/docling/models:/app/.cache/docling/models
+      - ./.cache/docling/models:/app/.cache/docling/models
+      - ./Quiz_Results_Folder:/app/Quiz_Results_Folder
+      - ./Questionaire_Results_Folder:/app/Questionaire_Results_Folder
     develop:
       watch:
         - action: sync
@@ -60,6 +64,8 @@ services:
           target: /app
           ignore:
             - ./alembic/versions/
+            - ./Quiz_Results_Folder/
+            - ./Questionaire_Results_Folder/
         - action: rebuild
           path: ./pyproject.toml
     depends_on:

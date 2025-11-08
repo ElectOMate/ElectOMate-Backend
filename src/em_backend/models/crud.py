@@ -217,3 +217,60 @@ class ProposedQuestionResponse(ProposedQuestionBase):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# Quiz Question schemas
+class QuizQuestionBase(BaseModel):
+    question: str = Field(max_length=1000)
+    option_a: str = Field(max_length=500)
+    option_b: str = Field(max_length=500)
+    option_c: str = Field(max_length=500)
+    option_d: str = Field(max_length=500)
+    correct_answer: int | None = Field(None, ge=0, le=3)
+    category: str | None = Field(None, max_length=100)
+    difficulty: str | None = Field(None, max_length=50)
+    is_active: bool = True
+
+
+class QuizQuestionCreate(QuizQuestionBase):
+    country_id: UUID | None = None
+
+
+class QuizQuestionUpdate(BaseModel):
+    question: str | None = Field(None, max_length=1000)
+    option_a: str | None = Field(None, max_length=500)
+    option_b: str | None = Field(None, max_length=500)
+    option_c: str | None = Field(None, max_length=500)
+    option_d: str | None = Field(None, max_length=500)
+    correct_answer: int | None = Field(None, ge=0, le=3)
+    category: str | None = Field(None, max_length=100)
+    difficulty: str | None = Field(None, max_length=50)
+    is_active: bool | None = None
+    country_id: UUID | None = None
+
+
+class QuizQuestionResponse(QuizQuestionBase):
+    id: UUID
+    country_id: UUID | None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Quiz Submission schemas
+class QuizSubmissionBase(BaseModel):
+    question_id: UUID
+    selected_option: int = Field(ge=0, le=3)
+    session_id: str | None = None
+    user_id: str | None = None
+
+
+class QuizSubmissionCreate(QuizSubmissionBase):
+    pass
+
+
+class QuizSubmissionResponse(QuizSubmissionBase):
+    id: UUID
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

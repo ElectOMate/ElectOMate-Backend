@@ -1,0 +1,44 @@
+{
+  "submission_id": "828290da-0627-46b4-8ebd-079122c647f1",
+  "submitted_at": "2025-11-08T06:00:02.538968",
+  "score": 0,
+  "correct_count": 0,
+  "total_questions": 5,
+  "answers": [
+    {
+      "question_number": 1,
+      "question_text": "What is the main legislative body in Germany?",
+      "selected_answer": "A",
+      "selected_answer_text": "The Bundesrat",
+      "is_correct": false
+    },
+    {
+      "question_number": 2,
+      "question_text": "Who elects the German Chancellor?",
+      "selected_answer": "A",
+      "selected_answer_text": "The people directly",
+      "is_correct": false
+    },
+    {
+      "question_number": 3,
+      "question_text": "How many federal states (Bundesländer) does Germany have?",
+      "selected_answer": "A",
+      "selected_answer_text": "12",
+      "is_correct": false
+    },
+    {
+      "question_number": 4,
+      "question_text": "What is the minimum percentage a party needs to enter the Bundestag?",
+      "selected_answer": "A",
+      "selected_answer_text": "3%",
+      "is_correct": false
+    },
+    {
+      "question_number": 5,
+      "question_text": "Which institution represents the federal states at the national level?",
+      "selected_answer": "A",
+      "selected_answer_text": "The Bundestag",
+      "is_correct": false
+    }
+  ]
+}

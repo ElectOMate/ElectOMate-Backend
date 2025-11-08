@@ -102,6 +102,7 @@ from em_backend.api.routers import (  # noqa: E402
     elections,
     parties,
     proposed_questions,
+    quiz,
 )
 
 v2_router.include_router(agent.agent_router)
@@ -111,3 +112,4 @@ v2_router.include_router(parties.router)
 v2_router.include_router(candidates.router)
 v2_router.include_router(documents.router)
 v2_router.include_router(proposed_questions.router)
+v2_router.include_router(quiz.router)

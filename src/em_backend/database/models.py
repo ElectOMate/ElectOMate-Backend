@@ -169,3 +169,255 @@ class ProposedQuestion(Base, CreatedAtMixin):
             f"ProposedQuestion(id={self.id}, question='{question_preview}', "
             f"party_id={self.party_id})"
         )
+
+
+class QuizQuestion(Base, CreatedAtMixin):
+    __tablename__ = "quiz_question_table"
+
+    question: Mapped[str]
+    option_a: Mapped[str]
+    option_b: Mapped[str]
+    option_c: Mapped[str]
+    option_d: Mapped[str]
+    correct_answer: Mapped[int | None] = mapped_column(default=None)  # 0-3, or None if no correct answer
+    category: Mapped[str | None] = mapped_column(default=None)
+    difficulty: Mapped[str | None] = mapped_column(default=None)  # easy, medium, hard
+    is_active: Mapped[bool] = mapped_column(default=True)
+
+    country_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("country_table.id", ondelete="SET NULL"), default=None
+    )
+    country: Mapped[Country | None] = relationship(default=None, init=False)
+
+    submissions: Mapped[list["QuizSubmission"]] = relationship(
+        default_factory=list, back_populates="question", cascade="all, delete-orphan", init=False
+    )
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4, init=False)
+
+    def __repr__(self) -> str:
+        question_preview = (
+            self.question[:50] + "..." if len(self.question) > 50 else self.question
+        )
+        return (
+            f"QuizQuestion(id={self.id}, question='{question_preview}', "
+            f"category='{self.category}')"
+        )
+
+
+class QuizSubmission(Base, CreatedAtMixin):
+    __tablename__ = "quiz_submission_table"
+
+    selected_option: Mapped[int]  # 0-3 corresponding to A, B, C, D
+    question_id: Mapped[UUID] = mapped_column(
+        ForeignKey("quiz_question_table.id", ondelete="CASCADE")
+    )
+    session_id: Mapped[str | None] = mapped_column(default=None)  # To group submissions from same quiz session
+    user_id: Mapped[str | None] = mapped_column(default=None)  # For authenticated users
+
+    question: Mapped[QuizQuestion] = relationship(default=None, init=False)
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4, init=False)
+
+    def __repr__(self) -> str:
+        return (
+            f"QuizSubmission(id={self.id}, question_id={self.question_id}, "
+            f"selected_option={self.selected_option})"
+        )
+
+
+# ===== Quiz Results Storage Tables =====
+# These tables store complete quiz results with all question details
+# Questions are loaded from frontend JSON files, not from QuizQuestion table
+
+
+class QuizResult(Base, CreatedAtMixin):
+    """
+    Stores overall quiz submission results.
+
+    This is denormalized storage that duplicates question text from frontend JSON files
+    to maintain a complete historical record of what the user saw and answered.
+    """
+    __tablename__ = "quiz_result_table"
+
+    submission_id: Mapped[str] = mapped_column(unique=True, index=True)
+    submitted_at: Mapped[datetime]
+    score: Mapped[int]  # Percentage 0-100
+    correct_count: Mapped[int]
+    total_questions: Mapped[int]
+    session_id: Mapped[str | None] = mapped_column(default=None)
+    user_id: Mapped[str | None] = mapped_column(default=None)
+    country_code: Mapped[str | None] = mapped_column(default=None)  # 2-letter country code (e.g., 'DE', 'CL')
+
+    # Relationships
+    answers: Mapped[list["QuizResultAnswer"]] = relationship(
+        back_populates="quiz_result",
+        cascade="all, delete-orphan",
+        default_factory=list,
+        init=False,
+    )
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4, init=False)
+
+    def __repr__(self) -> str:
+        return (
+            f"QuizResult(id={self.id}, submission_id={self.submission_id}, "
+            f"score={self.score}, correct_count={self.correct_count}/{self.total_questions})"
+        )
+
+
+class QuizResultAnswer(Base, CreatedAtMixin):
+    """
+    Stores individual answer details for each quiz result.
+
+    This stores the complete question text and selected answer to maintain
+    a historical record, since questions come from frontend JSON files.
+    """
+    __tablename__ = "quiz_result_answer_table"
+
+    question_number: Mapped[int]
+    question_text: Mapped[str]
+    selected_answer: Mapped[str]  # Letter: A, B, C, or D
+    selected_answer_text: Mapped[str]
+    is_correct: Mapped[bool]
+
+    # Foreign key to quiz result
+    quiz_result_id: Mapped[UUID] = mapped_column(
+        ForeignKey("quiz_result_table.id", ondelete="CASCADE"),
+        init=False,
+    )
+
+    # Relationship back to quiz result
+    quiz_result: Mapped[QuizResult] = relationship(
+        back_populates="answers",
+        default=None,
+        init=False,
+    )
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4, init=False)
+
+    def __repr__(self) -> str:
+        return (
+            f"QuizResultAnswer(id={self.id}, question_number={self.question_number}, "
+            f"selected={self.selected_answer}, correct={self.is_correct})"
+        )
+
+
+# ===== Questionnaire Results Storage Tables =====
+# These tables store complete questionnaire results with all question answers
+# This is for the yes/no/neutral political questionnaire feature
+
+
+class QuestionnaireResult(Base, CreatedAtMixin):
+    """
+    Stores overall questionnaire submission results.
+
+    This stores the complete anonymous questionnaire submission including all user answers.
+    """
+    __tablename__ = "questionnaire_result_table"
+
+    result_id: Mapped[str] = mapped_column(unique=True, index=True)
+    user_id: Mapped[str]  # Anonymous persistent user ID from localStorage
+    submitted_at: Mapped[datetime]
+    total_questions: Mapped[int]
+    answered_questions: Mapped[int]  # Questions not skipped
+    weighted_questions: Mapped[int]  # Questions with weight enabled
+    custom_answers_count: Mapped[int]  # Questions with custom text answers
+    country_code: Mapped[str | None] = mapped_column(default=None)  # 2-letter country code (e.g., 'DE', 'CL')
+
+    # Relationship to individual question answers
+    questions: Mapped[list["QuestionnaireAnswer"]] = relationship(
+        back_populates="questionnaire_result",
+        cascade="all, delete-orphan",
+        default_factory=list,
+        init=False,
+    )
+
+    # Relationship to party rankings
+    party_rankings: Mapped[list["PartyRanking"]] = relationship(
+        back_populates="questionnaire_result",
+        cascade="all, delete-orphan",
+        default_factory=list,
+        init=False,
+    )
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4, init=False)
+
+    def __repr__(self) -> str:
+        return (
+            f"QuestionnaireResult(id={self.id}, result_id={self.result_id}, "
+            f"user_id={self.user_id[:8]}..., answered={self.answered_questions}/{self.total_questions})"
+        )
+
+
+class QuestionnaireAnswer(Base, CreatedAtMixin):
+    """
+    Stores individual question answers for each questionnaire result.
+
+    This stores the complete question text and user's answer (yes/no/neutral/skipped)
+    along with weight preference and optional custom text answer.
+    """
+    __tablename__ = "questionnaire_answer_table"
+
+    question_number: Mapped[int]
+    question_text: Mapped[str]
+    answer: Mapped[str]  # yes, no, neutral, or skipped
+    weight_enabled: Mapped[bool]
+    custom_answer: Mapped[str | None] = mapped_column(default=None)
+
+    # Foreign key to questionnaire result
+    questionnaire_result_id: Mapped[UUID] = mapped_column(
+        ForeignKey("questionnaire_result_table.id", ondelete="CASCADE"),
+        init=False,
+    )
+
+    # Relationship back to questionnaire result
+    questionnaire_result: Mapped[QuestionnaireResult] = relationship(
+        back_populates="questions",
+        default=None,
+        init=False,
+    )
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4, init=False)
+
+    def __repr__(self) -> str:
+        return (
+            f"QuestionnaireAnswer(id={self.id}, question_number={self.question_number}, "
+            f"answer={self.answer}, weight_enabled={self.weight_enabled})"
+        )
+
+
+class PartyRanking(Base, CreatedAtMixin):
+    """
+    Stores party ranking results calculated from questionnaire answers.
+
+    Each row represents a single party's score/ranking for a specific questionnaire submission.
+    This allows efficient querying of which parties users matched with most.
+    """
+    __tablename__ = "party_ranking_table"
+
+    party_short_name: Mapped[str]  # e.g., "CDU", "SPD"
+    party_full_name: Mapped[str]  # e.g., "Christian Democratic Union"
+    score: Mapped[float]  # Match percentage (0-100)
+    rank: Mapped[int]  # Position in ranking (1 = highest match, 2 = second, etc.)
+
+    # Foreign key to questionnaire result
+    questionnaire_result_id: Mapped[UUID] = mapped_column(
+        ForeignKey("questionnaire_result_table.id", ondelete="CASCADE"),
+        init=False,
+    )
+
+    # Relationship back to questionnaire result
+    questionnaire_result: Mapped[QuestionnaireResult] = relationship(
+        back_populates="party_rankings",
+        default=None,
+        init=False,
+    )
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4, init=False)
+
+    def __repr__(self) -> str:
+        return (
+            f"PartyRanking(id={self.id}, party={self.party_short_name}, "
+            f"score={self.score:.1f}%, rank={self.rank})"
+        )

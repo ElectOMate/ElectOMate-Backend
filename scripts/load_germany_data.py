@@ -27,32 +27,28 @@ GERMANY_ELECTION = ElectionSeed(
 
 GERMANY_PARTIES: list[PartySeed] = [
     PartySeed(
-        shortname="CDU",
-        fullname="Christlich Demokratische Union Deutschlands / Christlich-Soziale Union in Bayern",
+        shortname="FDP",
+        fullname="Freie Demokratische Partei",
         description=(
-            "Die CDU/CSU ist ein Bündnis von Mitte-rechts-Parteien und dominiert traditionell"
-            " das konservative Lager in Deutschland. Die CDU ist in allen Bundesländern außer"
-            " Bayern aktiv, während die CSU ausschließlich in Bayern kandidiert. Die Union"
-            " setzt sich für wirtschaftlichen Liberalismus, christlich-soziale Werte, eine"
-            " starke Rolle Deutschlands in der EU und konservative Gesellschaftspolitik ein."
-            " Mit Friedrich Merz als Spitzenkandidat gewann die Union 2025 die Bundestagswahl."
-            " Sie ist regelmäßig eine Regierungspartei und stellt oft den/die Kanzler/kandidaten"
-            " bei Präsidentschaftswahlen. Die Partei schließt eine Zusammenarbeit mit der AfD"
-            " kategorisch aus."
+            "Die FDP wurde 1948 gegründet und vertritt liberale sowie wirtschaftsliberale Prinzipien. "
+            "Sie setzt sich für Bürgerrechte, eine freiheitliche Gesellschaft und marktwirtschaftliche Reformen ein. "
+            "Die Partei plädiert für Digitalisierung, Bildung und steuerliche Entlastungen. "
+            "Die FDP hatte wiederholt das Zünglein an der Waage in Koalitionsregierungen und ist besonders im Mittelstand "
+            "und bei Unternehmern verankert. In Präsidentschaftswahlen unterstützt die FDP meist eigene Kandidaten mit "
+            "liberalem Hintergrund oder spricht Wahlempfehlungen für bürgerliche Kandidaten aus."
         ),
         url=None,
     ),
     PartySeed(
-        shortname="SPD",
-        fullname="Sozialdemokratische Partei Deutschlands",
+        shortname="Linke",
+        fullname="Die Linke",
         description=(
-            "Die SPD ist Deutschlands älteste Partei und vertritt sozialdemokratische sowie"
-            " progressive Werte. Ihr Schwerpunkt liegt auf sozialer Gerechtigkeit, Stärkung"
-            " des Sozialstaats, Arbeitnehmerrechten sowie der europäischen Integration. Sie"
-            " führte bis 2024 die Bundesregierung unter Olaf Scholz, verlor 2025 jedoch"
-            " deutlich an Zustimmung. Die SPD nominiert regelmäßig Kandidaten zu"
-            " Präsidentschaftswahlen und war historisch an fast allen Bundesregierungen"
-            " beteiligt. Sie positioniert sich als Gegengewicht zur konservativen Union."
+            "Die Linke ist Nachfolgepartei der PDS und sozialen Bewegungen der westdeutschen Linken. "
+            "Sie versteht sich als sozialistische Partei für radikalen Umverteilungs- und sozialen Ausgleich, "
+            "Ausbau öffentlicher Daseinsvorsorge sowie friedenspolitische Initiativen. "
+            "Die Linke vertritt eine konsequente Ablehnung militarisierter Außenpolitik und fordert höhere Steuern auf Vermögen. "
+            "Trotz Wahlerfolgen befindet sich die Partei nach wichtigen Abspaltungen wie der Gründung des BSW im Umbruch. "
+            "Bei Präsidentenwahlen nominiert sie eigene Kandidierende, die klar links positioniert sind."
         ),
         url=None,
     ),
@@ -60,13 +56,53 @@ GERMANY_PARTIES: list[PartySeed] = [
         shortname="AfD",
         fullname="Alternative für Deutschland",
         description=(
-            "Die AfD ist eine rechtspopulistische und euroskeptische Partei, gegründet 2013."
-            " Ursprünglich mit Fokus auf Eurokritik, stehen heute nationale Identität,"
-            " restriktive Einwanderungspolitik, Ablehnung der EU-Zentralisierung und"
-            " Klimaskepsis im Mittelpunkt. In Ostdeutschland ist sie besonders stark. Sie"
-            " erreichte 2025 mit einer Anti-Establishment-Kampagne ihr bisher bestes"
-            " bundesweites Wahlergebnis. Die AfD stellt eigene Kandidaten zur"
-            " Präsidentschaftswahl auf, ist jedoch von anderen Parteien isoliert."
+            "Die AfD wurde 2013 gegründet, zunächst europakritisch, mittlerweile rechtspopulistisch und nationalkonservativ. "
+            "Schwerpunkte der Partei sind restriktive Migrationspolitik, Ablehnung der aktuellen EU-Institutionen sowie "
+            "Skepsis gegenüber Klimaschutzmaßnahmen, die als teuer und ineffizient betrachtet werden. "
+            "Die AfD schneidet in den neuen Bundesländern und im Osten besonders stark ab. "
+            "Sie steht seit Jahren in Opposition zu den traditionellen Parteien und ist aufgrund extremistischer Strömungen "
+            "innerhalb der Partei umstritten. Präsidentschaftskandidaten der AfD vertreten konservative bis nationalistische Positionen."
+        ),
+        url=None,
+    ),
+    PartySeed(
+        shortname="Grüne",
+        fullname="Bündnis 90/Die Grünen",
+        description=(
+            "Die Grünen entstanden Anfang der 1980er Jahre durch den Zusammenschluss umwelt- und friedensbewegter Gruppen. "
+            "Sie stehen für ökologische Nachhaltigkeit, soziale Gerechtigkeit, Gleichstellung und ein pro-europäisches Weltbild. "
+            "Die Partei forciert eine schnelle Klimawende, gesellschaftliche Modernisierung und Menschenrechte. "
+            "Im Präsidentschaftswahlkontext benennen die Grünen meist eine eigene Kandidatur oder unterstützen progressive Kandidierende. "
+            "Prominente Persönlichkeiten sind unter anderem Annalena Baerbock und Robert Habeck. "
+            "Ihr Einfluss wächst besonders in städtischen und jüngeren Wählerschichten stetig."
+        ),
+        url=None,
+    ),
+    PartySeed(
+        shortname="SPD",
+        fullname="Sozialdemokratische Partei Deutschlands",
+        description=(
+            "Die SPD, gegründet 1863, ist Deutschlands älteste bestehende Partei und eine der bedeutendsten Akteure im "
+            "politischen System der BRD. Sie versteht sich als links der Mitte, steht für soziale Gerechtigkeit, "
+            "Arbeitnehmerrechte und einen aktiven Sozialstaat. International ist die SPD mit der Sozialistischen Internationale "
+            "und der Progressiven Allianz verbunden. Olaf Scholz war zuletzt Kanzlerkandidat und Regierungschef. "
+            "Die Partei setzt sich für die Bekämpfung sozialer Ungleichheit, Klimaschutz und Fortschritt in der Technologie- "
+            "und Familienpolitik ein. Bei Präsidentschaftswahlen unterstützt sie gewöhnlich einen eigenen oder einen "
+            "überparteilichen Kandidaten mit sozialdemokratischer Prägung."
+        ),
+        url=None,
+    ),
+    PartySeed(
+        shortname="CDU",
+        fullname="Christlich Demokratische Union Deutschlands/Christlich-Soziale Union in Bayern",
+        description=(
+            "Die CDU/CSU ist ein Bündnis aus zwei Schwesterparteien: der CDU (außerhalb Bayerns) und der CSU (nur in Bayern). "
+            "Sie repräsentiert das konservative und christdemokratische Spektrum und war nach dem Zweiten Weltkrieg mehrfach "
+            "Regierungspartei in Deutschland. Die CDU/CSU ist für eine marktwirtschaftliche Ordnung, eine pro-europäische Haltung "
+            "und die Bewahrung traditioneller Werte bekannt. Ihre Spitzenkandidaten sind häufig zentrale Figuren im "
+            "Präsidentschafts- und Bundestagswahlkampf. Friedrich Merz, aktueller Parteivorsitzender, steht für eine stärkere "
+            "konservative Ausrichtung. Die Union setzt auf Haushaltsdisziplin, eine restriktivere Migrationspolitik und einen "
+            "starken deutschen Beitrag innerhalb der NATO."
         ),
         url=None,
     ),

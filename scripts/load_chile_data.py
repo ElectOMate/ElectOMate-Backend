@@ -118,12 +118,12 @@ def create_chile_candidate(
 
 def create_chile_parties(client: TestClient, election_id: UUID) -> dict[str, UUID]:
     party_ids: dict[str, UUID] = {}
-    party_ids["PCCh"] = create_chile_party(
+    party_ids["PC"] = create_chile_party(
         client,
-        shortname="PCCh",
-        fullname="Communist Party of Chile",
-        description="The Communist Party of Chile (Spanish: Partido Comunista de Chile, PCCh) is a communist party in Chile.",
-        url="https://en.wikipedia.org/wiki/National_Libertarian_Party",
+        shortname="PC",
+        fullname="Partido Comunista de Chile",
+        description="El Partido Comunista de Chile es una fuerza política de izquierda, parte fundamental de la coalición Unidad por Chile. Fundado en 1922, ha desempeñado un papel histórico en la lucha por los derechos laborales y sociales, con énfasis en la igualdad social y económica. El PCCh apoya la expansión del Estado en la educación, salud y redistribución de la riqueza. Para la elección presidencial de 2025, presenta como candidata a Jeannette Jara, que encabeza las propuestas del bloque oficialista. El partido ha impulsado reformas constitucionales y sociales desde la presidencia de Gabriel Boric.",
+        url="https://en.wikipedia.org/wiki/Communist_Party_of_Chile",
         election_id=election_id,
     )
     create_chile_candidate(
@@ -132,29 +132,13 @@ def create_chile_parties(client: TestClient, election_id: UUID) -> dict[str, UUI
         family_name="Jara",
         description="Jeannette Alejandra Jara Román (born 23 April 1974) is a Chilean lawyer, public administrator, who served as Minister of Labor and Social Welfare from 2022 to 2025 under President Gabriel Boric. Previously, she served as Undersecretary of Social Security in the second government of former President Michelle Bachelet between 2016 and 2018.",
         url="https://en.wikipedia.org/wiki/Jeannette_Jara",
-        party_id=party_ids["PCCh"],
+        party_id=party_ids["PC"],
     )
-    party_ids["PNL"] = create_chile_party(
+    party_ids["REP"] = create_chile_party(
         client,
-        shortname="PNL",
-        fullname="National Libertarian Party",
-        description="The National Libertarian Party (Spanish: Partido Nacional Libertario) is a Chilean political party led by Johannes Kaiser.",
-        url="https://en.wikipedia.org/wiki/National_Libertarian_Party",
-        election_id=election_id,
-    )
-    create_chile_candidate(
-        client,
-        given_name="Johannes",
-        family_name="Kaiser",
-        description="Johannes Maximilian Kaiser Barents-von Hohenhagen (born 5 January 1976) is a Chilean politician, serving as a national deputy since March 2022, representing the 10th district of the Metropolitan Region of Santiago. Previously a member of the Republican Party, he founded the National Libertarian Party in 2024.",
-        url="https://en.wikipedia.org/wiki/Johannes_Kaiser_(Chilean_politician)",
-        party_id=party_ids["PNL"],
-    )
-    party_ids["PRCh"] = create_chile_party(
-        client,
-        shortname="PRCh",
-        fullname="Republican Party of Chile",
-        description="The Republican Party of Chile (Spanish: Partido Republicano de Chile; PRCh) is a right-wing populist and conservative political party in Chile. Its founder and former leader is Chilean presidential candidate José Antonio Kast.",
+        shortname="REP",
+        fullname="Partido Republicano",
+        description="El Partido Republicano es una agrupación de extrema derecha fundada en 2019 por José Antonio Kast, quien actualmente es nuevamente candidato presidencial. Defiende políticas conservadoras en temas sociales, migratorios y de seguridad, y una marcada tendencia liberal en economía. Se opone a las reformas progresistas promovidas por la izquierda y busca limitar el rol del Estado en áreas como educación y salud. Ha ganado popularidad tras el estallido social y la polarización política vista en Chile desde 2019, atrayendo a sectores descontentos con el gobierno de Boric.",
         url="https://en.wikipedia.org/wiki/Republican_Party_of_Chile",
         election_id=election_id,
     )
@@ -164,13 +148,13 @@ def create_chile_parties(client: TestClient, election_id: UUID) -> dict[str, UUI
         family_name="Kast",
         description="José Antonio Kast Rist (born 18 January 1966), also known by his initials JAK, is a Chilean lawyer and politician, who is currently serving as the Republican Party's presidential candidate in the 2025 Chilean general election. Part of the prominent Kast family, he served as a member of the Chamber of Deputies from 2002 to 2018.",
         url="https://en.wikipedia.org/wiki/Jos%C3%A9_Antonio_Kast",
-        party_id=party_ids["PRCh"],
+        party_id=party_ids["REP"],
     )
     party_ids["UDI"] = create_chile_party(
         client,
         shortname="UDI",
-        fullname="Independent Democratic Union",
-        description="The Independent Democratic Union (Unión Demócrata Independiente, UDI) is a conservative and right-wing political party in Chile, founded in 1983. Its founder was the lawyer, politician, law professor and senator Jaime Guzmán, a civilian allied with Augusto Pinochet.",
+        fullname="Unión Demócrata Independiente",
+        description="La UDI, fundada en 1983, es un partido conservador y uno de los principales referentes de la derecha chilena. Integrante de la coalición Chile Grande y Unido, defiende posiciones conservadoras en temas religiosos, sociales y económicos, abogando por el libre mercado, la inversión y la seguridad ciudadana. Históricamente ha tenido fuerte presencia legislativa y es clave en la conformación de candidaturas presidenciales de la centroderecha.",
         url="https://en.wikipedia.org/wiki/Independent_Democratic_Union",
         election_id=election_id,
     )
@@ -185,8 +169,8 @@ def create_chile_parties(client: TestClient, election_id: UUID) -> dict[str, UUI
     party_ids["PDG"] = create_chile_party(
         client,
         shortname="PDG",
-        fullname="Party of the People",
-        description="The Party of the People (Spanish: Partido de la Gente, PDG) is a Chilean political party, characterized as a centre-right to right-wing and populist.",
+        fullname="Partido de la Gente",
+        description="El Partido de la Gente surgió en 2021 como una respuesta a la ciudadanía desencantada con los partidos tradicionales, con Franco Parisi como su principal líder y candidato. Defiende políticas anticorrupción, mayor participación ciudadana y reducción de privilegios de la clase política. En 2025 Parisi compite como independiente, aunque el partido lo respalda formalmente como su abanderado.",
         url="https://en.wikipedia.org/wiki/Party_of_the_People_(Chile)",
         election_id=election_id,
     )
@@ -197,6 +181,22 @@ def create_chile_parties(client: TestClient, election_id: UUID) -> dict[str, UUI
         description="Franco Aldo Parisi Fernández (born 25 August 1967) is a Chilean business engineer and economist. He received recognition for doing radio and television programs about economy along with his brother Antonino Parisi, and has been nicknamed 'the economist of the people'.",
         url="https://en.wikipedia.org/wiki/Franco_Parisi",
         party_id=party_ids["PDG"],
+    )
+    party_ids["PartidoNacionalLibertari"] = create_chile_party(
+        client,
+        shortname="PartidoNacionalLibertari",
+        fullname="Partido Nacional Libertario",
+        description="El Partido Nacional Libertario es una fuerza de derecha radical que postula a Johannes Kaiser como candidato presidencial para 2025. Su plataforma gira en torno a la reducción del Estado, la defensa de nuevas libertades económicas y la liberalización de leyes sobre armas y migración. Busca atraer votantes descontentos con los partidos de centroderecha y extrema derecha tradicionales.",
+        url="https://en.wikipedia.org/wiki/National_Libertarian_Party",
+        election_id=election_id,
+    )
+    create_chile_candidate(
+        client,
+        given_name="Johannes",
+        family_name="Kaiser",
+        description="Johannes Maximilian Kaiser Barents-von Hohenhagen (born 5 January 1976) is a Chilean politician, serving as a national deputy since March 2022, representing the 10th district of the Metropolitan Region of Santiago. Previously a member of the Republican Party, he founded the National Libertarian Party in 2024.",
+        url="https://en.wikipedia.org/wiki/Johannes_Kaiser_(Chilean_politician)",
+        party_id=party_ids["PartidoNacionalLibertari"],
     )
     return party_ids
 

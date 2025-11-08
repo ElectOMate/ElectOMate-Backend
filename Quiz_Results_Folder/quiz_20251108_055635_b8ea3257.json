@@ -1,0 +1,65 @@
+{
+  "submission_id": "b8ea3257-8794-4c14-b4d0-bd0c020a8ebf",
+  "submitted_at": "2025-11-08T05:56:35.931768",
+  "score": 0,
+  "correct_count": 0,
+  "total_questions": 8,
+  "answers": [
+    {
+      "question_number": 1,
+      "question_text": "What is the main legislative body in Germany?",
+      "selected_answer": "D",
+      "selected_answer_text": "The Federal President",
+      "is_correct": false
+    },
+    {
+      "question_number": 2,
+      "question_text": "Who elects the German Chancellor?",
+      "selected_answer": "D",
+      "selected_answer_text": "The Federal Convention",
+      "is_correct": false
+    },
+    {
+      "question_number": 3,
+      "question_text": "How many federal states (Bundesländer) does Germany have?",
+      "selected_answer": "D",
+      "selected_answer_text": "18",
+      "is_correct": false
+    },
+    {
+      "question_number": 4,
+      "question_text": "What is the minimum percentage a party needs to enter the Bundestag?",
+      "selected_answer": "D",
+      "selected_answer_text": "10%",
+      "is_correct": false
+    },
+    {
+      "question_number": 5,
+      "question_text": "Which institution represents the federal states at the national level?",
+      "selected_answer": "D",
+      "selected_answer_text": "The Federal Government",
+      "is_correct": false
+    },
+    {
+      "question_number": 5,
+      "question_text": "Which institution represents the federal states at the national level?",
+      "selected_answer": "D",
+      "selected_answer_text": "The Federal Government",
+      "is_correct": false
+    },
+    {
+      "question_number": 5,
+      "question_text": "Which institution represents the federal states at the national level?",
+      "selected_answer": "D",
+      "selected_answer_text": "The Federal Government",
+      "is_correct": false
+    },
+    {
+      "question_number": 5,
+      "question_text": "Which institution represents the federal states at the national level?",
+      "selected_answer": "D",
+      "selected_answer_text": "The Federal Government",
+      "is_correct": false
+    }
+  ]
+}

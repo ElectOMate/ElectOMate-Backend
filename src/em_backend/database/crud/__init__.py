@@ -6,6 +6,10 @@ from em_backend.database.models import (
     Election,
     Party,
     ProposedQuestion,
+    QuizQuestion,
+    QuizResult,
+    QuizResultAnswer,
+    QuizSubmission,
 )
 
 country = CRUDBase(Country)
@@ -14,3 +18,7 @@ party = CRUDBase(Party)
 candidate = CRUDBase(Candidate)
 document = CRUDBase(Document)
 proposed_question = CRUDBase(ProposedQuestion)
+quiz_question = CRUDBase(QuizQuestion)
+quiz_submission = CRUDBase(QuizSubmission)
+quiz_result = CRUDBase(QuizResult)
+quiz_result_answer = CRUDBase(QuizResultAnswer)

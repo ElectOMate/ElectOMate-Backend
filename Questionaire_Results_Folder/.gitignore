@@ -1,0 +1,6 @@
+# Ignore all questionnaire result files to protect user privacy
+*.json
+
+# Keep this directory structure in git
+!.gitignore
+!README.md
