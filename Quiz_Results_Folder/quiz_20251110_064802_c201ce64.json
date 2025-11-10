@@ -1,0 +1,79 @@
+{
+  "submission_id": "c201ce64-b80e-48f5-98a3-d4c2072e574d",
+  "submitted_at": "2025-11-10T06:48:02.727754",
+  "score": 10,
+  "correct_count": 1,
+  "total_questions": 10,
+  "answers": [
+    {
+      "question_number": 1,
+      "question_text": "What is the main legislative body in Germany?",
+      "selected_answer": "C",
+      "selected_answer_text": "The Federal Constitutional Court",
+      "is_correct": false
+    },
+    {
+      "question_number": 2,
+      "question_text": "Who elects the German Chancellor?",
+      "selected_answer": "C",
+      "selected_answer_text": "The Bundesrat",
+      "is_correct": false
+    },
+    {
+      "question_number": 3,
+      "question_text": "How many federal states (Bundesländer) does Germany have?",
+      "selected_answer": "A",
+      "selected_answer_text": "12",
+      "is_correct": false
+    },
+    {
+      "question_number": 4,
+      "question_text": "What is the minimum percentage a party needs to enter the Bundestag?",
+      "selected_answer": "B",
+      "selected_answer_text": "5%",
+      "is_correct": true
+    },
+    {
+      "question_number": 5,
+      "question_text": "Which institution represents the federal states at the national level?",
+      "selected_answer": "A",
+      "selected_answer_text": "The Bundestag",
+      "is_correct": false
+    },
+    {
+      "question_number": 6,
+      "question_text": "Unknown question",
+      "selected_answer": "D",
+      "selected_answer_text": "Unknown",
+      "is_correct": false
+    },
+    {
+      "question_number": 7,
+      "question_text": "Unknown question",
+      "selected_answer": "D",
+      "selected_answer_text": "Unknown",
+      "is_correct": false
+    },
+    {
+      "question_number": 8,
+      "question_text": "Unknown question",
+      "selected_answer": "D",
+      "selected_answer_text": "Unknown",
+      "is_correct": false
+    },
+    {
+      "question_number": 9,
+      "question_text": "Unknown question",
+      "selected_answer": "D",
+      "selected_answer_text": "Unknown",
+      "is_correct": false
+    },
+    {
+      "question_number": 10,
+      "question_text": "Unknown question",
+      "selected_answer": "D",
+      "selected_answer_text": "Unknown",
+      "is_correct": false
+    }
+  ]
+}
