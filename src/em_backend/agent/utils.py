@@ -438,39 +438,61 @@ async def retrieve_documents_from_user_question(
     model = RERANK_DOCUMENTS | chat_model.with_structured_output(
         RerankDocumentsStructuredOutput
     )
-    try:
-        rerank_input = {
-            "sources": "\n".join(
-                [
-                    "<document>\n"
-                    f"Source ID: {doc.get('chunk_id', '')}\n"
-                    f"Title: {doc['title']}\n"
-                    f"Page number: {doc.get('page_number', 'unknown')}\n"
-                    f"Content: {doc['text']}\n"
-                    "</document>"
-                    for doc in documents
-                ]
-            ),
-            "messages": messages,
-        }
-        # _log_prompt("RerankDocuments", RERANK_DOCUMENTS.format_messages(**rerank_input))
-        response = cast(
-            "RerankDocumentsStructuredOutput",
-            await model.ainvoke(rerank_input),
-        )
-        logger.info(
-            "✅ Reranker indices for %s-%s: %s",
-            election.id,
-            party.shortname,
-            response.reranked_doc_indices,
-        )
-    except OpenAIRefusalError as exc:
-        logger.warning(
-            "Rerank model refused to respond for party %s: %s; using top documents fallback",
-            party.shortname,
-            exc,
-        )
-        return documents[:5]
+
+    rerank_input = {
+        "sources": "\n".join(
+            [
+                "<document>\n"
+                f"Source ID: {doc.get('chunk_id', '')}\n"
+                f"Title: {doc['title']}\n"
+                f"Page number: {doc.get('page_number', 'unknown')}\n"
+                f"Content: {doc['text']}\n"
+                "</document>"
+                for doc in documents
+            ]
+        ),
+        "messages": messages,
+    }
+
+    # Retry mechanism: try twice before falling back
+    max_retries = 2
+    response = None
+
+    for attempt in range(max_retries):
+        try:
+            # _log_prompt("RerankDocuments", RERANK_DOCUMENTS.format_messages(**rerank_input))
+            response = cast(
+                "RerankDocumentsStructuredOutput",
+                await model.ainvoke(rerank_input),
+            )
+            logger.info(
+                "✅ Reranker indices for %s-%s (attempt %s/%s): %s",
+                election.id,
+                party.shortname,
+                attempt + 1,
+                max_retries,
+                response.reranked_doc_indices,
+            )
+            break  # Success, exit retry loop
+        except (ValueError, OpenAIRefusalError) as exc:
+            if attempt < max_retries - 1:
+                # First attempt failed, retry
+                logger.warning(
+                    "Rerank model error for party %s (attempt %s/%s): %s; retrying...",
+                    party.shortname,
+                    attempt + 1,
+                    max_retries,
+                    exc,
+                )
+            else:
+                # Second attempt also failed, use fallback
+                logger.warning(
+                    "Rerank model failed for party %s after %s attempts: %s; using top documents fallback",
+                    party.shortname,
+                    max_retries,
+                    exc,
+                )
+                return documents[:5]
     valid_indices: list[int] = [
         idx
         for idx in response.reranked_doc_indices or []

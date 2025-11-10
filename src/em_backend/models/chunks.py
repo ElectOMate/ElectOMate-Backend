@@ -79,6 +79,13 @@ class PerplexitySourcesChunk(BaseChunk):
     party: str | None = None
 
 
+class ErrorChunk(BaseChunk):
+    type: Literal["error"] = "error"
+
+    message: str
+    error_code: str | None = None
+
+
 AnyChunk = Annotated[
     PartyTokenChunk
     | PartySourcesChunk
@@ -88,6 +95,7 @@ AnyChunk = Annotated[
     | ComparisonMessageChunk
     | TitleChunk
     | FollowUpQuestionsChunk
-    | PerplexitySourcesChunk,
+    | PerplexitySourcesChunk
+    | ErrorChunk,
     Field(discriminator="type"),
 ]

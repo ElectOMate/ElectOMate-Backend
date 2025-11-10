@@ -91,6 +91,12 @@ class AgentState(TypedDict):
     # Whether it's okay to match the user's message language when appropriate
     respond_in_user_language: bool | None
 
+    # Answer formatting preferences from frontend
+    # Length preference: "Short", "Medium", "Long"
+    answer_length: str | None
+    # Language style: "Simple", "Normal", "Expert", "Unhinged"
+    language_style: str | None
+
     # Keep this, even though the key is never used
     party_tag: Annotated[list[Party], add]
 

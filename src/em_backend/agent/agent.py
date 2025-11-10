@@ -92,6 +92,33 @@ COUNTRY_LANGUAGE_MAP: dict[str, dict[str, str]] = {
     "SI": {"name": "Slovenščina", "code": "sl"},
 }
 
+# Answer length definitions for prompt injection
+ANSWER_LENGTH_DEFINITIONS: dict[str, str] = {
+    "Short": "The user prefers **Short** answers: 1-2 very concise sentences or bullet points. Be brief and to the point.",
+    "Medium": "The user prefers **Medium** answers: 1-3 short sentences or bullet points. This is the standard length.",
+    "Long": "The user prefers **Long** answers: 3-5 detailed sentences or comprehensive bullet points with more context and explanation.",
+}
+
+# Language style definitions for prompt injection
+LANGUAGE_STYLE_DEFINITIONS: dict[str, str] = {
+    "Simple": "The user prefers a **Simple** communication style: Use plain, easy-to-understand language. Avoid jargon and technical terms. Explain concepts as if to someone unfamiliar with politics.",
+    "Normal": "The user prefers a **Normal** communication style: Standard, clear communication suitable for general audiences.",
+    "Expert": "The user prefers an **Expert** communication style: Use precise political terminology and assume familiarity with political concepts. You may include detailed policy analysis.",
+    "Unhinged": "The user prefers an **Unhinged** communication style: Be creative, humorous, and engaging while staying factual. Use colorful language and metaphors to make politics entertaining.",
+}
+
+
+def get_answer_length_definition(answer_length: str | None) -> str:
+    """Get the definition for the selected answer length option."""
+    length = answer_length or "Medium"
+    return ANSWER_LENGTH_DEFINITIONS.get(length, ANSWER_LENGTH_DEFINITIONS["Medium"])
+
+
+def get_language_style_definition(language_style: str | None) -> str:
+    """Get the definition for the selected language style option."""
+    style = language_style or "Normal"
+    return LANGUAGE_STYLE_DEFINITIONS.get(style, LANGUAGE_STYLE_DEFINITIONS["Normal"])
+
 
 def _format_message_content(content: Any) -> str:
     if isinstance(content, str):
@@ -161,13 +188,18 @@ class Agent:
         use_web_search: bool = False,
         use_vector_database: bool = True,
         language_context: dict[str, Any] | None = None,
+        answer_length: str | None = None,
+        language_style: str | None = None,
     ) -> AsyncGenerator[AnyChunk]:
         lc_messages = convert_to_lc_message(messages)
         logger.info(
-            "Agent invoke start: election=%s, initial_parties=%s, message_count=%s",
+            "Agent invoke start: election=%s, initial_parties=%s, message_count=%s, "
+            "answer_length='%s', language_style='%s'",
             election.id,
             [party.shortname for party in selected_parties],
             len(messages),
+            answer_length or "None",
+            language_style or "None",
         )
 
         effective_web_search = use_web_search and self.perplexity_client is not None
@@ -218,6 +250,9 @@ class Agent:
                     if language_context
                     else None
                 ),
+                # Answer formatting preferences
+                "answer_length": answer_length,
+                "language_style": language_style,
             },
             context={
                 "session": session,
@@ -263,14 +298,24 @@ class Agent:
                     )
                 )
             )
-            selected_parties_response = cast(
-                "DetermineQuestionTargetStructuredOutput",
-                await model.ainvoke(prompt_input),
-            )
-            logger.info(
-                "Party selection prompt result: %s",
-                selected_parties_response.selected_parties,
-            )
+
+            try:
+                selected_parties_response = cast(
+                    "DetermineQuestionTargetStructuredOutput",
+                    await model.ainvoke(prompt_input),
+                )
+                logger.info(
+                    "Party selection prompt result: %s",
+                    selected_parties_response.selected_parties,
+                )
+            except OpenAIRefusalError as exc:
+                logger.warning(
+                    "Party selection LLM refused to answer: %s; defaulting to empty party list for generic answer",
+                    str(exc),
+                )
+                # Return empty party list, which will trigger a generic answer instead
+                return {"selected_parties": []}
+
             unique_party_names: list[str] = []
             seen_party_names: set[str] = set()
             for party_name in selected_parties_response.selected_parties:
@@ -871,6 +916,8 @@ class Agent:
                 "web_sources": web_sources_block,
                 "latest_user_message": latest_user_message,
                 "messages": state["messages"],
+                "answer_length_definition": get_answer_length_definition(state.get("answer_length")),
+                "language_style_definition": get_language_style_definition(state.get("language_style")),
             }
             # Use streaming for real-time token updates
             response_stream = model.astream(
@@ -1035,6 +1082,8 @@ class Agent:
                 "latest_user_message": latest_user_message,
                 "messages": state["messages"],
                 "election_url": state["election"].url,
+                "answer_length_definition": get_answer_length_definition(state.get("answer_length")),
+                "language_style_definition": get_language_style_definition(state.get("language_style")),
             }
             # Use streaming for real-time token updates
             response_stream = model.astream(
@@ -1154,6 +1203,8 @@ class Agent:
                 "web_sources": web_sources_block,
                 "latest_user_message": latest_user_message,
                 "messages": state["messages"],
+                "answer_length_definition": get_answer_length_definition(state.get("answer_length")),
+                "language_style_definition": get_language_style_definition(state.get("language_style")),
             }
             try:
                 # Use streaming for real-time token updates

@@ -16,6 +16,7 @@ from em_backend.database.utils import (
     get_missing_party_shortnames,
     get_party_from_name_list,
 )
+from em_backend.models.chunks import ErrorChunk
 from em_backend.models.messages import AnyMessage
 
 
@@ -55,6 +56,10 @@ class AgentChatRequest(BaseModel):
     use_web_search: bool
     language_context: LanguageContext | None = None
 
+    # Answer formatting preferences
+    answer_length: str | None = None
+    language_style: str | None = None
+
 
 @agent_router.post("/chat")
 async def agent_chat(
@@ -69,12 +74,14 @@ async def agent_chat(
 ) -> StreamingResponse:
     logger.info(
         "Received agent chat request: election_id=%s, message_count=%s, selected_parties=%s, "
-        "use_vector_database=%s, use_web_search=%s",
+        "use_vector_database=%s, use_web_search=%s, answer_length='%s', language_style='%s'",
         chat_request.election_id,
         len(chat_request.messages),
         chat_request.selected_parties,
         chat_request.use_vector_database,
         chat_request.use_web_search,
+        chat_request.answer_length or "None",
+        chat_request.language_style or "None",
     )
     election = await get_election_from_election_id(session, chat_request.election_id)
     if election is None:
@@ -138,11 +145,20 @@ async def agent_chat(
                         if chat_request.language_context is not None
                         else None
                     ),
+                    # Pass answer formatting preferences
+                    answer_length=chat_request.answer_length,
+                    language_style=chat_request.language_style,
                 )
-            except Exception:
+            except Exception as e:
                 logger.exception("Agent invocation failed")
-                yield "event: ERROR\ndata: ERROR\n\n"
-                raise
+                error_chunk = ErrorChunk(
+                    message="Something went wrong while processing your question. Please try asking a different question.",
+                    error_code="AGENT_INVOCATION_ERROR"
+                )
+                yield f"event: {error_chunk.type}\ndata: {error_chunk.model_dump_json()}\n\n"
+                logger.info("Finished agent stream with error for election=%s", election.id)
+                yield "event: DONE\ndata: DONE\n\n"
+                return
             async with streamcontext(stream) as streamer:
                 try:
                     async for chunk in streamer:
@@ -152,10 +168,16 @@ async def agent_chat(
                             chunk.model_dump_json(),
                         )
                         yield f"event: {chunk.type}\ndata: {chunk.model_dump_json()}\n\n"
-                except Exception:
+                except Exception as e:
                     logger.exception("Error while streaming agent chunks")
-                    yield "event: ERROR\ndata: ERROR\n\n"
-                    raise
+                    error_chunk = ErrorChunk(
+                        message="Something went wrong while processing your question. Please try asking a different question.",
+                        error_code="STREAM_PROCESSING_ERROR"
+                    )
+                    yield f"event: {error_chunk.type}\ndata: {error_chunk.model_dump_json()}\n\n"
+                    logger.info("Finished agent stream with error for election=%s", election.id)
+                    yield "event: DONE\ndata: DONE\n\n"
+                    return
         logger.info("Finished agent stream for election=%s", election.id)
         yield "event: DONE\ndata: DONE\n\n"
 
