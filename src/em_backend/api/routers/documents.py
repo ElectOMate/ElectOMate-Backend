@@ -168,8 +168,10 @@ async def process_document(
                         }
                         for chunk in document_chunks
                     ]
-                    bbox_map = bbox_extractor.extract_bboxes_for_chunks(fitz_doc, chunk_inputs)
-                    fitz_doc.close()
+                    try:
+                        bbox_map = bbox_extractor.extract_bboxes_for_chunks(fitz_doc, chunk_inputs)
+                    finally:
+                        fitz_doc.close()
                     for chunk in document_chunks:
                         chunk["bbox_data"] = json.dumps(bbox_map.get(chunk["chunk_id"], []))
                     logger.info(

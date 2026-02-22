@@ -13,8 +13,9 @@ MANIFESTO_URLS: dict[str, str] = {
     "LINKE": "https://www.die-linke.de/fileadmin/user_upload/Wahlprogramm_Langfassung_Linke-BTW25_01.pdf",
     "BSW": "https://bsw-vg.de/wp-content/themes/bsw/assets/downloads/BSW%20Wahlprogramm%202025.pdf",
     "BUENDNIS": "https://buendnis-deutschland.de/wp-content/uploads/2025/01/btw25-final.pdf",
-    "FREIE": "https://www.freiewaehler.eu/unsere-politik/wahlprogramm/",
-    "MLPD": "https://www.mlpd.de/parteiprogramm",
+    # FREIE and MLPD remote URLs are HTML pages, not PDFs — local files only
+    # "FREIE": "https://www.freiewaehler.eu/unsere-politik/wahlprogramm/",
+    # "MLPD": "https://www.mlpd.de/parteiprogramm",
     "VOLT": "https://voltdeutschland.org/storage/assets-btw25/volt-programm-bundestagswahl-2025.pdf",
 }
 

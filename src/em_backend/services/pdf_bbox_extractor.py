@@ -129,8 +129,18 @@ class PDFBboxExtractor:
         return deduped
 
     def _extract_search_phrase(self, text: str, length: int = 80) -> str:
-        """Extract a clean phrase for PDF text search."""
-        clean = re.sub(r'\s+', ' ', text.strip())
+        """Extract a clean phrase for PDF text search.
+
+        Strips Docling markdown formatting before searching — Docling outputs
+        headings/bold/lists in chunk text, but the raw PDF has no markdown chars.
+        """
+        clean = text.strip()
+        # Strip markdown: headings, bold/italic, list markers, inline code
+        clean = re.sub(r'^#{1,6}\s+', '', clean, flags=re.MULTILINE)  # headings
+        clean = re.sub(r'\*{1,2}([^*]+)\*{1,2}', r'\1', clean)        # bold/italic
+        clean = re.sub(r'`[^`]+`', '', clean)                          # inline code
+        clean = re.sub(r'^[-*+]\s+', '', clean, flags=re.MULTILINE)    # list markers
+        clean = re.sub(r'\s+', ' ', clean).strip()
         if len(clean) < 20:
             return clean
         phrase = clean[:length]
