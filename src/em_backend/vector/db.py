@@ -1,3 +1,4 @@
+import json
 from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager
 from typing import Any, Awaitable, Callable, Self, TypedDict, TypeVar
@@ -24,6 +25,7 @@ class DocumentChunk(TypedDict, total=False):
     token_count: int | None
     char_count: int | None
     word_count: int | None
+    bbox_data: list[dict] | None  # [{page, x0, y0, x1, y1}, ...] — PyMuPDF bounding boxes
 
 T = TypeVar("T")
 
@@ -128,6 +130,13 @@ class VectorDatabase:
                         data_type=DataType.INT,
                         skip_vectorization=True,
                     ),
+                    Property(
+                        name="bbox_data",
+                        data_type=DataType.TEXT,
+                        skip_vectorization=True,
+                        index_filterable=False,
+                        index_searchable=False,
+                    ),
                 ],
             )
         )
@@ -156,6 +165,13 @@ class VectorDatabase:
         # Use dynamic batch for automatic error handling
         with country_docs.batch.dynamic() as batch:
             for chunk in chunks:
+                raw_bbox = chunk.get("bbox_data")
+                if isinstance(raw_bbox, list):
+                    bbox_str = json.dumps(raw_bbox)
+                elif isinstance(raw_bbox, str):
+                    bbox_str = raw_bbox
+                else:
+                    bbox_str = "[]"
                 batch.add_object(
                     {
                         "text": chunk["text"],
@@ -168,6 +184,7 @@ class VectorDatabase:
                         "token_count": chunk.get("token_count"),
                         "char_count": chunk.get("char_count"),
                         "word_count": chunk.get("word_count"),
+                        "bbox_data": bbox_str,
                     }
                 )
                 processed += 1
@@ -218,6 +235,8 @@ class VectorDatabase:
         documents: list[DocumentChunk] = []
         for obj in response.objects:
             properties = obj.properties  # pyright: ignore[reportAttributeAccessIssue]
+            bbox_raw = properties.get("bbox_data") or "[]"
+            bbox_parsed: list[dict] = json.loads(bbox_raw) if isinstance(bbox_raw, str) else (bbox_raw or [])
             documents.append(
                 DocumentChunk(
                     title=properties["title"],
@@ -229,6 +248,7 @@ class VectorDatabase:
                     token_count=properties.get("token_count"),
                     char_count=properties.get("char_count"),
                     word_count=properties.get("word_count"),
+                    bbox_data=bbox_parsed,
                 )
             )
         return documents

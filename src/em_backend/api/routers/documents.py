@@ -1,4 +1,5 @@
 import asyncio
+import json
 from io import BytesIO
 from pathlib import Path
 from typing import Annotated, cast
@@ -15,6 +16,7 @@ from fastapi import (
     Query,
     UploadFile,
 )
+from fastapi.responses import Response, StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from structlog.stdlib import get_logger
 
@@ -26,6 +28,11 @@ from em_backend.api.routers.v2 import (
 )
 from pydantic import BaseModel, Field
 
+from em_backend.config.manifesto_urls import (
+    LOCAL_MANIFESTO_DIR,
+    MANIFESTO_LOCAL_NAMES,
+    MANIFESTO_URLS,
+)
 from em_backend.database.crud import document as document_crud
 from em_backend.database.models import Document, Election, Party
 from em_backend.models.crud import (
@@ -38,6 +45,7 @@ from em_backend.models.enums import (
     ParsingQuality,
     SupportedDocumentFormats,
 )
+from em_backend.services.pdf_bbox_extractor import PDFBboxExtractor
 from em_backend.vector.db import VectorDatabase
 from em_backend.vector.parser import DocumentParser
 
@@ -141,14 +149,54 @@ async def process_document(
         # No DB connection held during this time!
         logger.info(f"Chunking {document_id}...")
         try:
-            document_chunks = document_parser.chunk_document(parsed_document)
+            # Materialize chunks so we can run the bbox extraction pass before insertion
+            document_chunks = list(document_parser.chunk_document(parsed_document))
+
+            # Secondary pass: extract PyMuPDF bboxes for citation highlighting.
+            # Uses the PDF bytes cached by the parser during parse_document().
+            # Wrapped in try/except — bbox failure must never block ingestion.
+            try:
+                pdf_bytes = document_parser._current_pdf_bytes
+                if pdf_bytes:
+                    bbox_extractor = PDFBboxExtractor()
+                    fitz_doc = bbox_extractor.extract_from_bytes(pdf_bytes)
+                    chunk_inputs = [
+                        {
+                            "chunk_id": chunk["chunk_id"],
+                            "text": chunk.get("text", ""),
+                            "page_number": chunk.get("page_number"),
+                        }
+                        for chunk in document_chunks
+                    ]
+                    bbox_map = bbox_extractor.extract_bboxes_for_chunks(fitz_doc, chunk_inputs)
+                    fitz_doc.close()
+                    for chunk in document_chunks:
+                        chunk["bbox_data"] = json.dumps(bbox_map.get(chunk["chunk_id"], []))
+                    logger.info(
+                        f"bbox extraction complete for {document_id}, "
+                        f"{len(document_chunks)} chunks annotated"
+                    )
+                else:
+                    logger.warning(
+                        f"No PDF bytes cached for bbox extraction on {document_id}, "
+                        "continuing without bboxes"
+                    )
+                    for chunk in document_chunks:
+                        chunk.setdefault("bbox_data", "[]")
+            except Exception as bbox_err:
+                logger.warning(
+                    f"bbox extraction failed for {document_id}, "
+                    f"continuing without bboxes: {bbox_err}"
+                )
+                for chunk in document_chunks:
+                    chunk.setdefault("bbox_data", "[]")
 
             # Use the loaded objects (they're detached but have all attributes in memory)
             indexing_success = weaviate_database.insert_chunks(
                 election,       # Use the full loaded Election object
                 party,          # Use the full loaded Party object
                 document_view,  # Use document_view (has id and title)
-                document_chunks,
+                iter(document_chunks),
             )
         except Exception as e:
             logger.error(f"Chunking error for {document_id}: {e}")
@@ -192,6 +240,83 @@ router = APIRouter(prefix="/documents", tags=["documents"])
 
 class ChunkDebugRequest(BaseModel):
     file_path: str = Field(..., description="Absolute path to the PDF file to chunk")
+
+
+# ---------------------------------------------------------------------------
+# PDF proxy helpers
+# ---------------------------------------------------------------------------
+
+def _serve_local_pdf(path: Path) -> StreamingResponse:
+    """Stream a local PDF file with CORS headers."""
+
+    def iterfile():
+        with open(path, "rb") as f:
+            while chunk := f.read(65536):
+                yield chunk
+
+    return StreamingResponse(
+        iterfile(),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="{path.name}"',
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "public, max-age=86400",
+        },
+    )
+
+
+async def _proxy_remote_pdf(url: str) -> Response:
+    """Proxy a remote PDF with CORS headers."""
+    async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
+        try:
+            resp = await client.get(url)
+            resp.raise_for_status()
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=502, detail=f"Failed to fetch PDF: {e}")
+
+    return Response(
+        content=resp.content,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": "inline",
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "public, max-age=3600",
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
+# Manifesto PDF endpoint — placed BEFORE /{document_id} to avoid shadowing
+# ---------------------------------------------------------------------------
+
+@router.get("/pdf/{party_key}")
+async def get_manifesto_pdf(party_key: str) -> Response:
+    """
+    Serve a manifesto PDF by party key with CORS headers.
+
+    Tries the local copy in assets/manifestos/ first, then falls back to
+    proxying the party's remote URL.
+
+    Supported party keys (case-insensitive):
+        CDU, SPD, GRUNE, FDP, AFD, LINKE, BSW, BUENDNIS, FREIE, MLPD, VOLT
+    """
+    key = party_key.upper()
+
+    # 1. Try local file
+    local_name = MANIFESTO_LOCAL_NAMES.get(key)
+    if local_name:
+        local_path = LOCAL_MANIFESTO_DIR / local_name
+        if local_path.exists():
+            return _serve_local_pdf(local_path)
+
+    # 2. Fall back to remote proxy
+    remote_url = MANIFESTO_URLS.get(key)
+    if not remote_url:
+        raise HTTPException(
+            status_code=404, detail=f"No PDF found for party: {party_key}"
+        )
+
+    return await _proxy_remote_pdf(remote_url)
 
 
 @router.post("/")
@@ -389,7 +514,7 @@ async def delete_document(
 
     return {"message": "Document deleted successfully"}
 
-3
+
 @router.post("/debug/chunks")
 async def debug_chunk_document(
     payload: ChunkDebugRequest,

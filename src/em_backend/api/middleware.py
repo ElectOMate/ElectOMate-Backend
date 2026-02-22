@@ -138,7 +138,7 @@ def add_middleware(app: FastAPI) -> None:
         CORSMiddleware,
         allow_origins=["http://localhost:5173", "https://opendemocracy.ai", "https://www.opendemocracy.ai"],
         allow_credentials=False,
-        allow_methods=["OPTIONS", "POST"],
+        allow_methods=["OPTIONS", "GET", "POST", "PUT", "DELETE"],
         allow_headers=["*"],
     )
 
