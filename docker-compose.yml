@@ -54,7 +54,7 @@ services:
       - electomate-network
     volumes:
       - ./alembic/versions:/app/alembic/versions
-      - ./.cache/docling/models:/app/.cache/docling/models
+      - ./.cache/docling/models:/home/app/.cache/docling/models
       - ./Quiz_Results_Folder:/app/Quiz_Results_Folder
       - ./Questionaire_Results_Folder:/app/Questionaire_Results_Folder
     develop:

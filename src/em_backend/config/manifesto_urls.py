@@ -34,6 +34,24 @@ MANIFESTO_LOCAL_NAMES: dict[str, str] = {
     "VOLT": "VOLT.pdf",
 }
 
+# Mapping from DB party shortname → manifesto key used in MANIFESTO_URLS / MANIFESTO_LOCAL_NAMES.
+# Needed because DB shortnames use umlauts (Grüne, AfD, Linke) while manifesto keys are
+# ASCII-normalised (GRUNE, AFD, LINKE). Without this, `"Grüne".upper()` → "GRÜNE" which
+# doesn't match "GRUNE". See docs/party_shortname_mismatch.md for full explanation.
+PARTY_SHORTNAME_TO_MANIFESTO_KEY: dict[str, str] = {
+    "CDU": "CDU",
+    "SPD": "SPD",
+    "Grüne": "GRUNE",
+    "FDP": "FDP",
+    "AfD": "AFD",
+    "Linke": "LINKE",
+    "BSW": "BSW",
+    "VOLT": "VOLT",
+    "BUENDNIS": "BUENDNIS",
+    "FREIE": "FREIE",
+    "MLPD": "MLPD",
+}
+
 # Directory where local copies are stored
 # This file lives at: src/em_backend/config/manifesto_urls.py
 # .parent      → src/em_backend/config/

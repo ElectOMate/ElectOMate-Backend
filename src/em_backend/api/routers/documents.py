@@ -32,6 +32,7 @@ from em_backend.config.manifesto_urls import (
     LOCAL_MANIFESTO_DIR,
     MANIFESTO_LOCAL_NAMES,
     MANIFESTO_URLS,
+    PARTY_SHORTNAME_TO_MANIFESTO_KEY,
 )
 from em_backend.database.crud import document as document_crud
 from em_backend.database.models import Document, Election, Party
@@ -302,7 +303,10 @@ async def get_manifesto_pdf(party_key: str) -> Response:
     Supported party keys (case-insensitive):
         CDU, SPD, GRUNE, FDP, AFD, LINKE, BSW, BUENDNIS, FREIE, MLPD, VOLT
     """
-    key = party_key.upper()
+    # Normalize: DB shortnames use umlauts (Grüne, AfD, Linke) but manifesto keys are
+    # ASCII-only (GRUNE, AFD, LINKE). Try the explicit mapping first, then fall back to
+    # plain .upper() for keys that already match (CDU, SPD, FDP, etc.).
+    key = PARTY_SHORTNAME_TO_MANIFESTO_KEY.get(party_key) or party_key.upper()
 
     # 1. Try local file
     local_name = MANIFESTO_LOCAL_NAMES.get(key)
