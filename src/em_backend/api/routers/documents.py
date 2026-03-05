@@ -26,7 +26,8 @@ from em_backend.api.routers.v2 import (
     get_sessionmaker,
     get_vector_database,
 )
-from pydantic import BaseModel, Field
+from ipaddress import ip_address
+from urllib.parse import urlparse
 
 from em_backend.config.manifesto_urls import (
     LOCAL_MANIFESTO_DIR,
@@ -219,18 +220,37 @@ async def process_document(
 
         # Step 6: Send callback to AutoCreate (outside DB session)
         if callback_url and country_code and party_name:
+            # Validate callback URL to prevent SSRF
             try:
-                async with httpx.AsyncClient(timeout=30.0) as client:
-                    callback_payload = {
-                        "country_code": country_code,
-                        "document_id": str(document_id),
-                        "party_name": party_name,
-                    }
-                    response = await client.post(callback_url, json=callback_payload)
-                    if response.status_code != 200:
-                        logger.warning(f"Callback returned {response.status_code} for {document_id}")
-            except Exception as callback_error:
-                logger.warning(f"Callback failed for {document_id}: {str(callback_error)}")
+                parsed = urlparse(callback_url)
+                if parsed.scheme not in ("https", "http"):
+                    raise ValueError("Only HTTP(S) callback URLs allowed")
+                hostname = parsed.hostname or ""
+                try:
+                    addr = ip_address(hostname)
+                    if addr.is_private or addr.is_loopback or addr.is_reserved:
+                        raise ValueError("Callback URL must not target private/internal networks")
+                except ValueError as ip_err:
+                    if "Callback URL" in str(ip_err):
+                        raise
+                    # hostname is a domain name, not an IP — allow it
+            except ValueError as url_err:
+                logger.warning(f"Invalid callback URL for {document_id}: {url_err}")
+                callback_url = None
+
+            if callback_url:
+                try:
+                    async with httpx.AsyncClient(timeout=30.0) as client:
+                        callback_payload = {
+                            "country_code": country_code,
+                            "document_id": str(document_id),
+                            "party_name": party_name,
+                        }
+                        response = await client.post(callback_url, json=callback_payload)
+                        if response.status_code != 200:
+                            logger.warning(f"Callback returned {response.status_code} for {document_id}")
+                except Exception as callback_error:
+                    logger.warning(f"Callback failed for {document_id}: {str(callback_error)}")
 
         logger.info(f"Completed {document_id}")
     except Exception as e:
@@ -239,10 +259,6 @@ async def process_document(
 
 
 router = APIRouter(prefix="/documents", tags=["documents"])
-
-
-class ChunkDebugRequest(BaseModel):
-    file_path: str = Field(..., description="Absolute path to the PDF file to chunk")
 
 
 # ---------------------------------------------------------------------------
@@ -262,7 +278,6 @@ def _serve_local_pdf(path: Path) -> StreamingResponse:
         media_type="application/pdf",
         headers={
             "Content-Disposition": f'inline; filename="{path.name}"',
-            "Access-Control-Allow-Origin": "*",
             "Cache-Control": "public, max-age=86400",
         },
     )
@@ -282,7 +297,6 @@ async def _proxy_remote_pdf(url: str) -> Response:
         media_type="application/pdf",
         headers={
             "Content-Disposition": "inline",
-            "Access-Control-Allow-Origin": "*",
             "Cache-Control": "public, max-age=3600",
         },
     )
@@ -521,36 +535,3 @@ async def delete_document(
     return {"message": "Document deleted successfully"}
 
 
-@router.post("/debug/chunks")
-async def debug_chunk_document(
-    payload: ChunkDebugRequest,
-    document_parser: Annotated[DocumentParser, Depends(get_document_parser)],
-) -> dict[str, object]:
-    file_path = Path(payload.file_path)
-    if not file_path.exists() or not file_path.is_file():
-        raise HTTPException(status_code=404, detail="Provided file path does not exist")
-
-    file_bytes = file_path.read_bytes()
-    document, confidence = document_parser.parse_document(
-        file_path.name,
-        BytesIO(file_bytes),
-    )
-
-    chunks = list(document_parser.chunk_document(document))
-    preview: list[dict[str, object]] = []
-    for idx, chunk in enumerate(chunks[:5]):
-        preview.append(
-            {
-                "chunk_id": chunk.get("chunk_id"),
-                "page_number": chunk.get("page_number"),
-                "chunk_index": chunk.get("chunk_index"),
-                "text_preview": (chunk.get("text") or "")[:200],
-            }
-        )
-
-    return {
-        "file": str(file_path),
-        "chunk_count": len(chunks),
-        "confidence": confidence.model_dump(),
-        "preview": preview,
-    }

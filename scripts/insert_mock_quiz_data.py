@@ -8,13 +8,18 @@ import random
 from datetime import datetime, timedelta
 from uuid import uuid4
 
+import os
+
 from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from em_backend.database.models import QuizResult, QuizResultAnswer
 
-# Database URL (using 'postgres' as host inside Docker container)
-DATABASE_URL = "postgresql+psycopg://postgres:postgres@postgres:5432/em_dev"
+# Database URL from environment variable (falls back to Docker internal default)
+DATABASE_URL = os.environ.get(
+    "POSTGRES_URL",
+    "postgresql+psycopg://postgres:postgres@postgres:5432/em_dev",
+)
 
 # Quiz questions
 QUIZ_QUESTIONS = {
