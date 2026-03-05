@@ -79,6 +79,19 @@ def get_client_addr(scope: Scope) -> str:
     return f"{ip}:{port}"
 
 
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Add security headers to all responses."""
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
+
+
 class LoggingMiddleware(BaseHTTPMiddleware):
     """Middleware to log canonical log lines."""
 
@@ -141,6 +154,9 @@ def add_middleware(app: FastAPI) -> None:
         allow_methods=["OPTIONS", "GET", "POST", "PUT", "DELETE"],
         allow_headers=["*"],
     )
+
+    # Security headers
+    app.add_middleware(SecurityHeadersMiddleware)
 
     # The logging middleware
     app.add_middleware(LoggingMiddleware, app)

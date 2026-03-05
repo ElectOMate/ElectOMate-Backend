@@ -8,12 +8,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from structlog.stdlib import get_logger
+
 from em_backend.api.routers.v2 import get_database_session
 from em_backend.database.models import (
     QuizResult,
     QuizResultAnswer,
 )
 from sqlalchemy import select, func
+
+logger = get_logger()
 
 router = APIRouter(prefix="/quiz", tags=["quiz"])
 
@@ -172,10 +176,10 @@ async def submit_quiz(
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data_to_save, f, indent=2, ensure_ascii=False)
 
-        print(f"[QUIZ] Saved quiz results to {file_path}")
+        logger.info("quiz_saved_to_file", file_path=str(file_path))
 
     except Exception as e:
-        print(f"[QUIZ] Failed to save quiz results: {e}")
+        logger.warning("quiz_file_save_failed", error=str(e))
         # Don't fail the request if file saving fails
 
     # Save quiz results to database
@@ -205,10 +209,10 @@ async def submit_quiz(
         db.add(quiz_result)
         await db.flush()  # Flush to get the ID without committing
 
-        print(f"[QUIZ] Saved quiz results to database: {quiz_result.id}")
+        logger.info("quiz_saved_to_db", result_id=str(quiz_result.id))
 
     except Exception as e:
-        print(f"[QUIZ] Failed to save quiz results to database: {e}")
+        logger.warning("quiz_db_save_failed", error=str(e))
         # Don't fail the request if database saving fails
 
     # Calculate real score distribution from database
@@ -234,10 +238,10 @@ async def submit_quiz(
             for s in possible_scores
         ]
 
-        print(f"[QUIZ] Score distribution: {distribution}")
+        logger.info("quiz_score_distribution_calculated", distribution_count=len(distribution))
 
     except Exception as e:
-        print(f"[QUIZ] Failed to calculate distribution: {e}")
+        logger.warning("quiz_distribution_calc_failed", error=str(e))
         # Fallback to empty distribution
         distribution = [
             ScoreDistributionPoint(score=s, count=0)

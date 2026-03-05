@@ -7,6 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
+from structlog.stdlib import get_logger
 
 from em_backend.api.routers.v2 import get_database_session
 from em_backend.database.models import (
@@ -15,6 +16,8 @@ from em_backend.database.models import (
     PartyRanking,
 )
 from sqlalchemy import select, func
+
+logger = get_logger()
 
 router = APIRouter(prefix="/questionnaire", tags=["questionnaire"])
 
@@ -93,7 +96,7 @@ async def upload_questionnaire_results(
     file_path = None
     try:
         # Ensure the results folder exists
-        QUESTIONNAIRE_RESULTS_FOLDER.mkdir(parents=True, exist_ok=True, mode=0o777)
+        QUESTIONNAIRE_RESULTS_FOLDER.mkdir(parents=True, exist_ok=True)
 
         # Create timestamp-based filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -116,10 +119,10 @@ async def upload_questionnaire_results(
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data_to_save, f, indent=2, ensure_ascii=False)
 
-        print(f"[QUESTIONNAIRE] Saved questionnaire results to {file_path}")
+        logger.info("questionnaire_saved_to_file", file_path=str(file_path))
 
     except Exception as e:
-        print(f"[QUESTIONNAIRE] Failed to save questionnaire results to file: {e}")
+        logger.warning("questionnaire_file_save_failed", error=str(e))
         file_path = None
 
     # Save questionnaire results to database (critical operation)
@@ -158,12 +161,12 @@ async def upload_questionnaire_results(
                 )
                 questionnaire_result.party_rankings.append(party_ranking)
 
-            print(f"[QUESTIONNAIRE] Added {len(results.party_rankings)} party rankings to submission")
+            logger.info("questionnaire_rankings_added", count=len(results.party_rankings))
 
         # Add to database (transaction will auto-commit via dependency)
         db.add(questionnaire_result)
 
-        print(f"[QUESTIONNAIRE] Saved questionnaire results to database: {questionnaire_result.id}")
+        logger.info("questionnaire_saved_to_db", result_id=str(questionnaire_result.id))
 
         return QuestionnaireResultResponse(
             message="Questionnaire results uploaded successfully",
@@ -172,14 +175,10 @@ async def upload_questionnaire_results(
         )
 
     except Exception as e:
-        print(f"[QUESTIONNAIRE] Failed to save questionnaire results to database: {e}")
-        import traceback
-        traceback.print_exc()
-
-        # Return error since database save is critical
+        logger.exception("questionnaire_db_save_failed")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to save questionnaire results: {str(e)}"
+            detail="Failed to save questionnaire results. Please try again later.",
         )
 
 
@@ -324,7 +323,7 @@ async def get_ranking_heatmap(
                 rank_percentages=party_data[party]['rank_percentages']
             ))
 
-        print(f"[HEATMAP] Generated heatmap for {len(parties)} parties, {len(rank_positions)} ranks, {total_submissions} submissions (country={country_code})")
+        logger.info("heatmap_generated", parties=len(parties), ranks=len(rank_positions), submissions=total_submissions, country=country_code)
 
         return PartyRankingHeatmapResponse(
             country_code=country_code,
@@ -336,12 +335,10 @@ async def get_ranking_heatmap(
         )
 
     except Exception as e:
-        print(f"[HEATMAP] Error generating ranking heatmap: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.exception("heatmap_generation_failed")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate ranking heatmap: {str(e)}"
+            detail="Failed to generate ranking heatmap. Please try again later.",
         )
 
 
@@ -494,53 +491,18 @@ async def get_question_statistics(
                 total_responses=total
             ))
 
-        print(f"[QUESTION STATS] Generated statistics for {len(questions_stats)} questions, "
-              f"{total_submissions} submissions (country={country_code}, user_id={user_id})")
+        logger.info("question_stats_generated", questions=len(questions_stats), submissions=total_submissions, country=country_code)
 
-        # Log detailed question data to debug mixed language issue
-        print(f"[QUESTION STATS] Detailed question data:")
-        for q in questions_stats:
-            print(f"  Q{q.question_number}: {q.question_text[:100]}... (user_answer={q.user_answer}, total={q.total_responses})")
-
-        response = QuestionStatisticsResponse(
+        return QuestionStatisticsResponse(
             country_code=country_code,
             user_id=user_id,
             total_submissions=total_submissions,
             questions=questions_stats
         )
 
-        # Log the full response being sent to frontend
-        print(f"[QUESTION STATS] Sending response with {len(response.questions)} questions")
-        import json
-        print(f"[QUESTION STATS] Full response data:")
-        print(json.dumps({
-            "country_code": response.country_code,
-            "user_id": response.user_id,
-            "total_submissions": response.total_submissions,
-            "questions": [
-                {
-                    "question_number": q.question_number,
-                    "question_text": q.question_text[:80] + "..." if len(q.question_text) > 80 else q.question_text,
-                    "answer_distribution": {
-                        "yes": q.answer_distribution.yes,
-                        "no": q.answer_distribution.no,
-                        "neutral": q.answer_distribution.neutral,
-                        "skipped": q.answer_distribution.skipped,
-                    },
-                    "user_answer": q.user_answer,
-                    "total_responses": q.total_responses,
-                }
-                for q in response.questions
-            ]
-        }, indent=2, ensure_ascii=False))
-
-        return response
-
     except Exception as e:
-        print(f"[QUESTION STATS] Error generating question statistics: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.exception("question_stats_generation_failed")
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate question statistics: {str(e)}"
+            detail="Failed to generate question statistics. Please try again later.",
         )
