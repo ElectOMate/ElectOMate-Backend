@@ -15,9 +15,6 @@ def add_obervability(app: FastAPI) -> None:
     from opentelemetry.instrumentation.fastapi import (
         FastAPIInstrumentor,
     )
-    from opentelemetry.instrumentation.httpx import (
-        HTTPXClientInstrumentor,
-    )
     from opentelemetry.trace import Span
 
     # === Setup Tracing === #
@@ -42,5 +39,6 @@ def add_obervability(app: FastAPI) -> None:
         server_request_hook=server_request_hook,
     )
 
-    # Instrument HTTPX
-    HTTPXClientInstrumentor().instrument()
+    # NOTE: HTTPXClientInstrumentor was removed because it globally patches
+    # httpx, which breaks the Weaviate client's internal HTTP/gRPC operations
+    # and causes DEADLINE_EXCEEDED errors on hybrid search queries.
