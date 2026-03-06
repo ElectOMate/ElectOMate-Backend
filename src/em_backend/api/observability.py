@@ -1,5 +1,6 @@
 """Provides tracing utilities for FastAPI applications."""
 
+import logging
 import os
 from typing import Any
 
@@ -9,15 +10,20 @@ from starlette_context.header_keys import HeaderKeys
 
 from em_backend.api.middleware import API_LOGGER_NAME
 
+_logger = logging.getLogger(API_LOGGER_NAME)
+
 
 def add_obervability(app: FastAPI) -> None:
     """Setup Jaeger tracing on the application."""
-    # Disable httpx and grpc auto-instrumentation BEFORE importing
-    # configure_azure_monitor, because it auto-instruments all detected
-    # libraries. httpx/grpc patching breaks Weaviate's internal connections.
-    os.environ.setdefault(
-        "OTEL_PYTHON_DISABLED_INSTRUMENTATIONS",
-        "httpx,grpc",
+    # Force-disable httpx and grpc auto-instrumentation. configure_azure_monitor
+    # auto-instruments all detected libraries; httpx/grpc patching breaks
+    # Weaviate's internal gRPC connections (DEADLINE_EXCEEDED).
+    os.environ["OTEL_PYTHON_DISABLED_INSTRUMENTATIONS"] = (
+        "httpx,grpc,grpc_client,grpc_server,grpcio,aiohttp,urllib3,urllib"
+    )
+    _logger.info(
+        "Observability: disabled instrumentations=%s",
+        os.environ["OTEL_PYTHON_DISABLED_INSTRUMENTATIONS"],
     )
 
     from azure.monitor.opentelemetry import configure_azure_monitor
@@ -29,6 +35,7 @@ def add_obervability(app: FastAPI) -> None:
     # === Setup Tracing === #
 
     configure_azure_monitor(logger_name=API_LOGGER_NAME)
+    _logger.info("Observability: Azure Monitor configured")
 
     # === Instrumentation === #
 

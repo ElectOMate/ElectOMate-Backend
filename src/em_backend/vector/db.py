@@ -7,7 +7,7 @@ from structlog.stdlib import get_logger
 
 import weaviate
 from weaviate.classes.config import Configure, DataType, Property
-from weaviate.classes.init import Auth
+from weaviate.classes.init import AdditionalConfig, Auth, Timeout
 from weaviate.classes.query import Filter, MetadataQuery
 
 from em_backend.core.config import settings
@@ -52,12 +52,16 @@ class VectorDatabase:
     @classmethod
     @asynccontextmanager
     async def create(cls) -> AsyncGenerator[Self]:
+        _timeout_config = AdditionalConfig(
+            timeout=Timeout(query=60, insert=120, init=30),
+        )
         client = weaviate.connect_to_weaviate_cloud(
             cluster_url=settings.wv_url,
             auth_credentials=Auth.api_key(settings.wv_api_key),
             headers={
                 "X-OpenAI-Api-Key": settings.openai_api_key,
             },
+            additional_config=_timeout_config,
         )
         async_client = weaviate.use_async_with_weaviate_cloud(
             cluster_url=settings.wv_url,
@@ -65,6 +69,7 @@ class VectorDatabase:
             headers={
                 "X-OpenAI-Api-Key": settings.openai_api_key,
             },
+            additional_config=_timeout_config,
         )
         client.connect()
         await async_client.connect()
