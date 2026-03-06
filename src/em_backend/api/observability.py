@@ -1,5 +1,6 @@
 """Provides tracing utilities for FastAPI applications."""
 
+import os
 from typing import Any
 
 from fastapi import FastAPI
@@ -11,6 +12,14 @@ from em_backend.api.middleware import API_LOGGER_NAME
 
 def add_obervability(app: FastAPI) -> None:
     """Setup Jaeger tracing on the application."""
+    # Disable httpx and grpc auto-instrumentation BEFORE importing
+    # configure_azure_monitor, because it auto-instruments all detected
+    # libraries. httpx/grpc patching breaks Weaviate's internal connections.
+    os.environ.setdefault(
+        "OTEL_PYTHON_DISABLED_INSTRUMENTATIONS",
+        "httpx,grpc",
+    )
+
     from azure.monitor.opentelemetry import configure_azure_monitor
     from opentelemetry.instrumentation.fastapi import (
         FastAPIInstrumentor,
