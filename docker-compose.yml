@@ -1,4 +1,25 @@
 services:
+  # Apache AGE Graph Database (PostgreSQL + AGE extension)
+  age-postgres:
+    image: apache/age:latest
+    container_name: electomate-age
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: age_graph
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - age_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - electomate-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d age_graph"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # PostgreSQL Database
   postgres:
     image: postgres:17-alpine
@@ -45,6 +66,15 @@ services:
       # OpenAI Configuration (from .env)
       OPENAI_API_KEY: ${OPENAI_API_KEY}
 
+      # Graph Database (AGE)
+      AGE_POSTGRES_URL: "host=age-postgres port=5432 dbname=age_graph user=postgres password=postgres"
+
+      # Google Gemini API
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+
+      # Hungarian Parliament API
+      PARLIAMENT_HU_API_TOKEN: ${PARLIAMENT_HU_API_TOKEN:-}
+
       # Application Environment
       ENV: ${ENV:-dev}
       LOG_LEVEL: DEBUG
@@ -71,6 +101,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      age-postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
       interval: 30s
@@ -89,3 +121,6 @@ volumes:
   postgres_data:
     driver: local
     name: electomate-postgres-data
+  age_postgres_data:
+    driver: local
+    name: electomate-age-data

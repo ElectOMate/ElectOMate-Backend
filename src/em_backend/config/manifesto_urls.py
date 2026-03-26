@@ -21,6 +21,7 @@ MANIFESTO_URLS: dict[str, str] = {
 
 # Local filename mapping — must match actual files in LOCAL_MANIFESTO_DIR
 MANIFESTO_LOCAL_NAMES: dict[str, str] = {
+    # Germany
     "SPD": "SPD.pdf",
     "CDU": "CDU.pdf",
     "GRUNE": "GRUNE.pdf",
@@ -32,6 +33,14 @@ MANIFESTO_LOCAL_NAMES: dict[str, str] = {
     "FREIE": "FREIE.pdf",
     "MLPD": "MLPD.pdf",
     "VOLT": "VOLT.pdf",
+    # Hungary
+    "FIDESZ": "FIDESZ.pdf",
+    "TISZA": "TISZA.pdf",
+    "DK": "DK.pdf",
+    "MI_HAZANK": "MI_HAZANK.pdf",
+    "MKKP": "MKKP.pdf",
+    "JOBBIK": "JOBBIK.pdf",
+    "MSZP": "MSZP.pdf",
 }
 
 # Mapping from DB party shortname → manifesto key used in MANIFESTO_URLS / MANIFESTO_LOCAL_NAMES.
@@ -39,6 +48,7 @@ MANIFESTO_LOCAL_NAMES: dict[str, str] = {
 # ASCII-normalised (GRUNE, AFD, LINKE). Without this, `"Grüne".upper()` → "GRÜNE" which
 # doesn't match "GRUNE". See docs/party_shortname_mismatch.md for full explanation.
 PARTY_SHORTNAME_TO_MANIFESTO_KEY: dict[str, str] = {
+    # Germany
     "CDU": "CDU",
     "SPD": "SPD",
     "Grüne": "GRUNE",
@@ -50,6 +60,14 @@ PARTY_SHORTNAME_TO_MANIFESTO_KEY: dict[str, str] = {
     "BUENDNIS": "BUENDNIS",
     "FREIE": "FREIE",
     "MLPD": "MLPD",
+    # Hungary
+    "Fidesz": "FIDESZ",
+    "TISZA": "TISZA",
+    "DK": "DK",
+    "Mi Hazánk": "MI_HAZANK",
+    "MKKP": "MKKP",
+    "Jobbik": "JOBBIK",
+    "MSZP": "MSZP",
 }
 
 # Directory where local copies are stored

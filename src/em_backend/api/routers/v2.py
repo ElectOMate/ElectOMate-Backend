@@ -100,6 +100,7 @@ from em_backend.api.routers import (  # noqa: E402
     countries,
     documents,
     elections,
+    knowledge_graph,
     parties,
     proposed_questions,
     questionnaire,
@@ -115,3 +116,4 @@ v2_router.include_router(documents.router)
 v2_router.include_router(proposed_questions.router)
 v2_router.include_router(questionnaire.router)
 v2_router.include_router(quiz.router)
+v2_router.include_router(knowledge_graph.router)

@@ -26,5 +26,14 @@ class Settings(BaseSettings):
     # Postgres url
     postgres_url: str
 
+    # Apache AGE graph database (separate PG instance with AGE extension)
+    age_postgres_url: str = "host=age-postgres port=5432 dbname=age_graph user=postgres password=postgres"
+
+    # Google Gemini API (for YouTube video transcription)
+    google_api_key: str | None = None
+
+    # Hungarian Parliament API token
+    parliament_hu_api_token: str | None = None
+
 
 settings = Settings()  # type: ignore
