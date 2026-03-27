@@ -1,0 +1,78 @@
+# Docker Compose for the Knowledge Graph Explorer (standalone deployment)
+#
+# Runs: AGE+pgvector (graph DB) + FastAPI backend + React frontend
+# Usage: docker compose -f docker-compose.graph.yml up -d
+#
+# After first start, run: docker compose -f docker-compose.graph.yml exec app python scripts/embed_all_arguments.py
+# to re-embed arguments if the AGE database is fresh.
+
+services:
+  # Apache AGE + pgvector (Graph Database)
+  age-postgres:
+    build:
+      context: .
+      dockerfile: docker/age-pgvector.Dockerfile
+    container_name: kg-age
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: age_graph
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${AGE_PASSWORD:-postgres}
+    volumes:
+      - age_data:/var/lib/postgresql
+    ports:
+      - "${AGE_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d age_graph"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Backend (serves /v2/graph/* API)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PRELOAD_DOCLING_MODELS: "false"
+    container_name: kg-backend
+    restart: unless-stopped
+    environment:
+      AGE_POSTGRES_URL: "host=age-postgres port=5432 dbname=age_graph user=postgres password=${AGE_PASSWORD:-postgres}"
+      POSTGRES_URL: "postgresql+psycopg://postgres:postgres@age-postgres:5432/age_graph"
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      PERPLEXITY_API_KEY: ${PERPLEXITY_API_KEY:-}
+      PERPLEXITY_MODEL: ${PERPLEXITY_MODEL:-sonar}
+      WV_URL: ${WV_URL:-placeholder}
+      WV_API_KEY: ${WV_API_KEY:-placeholder}
+      ENV: ${ENV:-dev}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "${BACKEND_PORT:-9000}:8000"
+    depends_on:
+      age-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # React Frontend (Graph Explorer)
+  frontend:
+    build:
+      context: ./graph-explorer
+      dockerfile: Dockerfile
+    container_name: kg-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-9001}:80"
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  age_data:
+    driver: local

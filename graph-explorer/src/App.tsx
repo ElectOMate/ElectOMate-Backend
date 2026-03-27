@@ -1,6 +1,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import SigmaGraph from "./v1-sigma/SigmaGraph";
 import FlowGraph from "./v2-reactflow/FlowGraph";
+import DatabaseView from "./v2-reactflow/DatabaseView";
 
 function Landing() {
   return (
@@ -13,6 +14,7 @@ function Landing() {
       <div className="landing-links">
         <Link to="/v1">Sigma.js (Force-directed)</Link>
         <Link to="/v2">React Flow (Hierarchical)</Link>
+        <Link to="/db">Database View</Link>
       </div>
     </div>
   );
@@ -24,6 +26,7 @@ export default function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/v1" element={<SigmaGraph />} />
       <Route path="/v2" element={<FlowGraph />} />
+      <Route path="/db" element={<DatabaseView />} />
     </Routes>
   );
 }
