@@ -3,22 +3,27 @@
 from __future__ import annotations
 
 import json
+import os
 from typing import Any
 
 import psycopg2
 import structlog
-
-from em_backend.core.config import settings
 
 logger = structlog.get_logger(__name__)
 
 # Graph name used for the argument knowledge graph
 GRAPH_NAME = "hungarian_politics"
 
+# Connection URL: env var > .env file > default (localhost for local dev)
+_AGE_URL = os.environ.get(
+    "AGE_POSTGRES_URL",
+    "host=localhost port=5433 dbname=age_graph user=postgres password=postgres",
+)
+
 
 def get_connection() -> psycopg2.extensions.connection:
     """Create a new synchronous connection to the AGE PostgreSQL database."""
-    conn = psycopg2.connect(settings.age_postgres_url)
+    conn = psycopg2.connect(_AGE_URL)
     conn.autocommit = False
     return conn
 

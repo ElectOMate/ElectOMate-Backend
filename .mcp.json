@@ -6,7 +6,8 @@
       "cwd": "/Users/gaborhollbeck/Desktop/GitHub/1_5_ElectomateFinal/ElectOMate-Backend/src",
       "env": {
         "AGE_POSTGRES_URL": "host=localhost port=5433 dbname=age_graph user=postgres password=postgres",
-        "PYTHONPATH": "/Users/gaborhollbeck/Desktop/GitHub/1_5_ElectomateFinal/ElectOMate-Backend/src"
+        "PYTHONPATH": "/Users/gaborhollbeck/Desktop/GitHub/1_5_ElectomateFinal/ElectOMate-Backend/src",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}"
       }
     }
   }
