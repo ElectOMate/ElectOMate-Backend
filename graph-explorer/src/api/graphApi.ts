@@ -45,3 +45,24 @@ export function fetchCompare(topic: string): Promise<Record<string, string[]>> {
     `${BASE}/compare/${encodeURIComponent(topic)}`
   );
 }
+
+/** Fetch graph overview (all topics + parties with connections). */
+export function fetchOverview(): Promise<import("../types").GraphData> {
+  return fetchJson<import("../types").GraphData>(`${BASE}/overview`);
+}
+
+/** Fetch neighborhood around a node. */
+export function fetchNeighborhood(
+  nodeType: string,
+  nodeName: string,
+  depth: number = 1,
+  limit: number = 50,
+): Promise<import("../types").GraphData> {
+  const qs = new URLSearchParams({
+    node_type: nodeType,
+    node_name: nodeName,
+    depth: String(depth),
+    limit: String(limit),
+  });
+  return fetchJson<import("../types").GraphData>(`${BASE}/neighborhood?${qs}`);
+}
