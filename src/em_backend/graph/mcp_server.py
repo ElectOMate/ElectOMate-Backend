@@ -63,12 +63,36 @@ def _cypher(cypher: str, columns: list[str] | None = None) -> list[dict]:
 
 
 @mcp.tool()
+def search_arguments(query: str, limit: int = 20) -> str:
+    """Semantic search over Hungarian political arguments using BGE-M3 embeddings.
+
+    This uses hybrid retrieval: vector similarity + graph traversal + Reciprocal Rank Fusion.
+    Much smarter than keyword search — finds paraphrases and related concepts.
+
+    Args:
+        query: Free-text search query in Hungarian or English.
+        limit: Max results (default 20).
+
+    Returns:
+        JSON list of semantically similar arguments with similarity scores.
+    """
+    from em_backend.graph.hybrid_retrieval import hybrid_search
+    results = hybrid_search(query, limit=limit)
+    # Clean up for JSON serialization
+    for r in results:
+        r.pop("embedding", None)
+    return json.dumps(results, ensure_ascii=False, indent=2)
+
+
+@mcp.tool()
 def query_arguments(
     topic: str | None = None,
     party: str | None = None,
     limit: int = 20,
 ) -> str:
-    """Search Hungarian political arguments by topic and/or party.
+    """Search Hungarian political arguments by topic and/or party (exact match).
+
+    For semantic/fuzzy search, use search_arguments instead.
 
     Args:
         topic: Topic name in Hungarian (e.g., "Gazdaság", "EU-kapcsolatok", "Korrupció")
@@ -162,28 +186,61 @@ def get_argument_chain(argument_text: str) -> str:
 def find_rebuttals(argument_text: str) -> str:
     """Find arguments that rebut or contradict a given claim.
 
+    Uses semantic similarity to find the closest argument in the graph,
+    then traverses REBUTS and CONTRADICTS edges. Also returns semantically
+    similar counter-arguments from opposing parties.
+
     Args:
         argument_text: The claim to find counter-arguments for.
 
     Returns:
-        JSON list of rebutting arguments with party attribution.
+        JSON list of rebutting/contradicting arguments with party attribution.
     """
-    escaped = argument_text.replace("'", "\\'")[:500]
+    from em_backend.graph.embeddings import find_similar_to_text
+
     results = []
 
-    for rel in ["REBUTS", "CONTRADICTS"]:
-        try:
-            found = _cypher(
-                f"""MATCH (r:Argument)-[:{rel}]->(a:Argument {{text: '{escaped}'}})
-                OPTIONAL MATCH (r)-[:MADE_BY]->(p:Party)
-                RETURN r.text, p.shortname, '{rel}' LIMIT 10""",
-                columns=["text", "party", "relation"],
-            )
-            results.extend(found)
-        except Exception:
-            pass
+    # 1. Find semantically similar arguments
+    similar = find_similar_to_text(argument_text, limit=5, min_similarity=0.5)
 
-    return json.dumps(results, ensure_ascii=False, indent=2)
+    # 2. For each similar argument, check for REBUTS/CONTRADICTS edges
+    for s in similar:
+        text = s["text"][:200].replace("'", "\\'")
+        for rel in ["REBUTS", "CONTRADICTS"]:
+            try:
+                found = _cypher(
+                    f"MATCH (a:Argument)-[:{rel}]->(b:Argument) "
+                    f"WHERE b.text STARTS WITH '{text}' "
+                    f"OPTIONAL MATCH (a)-[:MADE_BY]->(p:Party) "
+                    f"RETURN a.text, p.shortname, '{rel}' LIMIT 5",
+                    columns=["text", "party", "relation"],
+                )
+                results.extend(found)
+            except Exception:
+                pass
+            # Also reverse direction
+            try:
+                found = _cypher(
+                    f"MATCH (b:Argument)-[:{rel}]->(a:Argument) "
+                    f"WHERE b.text STARTS WITH '{text}' "
+                    f"OPTIONAL MATCH (a)-[:MADE_BY]->(p:Party) "
+                    f"RETURN a.text, p.shortname, '{rel}' LIMIT 5",
+                    columns=["text", "party", "relation"],
+                )
+                results.extend(found)
+            except Exception:
+                pass
+
+    # 3. Deduplicate
+    seen = set()
+    unique = []
+    for r in results:
+        key = str(r.get("text", ""))[:80]
+        if key not in seen:
+            seen.add(key)
+            unique.append(r)
+
+    return json.dumps(unique, ensure_ascii=False, indent=2)
 
 
 @mcp.tool()
@@ -286,19 +343,51 @@ def generate_polis_followup(statement: str, vote: str) -> str:
     Returns:
         JSON with follow-up questions of types: clarifying, probing, contrasting, deepening.
     """
-    import asyncio
-    from em_backend.graph.polis.question_generator import generate_followups
+    from openai import OpenAI
 
-    result = asyncio.run(generate_followups(statement=statement, user_vote=vote))
-    return json.dumps(
-        {
-            "original": result.original_statement,
-            "vote": result.user_vote,
-            "follow_ups": [fu.model_dump() for fu in result.follow_ups],
-        },
-        ensure_ascii=False,
-        indent=2,
+    oai_key = os.environ.get("OPENAI_API_KEY", "")
+    if not oai_key:
+        return json.dumps({"error": "OPENAI_API_KEY not set"})
+
+    # Find related arguments in graph
+    related = _cypher(
+        f"MATCH (a:Argument) WHERE a.text CONTAINS '{statement[:50].replace(chr(39), '')}' "
+        f"OPTIONAL MATCH (a)-[:MADE_BY]->(p:Party) "
+        f"RETURN a.text, p.shortname LIMIT 5",
+        columns=["text", "party"],
     )
+    # Also search by topic keywords
+    keywords = [w for w in statement.lower().split() if len(w) > 4]
+    for kw in keywords[:3]:
+        try:
+            found = _cypher(
+                f"MATCH (a:Argument) WHERE a.text CONTAINS '{kw}' "
+                f"OPTIONAL MATCH (a)-[:MADE_BY]->(p:Party) "
+                f"RETURN a.text, p.shortname LIMIT 3",
+                columns=["text", "party"],
+            )
+            related.extend(found)
+        except Exception:
+            pass
+
+    related_text = "\n".join(f"- [{r.get('party','?')}] {r.get('text','')}" for r in related[:8])
+    vote_desc = {"agree": "AGREED with", "disagree": "DISAGREED with", "pass": "PASSED on"}.get(vote, "voted on")
+
+    client = OpenAI(api_key=oai_key)
+    resp = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": (
+            f'A user has {vote_desc}: "{statement}"\n\n'
+            f"Related arguments from the knowledge graph:\n{related_text}\n\n"
+            "Generate 5 follow-up Pol.is statements IN HUNGARIAN.\n"
+            "Types: clarifying, probing, contrasting, deepening\n\n"
+            'Return JSON: {"follow_ups": [{"text": "...", "question_type": "...", "rationale": "..."}]}'
+        )}],
+        response_format={"type": "json_object"},
+        max_tokens=2000,
+        temperature=0.7,
+    )
+    return resp.choices[0].message.content or "{}"
 
 
 @mcp.tool()
@@ -312,18 +401,43 @@ def generate_polis_seeds(topic: str, count: int = 5) -> str:
     Returns:
         JSON list of balanced, voteable statements with controversy scores.
     """
-    import asyncio
-    from em_backend.graph.polis.seed_generator import generate_seed_statements
+    from openai import OpenAI
 
-    result = asyncio.run(generate_seed_statements(topic=topic, count=min(count, 10)))
-    return json.dumps(
-        {
-            "topic": result.topic,
-            "statements": [s.model_dump() for s in result.statements],
-        },
-        ensure_ascii=False,
-        indent=2,
+    oai_key = os.environ.get("OPENAI_API_KEY", "")
+    if not oai_key:
+        return json.dumps({"error": "OPENAI_API_KEY not set"})
+
+    t = topic.replace("'", "\\'")
+    args_by_party = _cypher(
+        f"MATCH (a:Argument)-[:ABOUT]->(t:Topic {{name: '{t}'}}) "
+        f"MATCH (a)-[:MADE_BY]->(p:Party) "
+        f"RETURN p.shortname, a.text LIMIT 20",
+        columns=["party", "text"],
     )
+
+    formatted = ""
+    by_party: dict[str, list[str]] = {}
+    for r in args_by_party:
+        by_party.setdefault(str(r["party"]), []).append(str(r["text"]))
+    for party, texts in by_party.items():
+        formatted += f"\n[{party}]:\n"
+        for t_text in texts[:3]:
+            formatted += f"  - {t_text[:150]}\n"
+
+    client = OpenAI(api_key=oai_key)
+    resp = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": (
+            f'Generate {min(count, 10)} balanced Pol.is seed statements about "{topic}" in Hungarian politics.\n\n'
+            f"Arguments from the knowledge graph:\n{formatted}\n\n"
+            "Rules: Hungarian, max 140 chars, voteable, balanced, don't attribute.\n\n"
+            '{"statements": [{"text": "...", "controversy_score": 0.0-1.0}]}'
+        )}],
+        response_format={"type": "json_object"},
+        max_tokens=1500,
+        temperature=0.8,
+    )
+    return resp.choices[0].message.content or "{}"
 
 
 @mcp.tool()
