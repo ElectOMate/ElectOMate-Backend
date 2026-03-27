@@ -166,6 +166,35 @@ async def generate_polis_seeds(request: SeedRequest) -> SeedResponse:
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/neighborhood")
+async def get_neighborhood(
+    node_type: str = Query(..., description="Node type: Topic, Party, or Argument"),
+    node_name: str = Query(..., description="Node identifier (topic name, party shortname, or argument text)"),
+    depth: int = Query(default=1, ge=1, le=2),
+    limit: int = Query(default=50, ge=1, le=200),
+) -> dict:
+    """Get graph neighborhood around a node for visualization. Returns {nodes, edges}."""
+    try:
+        graph = get_graph_db()
+        service = KnowledgeGraphService(graph)
+        return service.get_neighborhood(node_type, node_name, depth, limit)
+    except Exception as e:
+        logger.error("Failed to get neighborhood", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/overview")
+async def get_graph_overview() -> dict:
+    """Get all topics and parties with connections for the initial graph view."""
+    try:
+        graph = get_graph_db()
+        service = KnowledgeGraphService(graph)
+        return service.get_graph_overview()
+    except Exception as e:
+        logger.error("Failed to get overview", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/stats", response_model=GraphStats)
 async def get_graph_stats() -> GraphStats:
     """Get overall knowledge graph statistics."""

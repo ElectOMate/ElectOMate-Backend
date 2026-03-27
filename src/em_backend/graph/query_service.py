@@ -240,6 +240,229 @@ class KnowledgeGraphService:
             for r in results
         ]
 
+    def get_neighborhood(
+        self,
+        node_type: str,
+        node_name: str,
+        depth: int = 1,
+        limit: int = 50,
+    ) -> dict[str, list]:
+        """Get nodes and edges around a given node for graph visualization.
+
+        Args:
+            node_type: "Topic", "Party", or "Argument"
+            node_name: The node's identifying property
+            depth: 1 = direct neighbors, 2 = neighbors of neighbors
+            limit: Max neighbor nodes per expansion
+
+        Returns:
+            {"nodes": [...], "edges": [...]}
+        """
+        nodes: dict[str, dict] = {}
+        edges: list[dict] = []
+
+        escaped = node_name.replace("'", "\\'")
+
+        # Identify the root node's key property
+        if node_type == "Topic":
+            prop = "name"
+            root_id = f"topic::{node_name}"
+        elif node_type == "Party":
+            prop = "shortname"
+            root_id = f"party::{node_name}"
+        else:
+            prop = "text"
+            root_id = f"arg::{node_name[:80]}"
+
+        # Add root node
+        nodes[root_id] = {
+            "id": root_id,
+            "type": node_type,
+            "label": node_name[:120],
+            "properties": {},
+        }
+
+        # Depth 1: direct neighbors
+        if node_type == "Topic":
+            # Arguments about this topic
+            results = self._graph.query(
+                f"""
+                MATCH (a:Argument)-[:ABOUT]->(t:Topic {{{prop}: '{escaped}'}})
+                OPTIONAL MATCH (a)-[:MADE_BY]->(p:Party)
+                RETURN a.text, a.argument_type, a.sentiment, a.strength, p.shortname
+                LIMIT {limit}
+                """,
+                columns=["text", "arg_type", "sentiment", "strength", "party"],
+            )
+            for r in results:
+                text = str(r.get("text", "")).strip('"')
+                aid = f"arg::{text[:80]}"
+                nodes[aid] = {
+                    "id": aid, "type": "Argument", "label": text[:120],
+                    "properties": {
+                        "argument_type": r.get("arg_type"),
+                        "sentiment": r.get("sentiment"),
+                        "strength": r.get("strength"),
+                        "party": r.get("party"),
+                    },
+                }
+                edges.append({"source": aid, "target": root_id, "type": "ABOUT"})
+                # Also add party node + edge
+                party = r.get("party")
+                if party:
+                    party = str(party).strip('"')
+                    pid = f"party::{party}"
+                    if pid not in nodes:
+                        nodes[pid] = {"id": pid, "type": "Party", "label": party, "properties": {}}
+                    edges.append({"source": aid, "target": pid, "type": "MADE_BY"})
+
+        elif node_type == "Party":
+            # Arguments by this party
+            results = self._graph.query(
+                f"""
+                MATCH (a:Argument)-[:MADE_BY]->(p:Party {{{prop}: '{escaped}'}})
+                OPTIONAL MATCH (a)-[:ABOUT]->(t:Topic)
+                RETURN a.text, a.argument_type, a.sentiment, a.strength, t.name
+                LIMIT {limit}
+                """,
+                columns=["text", "arg_type", "sentiment", "strength", "topic"],
+            )
+            for r in results:
+                text = str(r.get("text", "")).strip('"')
+                aid = f"arg::{text[:80]}"
+                nodes[aid] = {
+                    "id": aid, "type": "Argument", "label": text[:120],
+                    "properties": {
+                        "argument_type": r.get("arg_type"),
+                        "sentiment": r.get("sentiment"),
+                        "strength": r.get("strength"),
+                    },
+                }
+                edges.append({"source": aid, "target": root_id, "type": "MADE_BY"})
+                topic = r.get("topic")
+                if topic:
+                    topic = str(topic).strip('"')
+                    tid = f"topic::{topic}"
+                    if tid not in nodes:
+                        nodes[tid] = {"id": tid, "type": "Topic", "label": topic, "properties": {}}
+                    edges.append({"source": aid, "target": tid, "type": "ABOUT"})
+
+        else:  # Argument
+            # Topics, parties, rebuttals, supports
+            for rel, target_label, target_prop in [
+                ("ABOUT", "Topic", "name"),
+                ("MADE_BY", "Party", "shortname"),
+            ]:
+                try:
+                    results = self._graph.query(
+                        f"""
+                        MATCH (a:Argument {{{prop}: '{escaped}'}})-[:{rel}]->(n:{target_label})
+                        RETURN n.{target_prop}
+                        """,
+                        columns=["val"],
+                    )
+                    for r in results:
+                        val = str(r.get("val", "")).strip('"')
+                        nid = f"{target_label.lower()}::{val}"
+                        nodes[nid] = {"id": nid, "type": target_label, "label": val, "properties": {}}
+                        edges.append({"source": root_id, "target": nid, "type": rel})
+                except Exception:
+                    pass
+
+            # Rebuttals and supports
+            for rel in ["REBUTS", "SUPPORTS", "CONTRADICTS"]:
+                try:
+                    results = self._graph.query(
+                        f"""
+                        MATCH (a:Argument {{{prop}: '{escaped}'}})-[:{rel}]->(b:Argument)
+                        RETURN b.text
+                        LIMIT 10
+                        """,
+                        columns=["text"],
+                    )
+                    for r in results:
+                        text = str(r.get("text", "")).strip('"')
+                        bid = f"arg::{text[:80]}"
+                        nodes[bid] = {"id": bid, "type": "Argument", "label": text[:120], "properties": {}}
+                        edges.append({"source": root_id, "target": bid, "type": rel})
+                except Exception:
+                    pass
+
+        # Depth 2: expand argument neighbors (only if requested)
+        if depth >= 2 and node_type in ("Topic", "Party"):
+            arg_ids = [nid for nid, n in nodes.items() if n["type"] == "Argument"]
+            for aid in arg_ids[:20]:  # Limit depth-2 expansion
+                arg_text = nodes[aid]["label"].replace("'", "\\'")
+                for rel in ["REBUTS", "SUPPORTS", "CONTRADICTS"]:
+                    try:
+                        results = self._graph.query(
+                            f"""
+                            MATCH (a:Argument {{text: '{arg_text}'}})-[:{rel}]->(b:Argument)
+                            RETURN b.text
+                            LIMIT 3
+                            """,
+                            columns=["text"],
+                        )
+                        for r in results:
+                            text = str(r.get("text", "")).strip('"')
+                            bid = f"arg::{text[:80]}"
+                            if bid not in nodes:
+                                nodes[bid] = {"id": bid, "type": "Argument", "label": text[:120], "properties": {}}
+                            edges.append({"source": aid, "target": bid, "type": rel})
+                    except Exception:
+                        pass
+
+        return {"nodes": list(nodes.values()), "edges": edges}
+
+    def get_graph_overview(self) -> dict[str, list]:
+        """Get all topics and parties with connection counts for the initial view."""
+        nodes: list[dict] = []
+        edges: list[dict] = []
+
+        # Get topics with argument counts
+        topics = self.get_all_topics()
+        for t in topics:
+            nodes.append({
+                "id": f"topic::{t.name}",
+                "type": "Topic",
+                "label": t.name,
+                "properties": {
+                    "name_en": t.name_en,
+                    "category": t.category,
+                    "argument_count": t.argument_count,
+                },
+            })
+
+        # Get parties with argument counts
+        parties = self.get_all_parties()
+        for p in parties:
+            nodes.append({
+                "id": f"party::{p.shortname}",
+                "type": "Party",
+                "label": p.shortname,
+                "properties": {
+                    "name": p.name,
+                    "ideology": p.ideology,
+                    "argument_count": p.argument_count,
+                },
+            })
+
+        # Get topic-party connections (how many arguments each party has per topic)
+        for t in topics:
+            for p in parties:
+                try:
+                    args = self.get_arguments_by_topic_and_party(t.name, p.shortname, limit=1)
+                    if args:
+                        edges.append({
+                            "source": f"party::{p.shortname}",
+                            "target": f"topic::{t.name}",
+                            "type": "HAS_ARGUMENTS",
+                        })
+                except Exception:
+                    pass
+
+        return {"nodes": nodes, "edges": edges}
+
     def get_stats(self) -> GraphStats:
         """Get overall graph statistics."""
         from em_backend.graph.schema import get_graph_stats

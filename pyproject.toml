@@ -47,6 +47,7 @@ dependencies = [
     "playwright>=1.40.0",
     "pdfplumber>=0.11.0",
     "lxml>=5.0.0",
+    "mcp[cli]>=1.0.0",
 ]
 
 [dependency-groups]
