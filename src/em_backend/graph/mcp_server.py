@@ -11,10 +11,7 @@ import os
 import psycopg2
 from mcp.server.fastmcp import FastMCP
 
-mcp = FastMCP(
-    "hungarian-politics-kg",
-    description="Hungarian Political Argument Knowledge Graph — query arguments, compare parties, find rebuttals, generate Pol.is questions",
-)
+mcp = FastMCP("hungarian-politics-kg")
 
 # Connection config (override for local dev vs Docker)
 AGE_URL = os.environ.get(
@@ -341,13 +338,58 @@ def get_neighborhood(node_type: str, node_name: str, depth: int = 1) -> str:
     Returns:
         JSON with {nodes: [...], edges: [...]} for graph visualization.
     """
-    from em_backend.graph.db import get_graph_db
-    from em_backend.graph.query_service import KnowledgeGraphService
+    escaped = node_name.replace("'", "\\'")
+    nodes: dict[str, dict] = {}
+    edges: list[dict] = []
 
-    graph = get_graph_db()
-    service = KnowledgeGraphService(graph)
-    result = service.get_neighborhood(node_type, node_name, depth)
-    return json.dumps(result, ensure_ascii=False, indent=2)
+    if node_type == "Topic":
+        prop, root_id = "name", f"topic::{node_name}"
+    elif node_type == "Party":
+        prop, root_id = "shortname", f"party::{node_name}"
+    else:
+        prop, root_id = "text", f"arg::{node_name[:80]}"
+
+    nodes[root_id] = {"id": root_id, "type": node_type, "label": node_name[:120], "properties": {}}
+
+    if node_type == "Topic":
+        results = _cypher(
+            f"MATCH (a:Argument)-[:ABOUT]->(t:Topic {{{prop}: '{escaped}'}}) "
+            f"OPTIONAL MATCH (a)-[:MADE_BY]->(p:Party) "
+            f"RETURN a.text, a.argument_type, a.sentiment, a.strength, p.shortname LIMIT 30",
+            columns=["text", "arg_type", "sentiment", "strength", "party"],
+        )
+        for r in results:
+            text = str(r.get("text", ""))
+            aid = f"arg::{text[:80]}"
+            nodes[aid] = {"id": aid, "type": "Argument", "label": text[:120], "properties": dict(r)}
+            edges.append({"source": aid, "target": root_id, "type": "ABOUT"})
+            party = r.get("party")
+            if party:
+                pid = f"party::{party}"
+                if pid not in nodes:
+                    nodes[pid] = {"id": pid, "type": "Party", "label": str(party), "properties": {}}
+                edges.append({"source": aid, "target": pid, "type": "MADE_BY"})
+
+    elif node_type == "Party":
+        results = _cypher(
+            f"MATCH (a:Argument)-[:MADE_BY]->(p:Party {{{prop}: '{escaped}'}}) "
+            f"OPTIONAL MATCH (a)-[:ABOUT]->(t:Topic) "
+            f"RETURN a.text, a.argument_type, a.sentiment, t.name LIMIT 30",
+            columns=["text", "arg_type", "sentiment", "topic"],
+        )
+        for r in results:
+            text = str(r.get("text", ""))
+            aid = f"arg::{text[:80]}"
+            nodes[aid] = {"id": aid, "type": "Argument", "label": text[:120], "properties": dict(r)}
+            edges.append({"source": aid, "target": root_id, "type": "MADE_BY"})
+            topic = r.get("topic")
+            if topic:
+                tid = f"topic::{topic}"
+                if tid not in nodes:
+                    nodes[tid] = {"id": tid, "type": "Topic", "label": str(topic), "properties": {}}
+                edges.append({"source": aid, "target": tid, "type": "ABOUT"})
+
+    return json.dumps({"nodes": list(nodes.values()), "edges": edges}, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":
