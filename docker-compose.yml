@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - age_postgres_data:/var/lib/postgresql/data
+      - age_postgres_data:/var/lib/postgresql
     ports:
       - "5433:5432"
     networks:
