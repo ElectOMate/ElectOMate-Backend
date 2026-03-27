@@ -1,7 +1,9 @@
 services:
-  # Apache AGE Graph Database (PostgreSQL + AGE extension)
+  # Apache AGE Graph Database (PostgreSQL + AGE + pgvector)
   age-postgres:
-    image: apache/age:latest
+    build:
+      context: .
+      dockerfile: docker/age-pgvector.Dockerfile
     container_name: electomate-age
     restart: unless-stopped
     environment:
