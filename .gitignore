@@ -239,3 +239,6 @@ scripts/append-db-to-azure.sh
 scripts/sync-db-to-azure.sh
 # Claude Code logs (session-specific, not committed)
 .claude/logs/
+
+# MCP config (contains local paths and secrets)
+.mcp.json
