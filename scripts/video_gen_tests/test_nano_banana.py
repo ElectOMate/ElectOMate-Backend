@@ -61,7 +61,6 @@ def main() -> None:
 
     print("\n=== SUCCESS ===")
     print(f"Output: {output_path.resolve()}")
-    return str(output_path.resolve())
 
 
 if __name__ == "__main__":

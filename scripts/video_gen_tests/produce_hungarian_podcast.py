@@ -11,12 +11,28 @@ import json
 import subprocess
 import sys
 import time
+from datetime import datetime, timezone
 from io import BytesIO
 from pathlib import Path
 
 from PIL import Image as PILImage
 
 from config import GEMINI_API_KEY, OUTPUT_DIR
+
+# --- Production log ---
+PRODUCTION_LOG: dict = {
+    "run_started": None,
+    "run_finished": None,
+    "model_image": "gemini-2.5-flash-image",
+    "model_video": "veo-3.0-generate-001",
+    "character_description": None,
+    "angles": {},
+    "shots": [],
+    "clips_generated": [],
+    "clips_failed": [],
+    "final_outputs": [],
+}
+VEO_POLL_TIMEOUT = 300  # 5 minutes max per clip
 
 # Directories
 PODCAST_DIR = OUTPUT_DIR / "hungarian_podcast"
@@ -208,9 +224,17 @@ def generate_angle_image(client, angle_key: str) -> Path:
             image = PILImage.open(BytesIO(part.inline_data.data))
             image.save(output_path)
             print(f"    Saved: {output_path.name} ({image.size[0]}x{image.size[1]})")
+            PRODUCTION_LOG["clips_generated"].append({
+                "type": "image",
+                "angle": angle_key,
+                "file": str(output_path.resolve()),
+                "size": f"{image.size[0]}x{image.size[1]}",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            })
             return output_path
 
     print(f"    ERROR: No image generated for {angle_key}")
+    PRODUCTION_LOG["clips_failed"].append({"type": "image", "angle": angle_key})
     sys.exit(1)
 
 
@@ -266,6 +290,12 @@ def generate_video_clip(client, clip_num: int, start_frame: Path, prompt: str) -
     start = time.time()
     while not operation.done:
         elapsed = int(time.time() - start)
+        if elapsed > VEO_POLL_TIMEOUT:
+            print(f"    ERROR: Timed out after {VEO_POLL_TIMEOUT}s for clip {clip_num}")
+            PRODUCTION_LOG["clips_failed"].append({
+                "type": "video", "clip": clip_num, "reason": "timeout",
+            })
+            return None
         print(f"    [{elapsed}s] Generating...")
         time.sleep(15)
         operation = client.operations.get(operation)
@@ -274,7 +304,9 @@ def generate_video_clip(client, clip_num: int, start_frame: Path, prompt: str) -
 
     if not operation.response or not operation.response.generated_videos:
         print(f"    ERROR: No video generated for clip {clip_num}")
-        print(f"    Operation: {operation}")
+        PRODUCTION_LOG["clips_failed"].append({
+            "type": "video", "clip": clip_num, "reason": "no_response",
+        })
         return None
 
     video = operation.response.generated_videos[0]
@@ -283,6 +315,16 @@ def generate_video_clip(client, clip_num: int, start_frame: Path, prompt: str) -
 
     size_mb = output_path.stat().st_size / (1024 * 1024)
     print(f"    Done in {elapsed}s: {output_path.name} ({size_mb:.1f} MB)")
+
+    PRODUCTION_LOG["clips_generated"].append({
+        "type": "video",
+        "clip": clip_num,
+        "file": str(output_path.resolve()),
+        "size_mb": round(size_mb, 1),
+        "generation_time_s": elapsed,
+        "prompt": prompt[:120] + "..." if len(prompt) > 120 else prompt,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
     return output_path
 
 
@@ -312,6 +354,14 @@ def main() -> None:
     if not GEMINI_API_KEY:
         print("ERROR: GEMINI_API_KEY not set.")
         sys.exit(1)
+
+    PRODUCTION_LOG["run_started"] = datetime.now(timezone.utc).isoformat()
+    PRODUCTION_LOG["character_description"] = CHARACTER
+    PRODUCTION_LOG["angles"] = ANGLES
+    PRODUCTION_LOG["shots"] = [
+        {"clip": n, "angle": a, "continuation": c, "prompt": p}
+        for n, a, c, p in SHOTS
+    ]
 
     client = get_client()
     clip_paths: list[Path] = []
@@ -359,13 +409,36 @@ def main() -> None:
     final_output = PODCAST_DIR / "hungarian_democracy_podcast_FINAL.mp4"
     concatenate_clips(clip_paths, final_output)
 
-    # Summary
-    print("\n" + "=" * 60)
-    print("  PRODUCTION COMPLETE")
-    print("=" * 60)
-    print(f"  Final video: {final_output.resolve()}")
-    print(f"  Clips: {CLIPS_DIR.resolve()}/")
-    print(f"  Frames: {FRAMES_DIR.resolve()}/")
+    PRODUCTION_LOG["final_outputs"].append(str(final_output.resolve()))
+
+    # Phase 4: Mix background music (if available)
+    music_file = OUTPUT_DIR / "Tony Anderson - Retour.mp3"
+    if music_file.exists():
+        print("\n--- Phase 4: Mixing background music ---")
+        final_music = PODCAST_DIR / "hungarian_democracy_podcast_FINAL_music.mp4"
+        try:
+            subprocess.run(
+                ["ffmpeg", "-y",
+                 "-i", str(final_output),
+                 "-i", str(music_file),
+                 "-filter_complex",
+                 "[0:a]volume=1.0[voice];[1:a]volume=0.12[music];"
+                 "[voice][music]amix=inputs=2:duration=shortest[out]",
+                 "-map", "0:v", "-map", "[out]",
+                 "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+                 "-movflags", "+faststart",
+                 str(final_music)],
+                capture_output=True, check=True,
+            )
+            size_mb = final_music.stat().st_size / (1024 * 1024)
+            print(f"  With music: {final_music.name} ({size_mb:.1f} MB)")
+            PRODUCTION_LOG["final_outputs"].append(str(final_music.resolve()))
+            PRODUCTION_LOG["background_music"] = str(music_file.resolve())
+        except subprocess.CalledProcessError as e:
+            print(f"  WARNING: Music mixing failed: {e.stderr[:200] if e.stderr else 'unknown error'}")
+    else:
+        print("\n--- Phase 4: Skipping music (no music file found) ---")
+        print(f"  Place music at: {music_file}")
 
     # Verify
     result = subprocess.run(
@@ -376,8 +449,29 @@ def main() -> None:
     info = json.loads(result.stdout)["format"]
     duration = float(info["duration"])
     size_mb = int(info["size"]) / (1024 * 1024)
+
+    PRODUCTION_LOG["run_finished"] = datetime.now(timezone.utc).isoformat()
+    PRODUCTION_LOG["final_duration_s"] = round(duration, 2)
+    PRODUCTION_LOG["final_size_mb"] = round(size_mb, 1)
+    PRODUCTION_LOG["total_clips"] = len(clip_paths)
+    PRODUCTION_LOG["clips_failed_count"] = len(PRODUCTION_LOG["clips_failed"])
+
+    # Write production log
+    log_path = PODCAST_DIR / "production_log.json"
+    with open(log_path, "w") as f:
+        json.dump(PRODUCTION_LOG, f, indent=2, ensure_ascii=False)
+    print(f"\n  Production log: {log_path.resolve()}")
+
+    # Summary
+    print("\n" + "=" * 60)
+    print("  PRODUCTION COMPLETE")
+    print("=" * 60)
+    print(f"  Final video: {final_output.resolve()}")
+    print(f"  Clips: {CLIPS_DIR.resolve()}/")
+    print(f"  Frames: {FRAMES_DIR.resolve()}/")
     print(f"  Duration: {int(duration // 60)}:{int(duration % 60):02d}")
     print(f"  Size: {size_mb:.1f} MB")
+    print(f"  Log: {log_path.resolve()}")
 
 
 if __name__ == "__main__":
