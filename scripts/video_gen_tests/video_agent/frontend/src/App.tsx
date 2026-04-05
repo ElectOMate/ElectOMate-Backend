@@ -71,8 +71,31 @@ export default function App() {
   const [progressLog, setProgressLog] = useState<ProgressEntry[]>([])
   const [metadata, setMetadata] = useState<any>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [previousJobs, setPreviousJobs] = useState<Array<{ job_id: string; status: string; topic: string }>>([])
 
   const update = (key: string, value: any) => setForm(f => ({ ...f, [key]: value }))
+
+  // Load previous productions on mount
+  useEffect(() => {
+    fetch(`${API}/jobs`).then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setPreviousJobs(data)
+    }).catch(() => {})
+  }, [])
+
+  const loadJob = async (jobId: string) => {
+    try {
+      const resp = await fetch(`${API}/jobs/${jobId}`)
+      const job: Job = await resp.json()
+      setActiveJob(job)
+      if (job.status === 'completed') {
+        const metaResp = await fetch(`${API}/jobs/${jobId}/metadata`)
+        setMetadata(await metaResp.json())
+      }
+      const progResp = await fetch(`${API}/jobs/${jobId}/progress`)
+      const prog = await progResp.json()
+      setProgressLog(prog.progress_log || [])
+    } catch {}
+  }
 
   const submit = async () => {
     setSubmitting(true)
@@ -110,6 +133,10 @@ export default function App() {
           const metaResp = await fetch(`${API}/jobs/${activeJob.job_id}/metadata`)
           const meta = await metaResp.json()
           setMetadata(meta)
+          // Refresh previous jobs list
+          fetch(`${API}/jobs`).then(r => r.json()).then(data => {
+            if (Array.isArray(data)) setPreviousJobs(data)
+          }).catch(() => {})
         }
       } catch {}
     }, 3000)
@@ -224,11 +251,41 @@ export default function App() {
           </div>
         </div>
 
+        {/* Previous Productions */}
+        {previousJobs.length > 0 && !activeJob && (
+          <div style={STYLES.card}>
+            <h3 style={{ margin: '0 0 12px', fontSize: 16 }}>Previous Productions</h3>
+            {previousJobs.map(j => (
+              <div key={j.job_id} style={{
+                ...STYLES.sourceCard, cursor: 'pointer', display: 'flex',
+                justifyContent: 'space-between', alignItems: 'center',
+              }} onClick={() => loadJob(j.job_id)}>
+                <div>
+                  <strong style={{ color: '#c9d1d9' }}>{j.topic || j.job_id}</strong>
+                  <br />
+                  <span style={{ fontSize: 12, color: '#484f58' }}>{j.job_id}</span>
+                </div>
+                <span style={{
+                  ...STYLES.badge,
+                  background: statusColors[j.status] || '#484f58',
+                  color: '#fff',
+                }}>{j.status}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Progress */}
         {activeJob && (
           <div style={STYLES.card}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <h3 style={{ margin: 0, fontSize: 16 }}>Production: {activeJob.job_id}</h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <button onClick={() => { setActiveJob(null); setMetadata(null); setProgressLog([]) }}
+                  style={{ background: 'none', border: '1px solid #30363d', borderRadius: 4, color: '#8b949e', padding: '4px 8px', cursor: 'pointer', fontSize: 12 }}>
+                  ← Back
+                </button>
+                <h3 style={{ margin: 0, fontSize: 16 }}>Production: {activeJob.job_id}</h3>
+              </div>
               <span style={{ ...STYLES.badge, background: statusColors[activeJob.status] || '#484f58', color: '#fff' }}>
                 {activeJob.status}
               </span>
