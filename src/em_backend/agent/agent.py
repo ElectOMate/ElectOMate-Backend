@@ -94,17 +94,47 @@ COUNTRY_LANGUAGE_MAP: dict[str, dict[str, str]] = {
 
 # Answer length definitions for prompt injection
 ANSWER_LENGTH_DEFINITIONS: dict[str, str] = {
-    "Short": "The user prefers **Short** answers: 1-2 very concise sentences or bullet points. Be brief and to the point.",
-    "Medium": "The user prefers **Medium** answers: 1-3 short sentences or bullet points. This is the standard length.",
-    "Long": "The user prefers **Long** answers: 3-5 detailed sentences or comprehensive bullet points with more context and explanation.",
+    "Short": (
+        "STRICT LENGTH CONSTRAINT — **Short** mode: Respond in **maximum 2 sentences**. "
+        "No lists, no bullet points unless explicitly requested. Be extremely concise. "
+        "If you cannot fit the answer in 2 sentences, prioritize the single most important point."
+    ),
+    "Medium": (
+        "**Medium** length: 2-4 sentences or 3-4 bullet points. "
+        "This is the standard length — balanced between brevity and completeness."
+    ),
+    "Long": (
+        "**Long** mode: Provide a **comprehensive, detailed answer** with 5-8 sentences "
+        "or a structured list of 4-6 bullet points. Include context, nuance, and specific "
+        "policy details. Go deeper than a surface-level summary. Use subheadings if helpful."
+    ),
 }
 
 # Language style definitions for prompt injection
 LANGUAGE_STYLE_DEFINITIONS: dict[str, str] = {
-    "Simple": "The user prefers a **Simple** communication style: Use plain, easy-to-understand language. Avoid jargon and technical terms. Explain concepts as if to someone unfamiliar with politics.",
-    "Normal": "The user prefers a **Normal** communication style: Standard, clear communication suitable for general audiences.",
-    "Expert": "The user prefers an **Expert** communication style: Use precise political terminology and assume familiarity with political concepts. You may include detailed policy analysis.",
-    "Unhinged": "The user prefers an **Unhinged** communication style: Be creative, humorous, and engaging while staying factual. Use colorful language and metaphors to make politics entertaining.",
+    "Simple": (
+        "STRICT STYLE CONSTRAINT — **Simple** mode: Write for a 16-year-old who has never "
+        "followed politics. Use short sentences. No technical jargon — replace terms like "
+        "'kvóta', 'paktum', 'szubszidiaritás', 'migrationspakt' with everyday equivalents. "
+        "Example: instead of 'migrációs paktum' say 'az EU szabálya arról, hogyan osszák el a menekülteket'."
+    ),
+    "Normal": (
+        "**Normal** communication style: Standard, clear communication suitable for general audiences. "
+        "Use common political terms but explain unusual ones briefly."
+    ),
+    "Expert": (
+        "**Expert** mode: Write for a political science audience. Use precise terminology: "
+        "'migrációs paktum', 'hatásköri szubszidiaritás', 'dublini rendszer', 'Schengen-övezet'. "
+        "Reference specific EU directives, policy frameworks, or legal instruments when relevant. "
+        "Assume the reader understands institutional structures and legislative processes."
+    ),
+    "Unhinged": (
+        "**Unhinged** mode: Channel the energy of a late-night political comedy show. "
+        "Use vivid metaphors, dramatic analogies, pop culture references, and sharp wit. "
+        "Be entertaining and irreverent but NEVER fabricate facts — every claim must still be accurate. "
+        "Example tone: 'A TISZA párt úgy kezeli az illegális bevándorlást, mint egy bouncer a beléptetést — "
+        "zéró tolerancia, ha nincs a listán, nem jössz be.' Make the reader laugh while they learn."
+    ),
 }
 
 
