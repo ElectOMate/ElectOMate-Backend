@@ -370,15 +370,6 @@ export default function SigmaGraph() {
 
   /* ---------- Render ---------- */
 
-  if (loading) {
-    return (
-      <div className="loading">
-        <div className="spinner" />
-        Loading graph data...
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="graph-container">
@@ -390,11 +381,18 @@ export default function SigmaGraph() {
 
   return (
     <div className="graph-container">
+      {loading && (
+        <div className="loading-overlay">
+          <div className="spinner" />
+          Loading graph data...
+        </div>
+      )}
+
       <Link to="/" className="back-link">
         Home
       </Link>
 
-      {/* Sigma canvas */}
+      {/* Sigma canvas — must always be in DOM for ref */}
       <div ref={containerRef} className="sigma-container" />
 
       {/* Search */}

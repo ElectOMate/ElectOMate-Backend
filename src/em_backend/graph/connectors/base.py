@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import date
 from enum import StrEnum
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -31,17 +31,17 @@ class Modality(StrEnum):
 
 class SpeakerInfo(BaseModel):
     name: str
-    party: str | None = None
-    role: str | None = None  # e.g., "Prime Minister", "MP", "Party Leader"
-    party_at_time: str | None = None  # party affiliation at time of speech
+    party: Optional[str] = None
+    role: Optional[str] = None  # e.g., "Prime Minister", "MP", "Party Leader"
+    party_at_time: Optional[str] = None  # party affiliation at time of speech
 
 
 class TextSegment(BaseModel):
     text: str
-    speaker: str | None = None
-    timestamp: str | None = None  # MM:SS for video, None for text
-    page_number: int | None = None  # for PDFs
-    paragraph_index: int | None = None
+    speaker: Optional[str] = None
+    timestamp: Optional[str] = None  # MM:SS for video, None for text
+    page_number: Optional[int] = None  # for PDFs
+    paragraph_index: Optional[int] = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -50,10 +50,10 @@ class IngestedDocument(BaseModel):
 
     source_type: SourceType
     modality: Modality
-    source_url: str | None = None
-    source_path: str | None = None  # local file path if applicable
+    source_url: Optional[str] = None
+    source_path: Optional[str] = None  # local file path if applicable
     title: str
-    date: date | None = None
+    date: Optional[date] = None
     language: str = "hu"  # ISO 639-1
     speakers: list[SpeakerInfo] = Field(default_factory=list)
     segments: list[TextSegment] = Field(default_factory=list)

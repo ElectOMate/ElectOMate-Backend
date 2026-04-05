@@ -2,6 +2,84 @@
 
 A knowledge graph system for Hungarian political arguments built on Apache AGE (PostgreSQL graph extension) with pgvector semantic embeddings.
 
+## Quick Start
+
+### Option A: Full stack via Docker (recommended)
+
+```bash
+cd ElectOMate-Backend
+
+# 1. Copy and fill in env vars
+cp .env.graph.example .env.graph
+# Edit .env.graph — at minimum set OPENAI_API_KEY
+
+# 2. Start everything (AGE DB + Backend API + React Explorer UI)
+docker compose -f docker-compose.graph.yml up -d
+
+# 3. On first run (or after DB wipe), rebuild the graph
+docker compose -f docker-compose.graph.yml exec app python scripts/rebuild_hungarian_graph.py
+```
+
+After startup:
+
+| Service | URL |
+|---------|-----|
+| **Graph Explorer UI** | http://localhost:9001 |
+| **Backend API** | http://localhost:9000 |
+| **AGE PostgreSQL** | `localhost:5433` |
+
+### Option B: Local dev (piece by piece)
+
+```bash
+cd ElectOMate-Backend
+
+# 1. Start just the AGE database
+docker compose -f docker-compose.graph.yml up age-postgres -d
+
+# 2. Set env vars (or use .env file)
+export AGE_POSTGRES_URL="host=localhost port=5433 dbname=age_graph user=postgres password=postgres"
+export OPENAI_API_KEY="your-key-here"
+
+# 3. Rebuild the graph from manifesto PDFs
+.venv/bin/python scripts/rebuild_hungarian_graph.py
+
+# 4. Start the backend API
+.venv/bin/python -m uvicorn em_backend.main:app --port 9000
+
+# 5. Start the Graph Explorer UI
+cd graph-explorer && npm install && npm run dev   # http://localhost:9001
+```
+
+The UI proxies API calls to `http://localhost:9000` (backend).
+
+## Rebuilding the Graph
+
+If the database gets wiped or you need a fresh start:
+
+```bash
+# Full rebuild (schema + manifesto ingestion + enrichment + embeddings + relationships)
+.venv/bin/python scripts/rebuild_hungarian_graph.py
+
+# Skip expensive GPT-4o relationship detection
+.venv/bin/python scripts/rebuild_hungarian_graph.py --skip-relationships
+
+# Skip BGE-M3 embedding computation
+.venv/bin/python scripts/rebuild_hungarian_graph.py --skip-embeddings
+
+# Only create schema and seed data (topics + parties, no ingestion)
+.venv/bin/python scripts/rebuild_hungarian_graph.py --schema-only
+```
+
+The rebuild script:
+1. Creates the AGE graph and pgvector table
+2. Seeds 14 Hungarian political topics and 7 parties
+3. Extracts arguments from all 7 party manifesto PDFs (via GPT-4o)
+4. Enriches with politicians, platforms, locations, organizations
+5. Computes BGE-M3 embeddings and stores in pgvector
+6. Detects SUPPORTS/REBUTS/CONTRADICTS relationships between arguments
+
+**Requires:** `OPENAI_API_KEY` (for argument extraction) and AGE PostgreSQL running.
+
 ## Architecture
 
 ```
@@ -30,14 +108,6 @@ graph/
     ├── question_generator.py  # Generate follow-up questions
     └── seed_generator.py      # Generate seed statements for Pol.is
 ```
-
-## Services & Ports
-
-| Service | Port | Description |
-|---------|------|-------------|
-| Apache AGE (PostgreSQL) | `5433` (local) / `5432` (Docker internal) | Graph database with pgvector |
-| Backend API | `8000` | FastAPI — graph endpoints at `/v2/graph/*` |
-| Graph Explorer UI | `9001` | React + React Flow visualization |
 
 ## API Endpoints
 
@@ -80,42 +150,37 @@ graph/
 | `VISION_MODEL` | Vision model name | `gpt-4o` |
 | `LOG_LEVEL` | Logging verbosity | `DEBUG` |
 
-## Quick Start
-
-### 1. Start the AGE database
-
-```bash
-docker compose up age-postgres -d
-```
-
-This starts PostgreSQL 18 with Apache AGE + pgvector extensions on port **5433**.
-
-### 2. Set environment variables
-
-```bash
-export AGE_POSTGRES_URL="host=localhost port=5433 dbname=age_graph user=postgres password=postgres"
-export OPENAI_API_KEY="your-key-here"
-```
-
-### 3. Build the graph
-
-```bash
-python -m em_backend.graph.builder
-```
-
-### 4. Run the MCP server (for Claude Code)
+## MCP Server (Claude Code integration)
 
 Configured in `.mcp.json` at project root. Requires `AGE_POSTGRES_URL` and `OPENAI_API_KEY` in environment.
 
-### 5. Start the Graph Explorer UI
+## Troubleshooting
 
-```bash
-cd graph-explorer
-npm install
-npm run dev   # http://localhost:9001
+### DB was wiped / graph is empty
+Run the rebuild script: `.venv/bin/python scripts/rebuild_hungarian_graph.py`
+
+### `kg-frontend` stuck in restart loop
+The frontend container depends on the backend (`app` service). Start the full stack:
+`docker compose -f docker-compose.graph.yml up -d`
+
+### Pydantic type errors on Python 3.13
+Known issue with Pydantic 2.11 + Python 3.13. The `base.py` connector uses `Optional[X]` instead of `X | None` as a workaround.
+
+### `argument_embeddings` table missing
+The rebuild script creates it automatically. Or manually:
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+CREATE TABLE argument_embeddings (
+    id SERIAL PRIMARY KEY,
+    argument_id TEXT UNIQUE NOT NULL,
+    argument_text TEXT NOT NULL,
+    embedding vector(1024) NOT NULL,
+    party TEXT, topics TEXT[], speaker TEXT,
+    arg_type TEXT, sentiment TEXT, source_date TEXT, platform TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX idx_argument_embeddings_hnsw ON argument_embeddings USING hnsw (embedding vector_cosine_ops);
 ```
-
-The UI proxies API calls to `http://localhost:9000` (backend).
 
 ## External Service URLs
 

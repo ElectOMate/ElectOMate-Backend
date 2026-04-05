@@ -295,7 +295,6 @@ export default function FlowGraph() {
   const filteredEdges = useMemo(() => {
     return edges.filter((e) => {
       if (!visibleNodeIds.has(e.source) || !visibleNodeIds.has(e.target)) return false;
-      const label = (e.label as string) || e.style?.stroke || "";
       // Check hidden relationship types
       for (const rel of hiddenRelTypes) {
         if (e.id.includes(rel)) return false;
