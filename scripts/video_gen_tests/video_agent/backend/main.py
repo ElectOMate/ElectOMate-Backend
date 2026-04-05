@@ -89,10 +89,13 @@ async def run_production_job(job_id: str, config: VideoAgentConfig):
         jobs[job_id]["status"] = "running"
         jobs[job_id]["step"] = step
         jobs[job_id]["message"] = msg
-        jobs[job_id]["progress_log"].append({"step": step, "message": msg})
 
     agent = VideoProducerAgent(config, progress_callback=progress_cb)
+    jobs[job_id]["agent"] = agent  # Keep reference for log access
     result = await agent.produce()
+
+    # Store the full agent log in the job
+    jobs[job_id]["progress_log"] = agent.log.get_progress_list()
 
     if result.success:
         jobs[job_id]["status"] = "completed"
@@ -128,6 +131,7 @@ async def start_production(req: ProductionRequest, background_tasks: BackgroundT
         "message": "Queued",
         "result": None,
         "progress_log": [],
+        "agent": None,
         "config": req.model_dump(),
     }
 
@@ -192,11 +196,31 @@ async def get_video(job_id: str, captioned: bool = False):
 async def get_progress(job_id: str):
     if job_id not in jobs:
         return {"error": "Job not found"}
+
+    # Pull live log from agent if still running
+    agent = jobs[job_id].get("agent")
+    if agent:
+        progress = agent.log.get_progress_list()
+    else:
+        progress = jobs[job_id].get("progress_log", [])
+
     return {
         "job_id": job_id,
         "status": jobs[job_id]["status"],
-        "progress_log": jobs[job_id].get("progress_log", []),
+        "progress_log": progress,
     }
+
+
+@app.get("/jobs/{job_id}/log")
+async def get_full_log(job_id: str):
+    """Return the full agent log (all entries including tool calls and data)."""
+    if job_id not in jobs:
+        return {"error": "Job not found"}
+
+    agent = jobs[job_id].get("agent")
+    if agent:
+        return {"job_id": job_id, "entries": agent.log.entries}
+    return {"job_id": job_id, "entries": jobs[job_id].get("progress_log", [])}
 
 
 if __name__ == "__main__":

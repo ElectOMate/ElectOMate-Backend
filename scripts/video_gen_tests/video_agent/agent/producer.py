@@ -24,6 +24,7 @@ for env_path in [Path(__file__).parent.parent / ".env", Path(__file__).parent.pa
         break
 
 from agent.tools import research, video_gen, post_process
+from agent.logger import AgentLogger
 
 
 # ---------------------------------------------------------------------------
@@ -149,7 +150,6 @@ class VideoProducerAgent:
 
     def __init__(self, config: VideoAgentConfig, progress_callback=None):
         self.config = config
-        self.progress = progress_callback or (lambda step, msg: print(f"  [{step}] {msg}"))
         self.project_dir = Path(config.output_dir) / config.project_name
         self.frames_dir = self.project_dir / "frames"
         self.clips_dir = self.project_dir / "clips"
@@ -157,6 +157,12 @@ class VideoProducerAgent:
 
         for d in [self.project_dir, self.frames_dir, self.clips_dir, self.sources_dir]:
             d.mkdir(parents=True, exist_ok=True)
+
+        # Structured logger — writes to stdout + file
+        self.log = AgentLogger(str(self.project_dir), job_id=config.project_name)
+
+        # Legacy callback for backend API compatibility
+        self._progress_cb = progress_callback
 
         self.metadata = {
             "config": asdict(config),
@@ -168,6 +174,12 @@ class VideoProducerAgent:
             "timestamps": [],
             "final_outputs": [],
         }
+
+    def progress(self, step: str, msg: str) -> None:
+        """Emit progress to both the structured logger and the API callback."""
+        self.log.step(step, msg)
+        if self._progress_cb:
+            self._progress_cb(step, msg)
 
     async def produce(self) -> ProductionResult:
         result = ProductionResult()
@@ -204,11 +216,15 @@ class VideoProducerAgent:
             clip_paths = self._add_source_overlays(clip_paths, script, sources)
 
             # Step 7: Concatenate
-            self.progress("concat", "Concatenating clips...")
+            self.progress("concat", f"Concatenating {len(clip_paths)} clips...")
+            self.log.tool_call("concatenate_clips", {"num_clips": len(clip_paths)})
+            t0 = time.time()
             final = post_process.concatenate_clips(
                 clip_paths,
                 str(self.project_dir / f"{self.config.project_name}_FINAL.mp4"),
             )
+            size_mb = Path(final).stat().st_size / (1024 * 1024)
+            self.log.tool_result("concatenate_clips", {"file": final, "size_mb": round(size_mb, 1)}, time.time() - t0)
             result.final_video = final
             self.metadata["final_outputs"].append(final)
 
@@ -246,14 +262,14 @@ class VideoProducerAgent:
             )
             result.duration_seconds = float(json.loads(probe.stdout)["format"]["duration"])
 
-            self.progress("done", f"Production complete: {final}")
+            self.log.done(f"Production complete: {final}")
 
         except Exception as e:
             result.error = str(e)
             self.metadata["error"] = str(e)
             self.metadata["run_finished"] = datetime.now(timezone.utc).isoformat()
             self._write_metadata()
-            self.progress("error", f"Failed: {e}")
+            self.log.error(f"Production failed: {e}")
             import traceback
             traceback.print_exc()
 
@@ -264,24 +280,45 @@ class VideoProducerAgent:
     async def _research(self) -> dict:
         data = {}
         if "web" in self.config.search_sources:
-            data = await research.web_search(
-                f"{self.config.topic} facts statistics sources",
-                str(self.project_dir),
-            )
+            query = f"{self.config.topic} facts statistics sources"
+            self.log.tool_call("web_search", {"query": query})
+            t0 = time.time()
+            data = await research.web_search(query, str(self.project_dir))
+            self.log.tool_result("web_search", {
+                "sources_found": len(data.get("sources", [])),
+                "answer_length": len(data.get("answer", "")),
+            }, time.time() - t0)
+            self.log.data("research_answer", data.get("answer", ""))
+            for src in data.get("sources", []):
+                self.log.info(f"Source found: [{src.get('index')}] {src.get('title', src.get('url', ''))}")
+
         if "knowledge_base" in self.config.search_sources and self.config.manifesto_dir:
-            kb_results = research.search_knowledge_base(
-                self.config.topic, self.config.manifesto_dir,
-            )
+            self.log.tool_call("search_knowledge_base", {"query": self.config.topic, "dir": self.config.manifesto_dir})
+            t0 = time.time()
+            kb_results = research.search_knowledge_base(self.config.topic, self.config.manifesto_dir)
+            self.log.tool_result("search_knowledge_base", {"results": len(kb_results)}, time.time() - t0)
             data["knowledge_base_results"] = kb_results
         return data
 
     def _generate_script(self) -> list[dict]:
-        return video_gen.generate_script(
-            self.config.topic,
-            self.config.num_clips,
-            self.config.tone,
-            self.config.language,
+        self.log.tool_call("generate_script", {
+            "topic": self.config.topic, "segments": self.config.num_clips,
+            "tone": self.config.tone, "language": self.config.language,
+        })
+        t0 = time.time()
+        script = video_gen.generate_script(
+            self.config.topic, self.config.num_clips,
+            self.config.tone, self.config.language,
         )
+        self.log.tool_result("generate_script", {"segments": len(script)}, time.time() - t0)
+        for seg in script:
+            self.log.data(f"script_segment_{seg.get('segment_num', '?')}", {
+                "text": seg.get("text", ""),
+                "angle": seg.get("camera_angle", ""),
+                "needs_source": seg.get("needs_source", False),
+                "source_hint": seg.get("source_hint", ""),
+            })
+        return script
 
     def _collect_sources(self, script: list[dict], research_data: dict) -> list[dict]:
         sources = []
@@ -289,16 +326,21 @@ class VideoProducerAgent:
 
         # Sources from research
         for src in research_data.get("sources", []):
+            url = src.get("url", "")
             screenshot_path = str(self.sources_dir / f"source_{source_idx:02d}.png")
-            research.take_screenshot(src.get("url", ""), screenshot_path)
+            self.log.tool_call("take_screenshot", {"url": url, "output": screenshot_path})
+            t0 = time.time()
+            research.take_screenshot(url, screenshot_path)
+            self.log.tool_result("take_screenshot", {"file": screenshot_path}, time.time() - t0)
             sources.append({
                 "index": source_idx,
                 "title": src.get("title", src.get("url", f"Source {source_idx}")),
-                "url": src.get("url", ""),
+                "url": url,
                 "description": src.get("description", ""),
                 "screenshot": screenshot_path,
                 "type": "web",
             })
+            self.log.info(f"Source {source_idx}: {src.get('title', url)}")
             source_idx += 1
 
         # Sources from script hints
@@ -306,7 +348,9 @@ class VideoProducerAgent:
             if seg.get("needs_source") and seg.get("source_hint"):
                 hint = seg["source_hint"]
                 screenshot_path = str(self.sources_dir / f"source_{source_idx:02d}.png")
+                self.log.tool_call("generate_source_card", {"hint": hint})
                 research._generate_source_card(hint, screenshot_path)
+                self.log.tool_result("generate_source_card", {"file": screenshot_path})
                 sources.append({
                     "index": source_idx,
                     "title": hint,
@@ -315,8 +359,10 @@ class VideoProducerAgent:
                     "screenshot": screenshot_path,
                     "type": "script_citation",
                 })
+                self.log.info(f"Source {source_idx} (citation): {hint}")
                 source_idx += 1
 
+        self.log.data("all_sources", [{"index": s["index"], "title": s["title"], "type": s["type"]} for s in sources])
         return sources
 
     def _generate_angle_images(self, script: list[dict]) -> dict[str, str]:
@@ -338,8 +384,10 @@ class VideoProducerAgent:
         for angle in selected:
             prompt = _build_character_prompt(self.config, angle)
             output = str(self.frames_dir / f"angle_{angle}.png")
-            self.progress("images", f"  Generating {angle}...")
+            self.log.tool_call("generate_image", {"angle": angle, "aspect_ratio": self.config.aspect_ratio, "prompt": prompt[:100] + "..."})
+            t0 = time.time()
             video_gen.generate_image(prompt, output, self.config.aspect_ratio)
+            self.log.tool_result("generate_image", {"file": output, "angle": angle}, time.time() - t0)
             angle_images[angle] = output
 
         return angle_images
@@ -377,10 +425,20 @@ class VideoProducerAgent:
 
             output = str(self.clips_dir / f"clip_{clip_num:02d}.mp4")
             try:
+                self.log.tool_call("generate_video_clip", {
+                    "clip": clip_num, "angle": angle, "frame": frame_path,
+                    "prompt": video_prompt[:120] + "...",
+                })
+                t0 = time.time()
                 video_gen.generate_video_clip(
                     frame_path, video_prompt, output,
                     self.config.aspect_ratio, self.config.resolution,
                 )
+                dur = time.time() - t0
+                size_mb = Path(output).stat().st_size / (1024 * 1024)
+                self.log.tool_result("generate_video_clip", {
+                    "file": output, "size_mb": round(size_mb, 1),
+                }, dur)
                 clip_paths.append(output)
                 prev_clip = output
 
@@ -389,9 +447,10 @@ class VideoProducerAgent:
                     "angle": angle,
                     "text": text,
                     "file": output,
+                    "generation_time_s": round(dur, 1),
                 })
             except Exception as e:
-                self.progress("video", f"  FAILED clip {clip_num}: {e}")
+                self.log.tool_error("generate_video_clip", f"Clip {clip_num}: {e}")
 
         return clip_paths
 
@@ -475,6 +534,11 @@ class VideoProducerAgent:
         self.metadata["timestamps"] = timestamps
 
     def _write_metadata(self) -> str:
+        # Include agent log entries in metadata
+        self.metadata["agent_log"] = self.log.entries
+        self.metadata["agent_log_file"] = str(self.project_dir / "agent_log.jsonl")
+        self.metadata["agent_log_text"] = str(self.project_dir / "agent_log.txt")
+
         path = str(self.project_dir / "production_metadata.json")
         with open(path, "w") as f:
             json.dump(self.metadata, f, indent=2, ensure_ascii=False)
