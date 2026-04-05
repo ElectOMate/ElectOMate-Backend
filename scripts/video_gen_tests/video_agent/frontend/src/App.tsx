@@ -314,19 +314,33 @@ export default function App() {
           <div style={STYLES.card}>
             <h3 style={{ margin: '0 0 16px', fontSize: 16, color: '#3fb950' }}>Production Complete</h3>
 
-            <div style={STYLES.row}>
-              <div style={STYLES.col}>
-                <label style={STYLES.label}>Duration</label>
-                <p style={{ margin: 0 }}>{Math.floor(activeJob.result.duration_seconds / 60)}:{String(Math.floor(activeJob.result.duration_seconds % 60)).padStart(2, '0')}</p>
-              </div>
-              <div style={STYLES.col}>
-                <label style={STYLES.label}>Video (no captions)</label>
-                <a href={`${API}/jobs/${activeJob.job_id}/video`} target="_blank" style={{ color: '#58a6ff' }}>Download</a>
-              </div>
-              <div style={STYLES.col}>
-                <label style={STYLES.label}>Video (captioned)</label>
-                <a href={`${API}/jobs/${activeJob.job_id}/video?captioned=true`} target="_blank" style={{ color: '#58a6ff' }}>Download</a>
-              </div>
+            <div style={{ marginBottom: 16 }}>
+              <label style={STYLES.label}>Duration: {Math.floor(activeJob.result.duration_seconds / 60)}:{String(Math.floor(activeJob.result.duration_seconds % 60)).padStart(2, '0')}</label>
+            </div>
+
+            {/* Video Players */}
+            <div style={{ marginBottom: 24 }}>
+              <h4 style={{ fontSize: 14, color: '#8b949e', marginBottom: 8 }}>Video (no captions)</h4>
+              <video
+                controls
+                style={{ width: '100%', maxWidth: '100%', borderRadius: 6, background: '#000' }}
+                src={`${API}/jobs/${activeJob.job_id}/video`}
+              />
+              <a href={`${API}/jobs/${activeJob.job_id}/video`} download style={{ color: '#58a6ff', fontSize: 13, marginTop: 4, display: 'inline-block' }}>
+                Download
+              </a>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <h4 style={{ fontSize: 14, color: '#8b949e', marginBottom: 8 }}>Video (with captions)</h4>
+              <video
+                controls
+                style={{ width: '100%', maxWidth: '100%', borderRadius: 6, background: '#000' }}
+                src={`${API}/jobs/${activeJob.job_id}/video?captioned=true`}
+              />
+              <a href={`${API}/jobs/${activeJob.job_id}/video?captioned=true`} download style={{ color: '#58a6ff', fontSize: 13, marginTop: 4, display: 'inline-block' }}>
+                Download
+              </a>
             </div>
 
             {/* Sources */}
