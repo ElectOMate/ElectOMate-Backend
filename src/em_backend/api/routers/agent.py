@@ -54,6 +54,7 @@ class AgentChatRequest(BaseModel):
 
     use_vector_database: bool
     use_web_search: bool
+    use_wikipedia: bool = False
     language_context: LanguageContext | None = None
 
     # Answer formatting preferences
@@ -74,12 +75,13 @@ async def agent_chat(
 ) -> StreamingResponse:
     logger.info(
         "Received agent chat request: election_id=%s, message_count=%s, selected_parties=%s, "
-        "use_vector_database=%s, use_web_search=%s, answer_length='%s', language_style='%s'",
+        "use_vector_database=%s, use_web_search=%s, use_wikipedia=%s, answer_length='%s', language_style='%s'",
         chat_request.election_id,
         len(chat_request.messages),
         chat_request.selected_parties,
         chat_request.use_vector_database,
         chat_request.use_web_search,
+        chat_request.use_wikipedia,
         chat_request.answer_length or "None",
         chat_request.language_style or "None",
     )
@@ -139,6 +141,7 @@ async def agent_chat(
                     session=session,
                     use_web_search=chat_request.use_web_search,
                     use_vector_database=chat_request.use_vector_database,
+                    use_wikipedia=chat_request.use_wikipedia,
                     # Pass language preferences through to the agent
                     language_context=(
                         chat_request.language_context.model_dump()

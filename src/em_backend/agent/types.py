@@ -83,6 +83,11 @@ class AgentState(TypedDict):
         merge_party_summaries,
     ]
 
+    # Wikipedia search
+    use_wikipedia: bool
+    wikipedia_sources: list["WebSource"]
+    wikipedia_summary: str
+
     # Language preferences passed from frontend
     # Name of the language in which to write final answers (human-readable, e.g., "Spanish")
     response_language_name: str | None

@@ -68,6 +68,7 @@ from em_backend.database.utils import (
 )
 from em_backend.llm.openai import get_openai_model
 from em_backend.llm.perplexity import PerplexityClient
+from em_backend.llm.wikipedia import WikipediaClient
 from em_backend.models.chunks import (
     AnyChunk,
     ComparisonSourcesChunk,
@@ -180,6 +181,44 @@ def _language_name_from_state(state: AgentState) -> str:
     return "English"
 
 
+# Maps language *names* to Wikipedia language codes
+_LANGUAGE_NAME_TO_WIKI_CODE: dict[str, str] = {
+    "deutsch": "de",
+    "english": "en",
+    "español": "es",
+    "magyar": "hu",
+    "polski": "pl",
+    "nederlands": "nl",
+    "norsk": "no",
+    "slovenščina": "sl",
+    # Also accept English language names
+    "german": "de",
+    "spanish": "es",
+    "hungarian": "hu",
+    "polish": "pl",
+    "dutch": "nl",
+    "norwegian": "no",
+    "slovenian": "sl",
+}
+
+
+def _wiki_language_code_from_state(state: AgentState) -> str:
+    """Derive a two-letter Wikipedia language code from the agent state."""
+    lang_name = _language_name_from_state(state)
+    code = _LANGUAGE_NAME_TO_WIKI_CODE.get(lang_name.lower())
+    if code:
+        return code
+    # Fallback: try country code from COUNTRY_LANGUAGE_MAP
+    country = state.get("country")
+    if country is not None:
+        country_code = getattr(country, "code", None)
+        if country_code:
+            match = COUNTRY_LANGUAGE_MAP.get(str(country_code).upper())
+            if match:
+                return match["code"]
+    return "en"
+
+
 async def _get_candidate_name_or_fallback(party: "Party") -> str:
     """Get candidate name or fallback if no candidate exists for the party."""
     try:
@@ -217,6 +256,7 @@ class Agent:
         session: AsyncSession,
         use_web_search: bool = False,
         use_vector_database: bool = True,
+        use_wikipedia: bool = False,
         language_context: dict[str, Any] | None = None,
         answer_length: str | None = None,
         language_style: str | None = None,
@@ -272,6 +312,10 @@ class Agent:
                 "perplexity_comparison_summary": "",
                 "perplexity_party_sources": {},
                 "perplexity_party_summaries": {},
+                # Wikipedia search
+                "use_wikipedia": use_wikipedia,
+                "wikipedia_sources": [],
+                "wikipedia_summary": "",
                 # Language preferences (names preferred, no backend mapping needed)
                 "response_language_name": response_language_name,
                 "manifesto_language_name": manifesto_language_name,
@@ -493,37 +537,117 @@ class Agent:
                 "You are a neutral political information assistant with live web search access. "
                 "Use authoritative sources, focus on elections and party programmes, and avoid speculation."
             )
-            try:
-                raw_response = await client.create_completion(
-                    [
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": "\n\n".join(user_prompt_parts)},
-                    ],
-                    temperature=0.0,
-                )
-            except Exception:  # pragma: no cover - network/LLM errors
-                logger.exception("Perplexity generic search request failed")
-                return {
-                    "perplexity_generic_sources": [],
-                    "perplexity_generic_summary": "",
-                }
+            # Run Perplexity and Wikipedia searches in parallel
+            wiki_sources: list[WebSource] = []
+            wiki_summary = ""
+            perplexity_answer = ""
+            perplexity_sources: list[WebSource] = []
 
-            answer, sources = normalize_perplexity_sources(raw_response)
-            logger.info("Perplexity generic search returned %s sources", len(sources))
+            async def _do_perplexity() -> None:
+                nonlocal perplexity_answer, perplexity_sources
+                try:
+                    raw_response = await client.create_completion(
+                        [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": "\n\n".join(user_prompt_parts)},
+                        ],
+                        temperature=0.0,
+                    )
+                except Exception:  # pragma: no cover - network/LLM errors
+                    logger.exception("Perplexity generic search request failed")
+                    return
+                perplexity_answer, perplexity_sources = normalize_perplexity_sources(raw_response)
+                logger.info("Perplexity generic search returned %s sources", len(perplexity_sources))
 
-            if sources:
+            async def _do_wikipedia() -> None:
+                nonlocal wiki_sources, wiki_summary
+                wiki_sources, wiki_summary = await _run_wikipedia_search_inline(state, runtime)
+
+            async with TaskGroup() as tg:
+                tg.create_task(_do_perplexity())
+                tg.create_task(_do_wikipedia())
+
+            if perplexity_sources:
                 runtime.stream_writer(
                     PerplexitySourcesChunk(
                         scope="generic",
-                        sources=sources,
-                        summary=answer,
+                        sources=perplexity_sources,
+                        summary=perplexity_answer,
                     )
                 )
 
             return {
-                "perplexity_generic_sources": sources,
-                "perplexity_generic_summary": answer,
+                "perplexity_generic_sources": perplexity_sources,
+                "perplexity_generic_summary": perplexity_answer,
+                "wikipedia_sources": wiki_sources,
+                "wikipedia_summary": wiki_summary,
             }
+
+        async def _run_wikipedia_search_inline(
+            state: AgentState,
+            runtime: Runtime[AgentContext],
+        ) -> tuple[list[WebSource], str]:
+            """Run Wikipedia search and stream results. Returns (sources, summary).
+
+            Safe to call from any node — returns empty results on failure or
+            when ``use_wikipedia`` is False.
+            """
+            if not state.get("use_wikipedia", False):
+                return [], ""
+
+            latest_user = state["messages"][-1]
+            query = _format_message_content(getattr(latest_user, "content", ""))
+            if not query:
+                return [], ""
+
+            wiki_lang = _wiki_language_code_from_state(state)
+            client = WikipediaClient(language=wiki_lang)
+
+            try:
+                response = await client.search(query, language=wiki_lang)
+            except Exception:
+                logger.exception("Wikipedia search failed for query=%r lang=%s", query, wiki_lang)
+                return [], ""
+            finally:
+                try:
+                    await client.close()
+                except Exception:
+                    pass
+
+            if not response.results:
+                return [], ""
+
+            sources: list[WebSource] = []
+            summary_parts: list[str] = []
+            for result in response.results:
+                snippet_text = result.extract or result.snippet
+                sources.append({
+                    "title": result.title,
+                    "url": result.url,
+                    "snippet": snippet_text,
+                })
+                if result.extract:
+                    summary_parts.append(f"- {result.title}: {result.extract}")
+
+            summary = "\n".join(summary_parts)
+
+            logger.info(
+                "Wikipedia search returned %d sources for query=%r lang=%s",
+                len(sources),
+                query,
+                wiki_lang,
+            )
+
+            if sources:
+                runtime.stream_writer(
+                    PerplexitySourcesChunk(
+                        scope="wikipedia",
+                        sources=sources,
+                        summary=summary,
+                    )
+                )
+
+            return sources, summary
 
         async def _run_party_perplexity_search(
             party: Party,
@@ -628,6 +752,12 @@ class Agent:
             comparison_sources: list[WebSource] = []
 
             results: dict[str, tuple[str, list[WebSource]]] = {}
+            wiki_sources: list[WebSource] = []
+            wiki_summary = ""
+
+            async def _do_wikipedia_comparison() -> None:
+                nonlocal wiki_sources, wiki_summary
+                wiki_sources, wiki_summary = await _run_wikipedia_search_inline(state, runtime)
 
             async with TaskGroup() as tg:
 
@@ -642,6 +772,9 @@ class Agent:
                 for party in state["selected_parties"]:
                     tg.create_task(run_for_party(party))
 
+                # Run Wikipedia search in parallel with Perplexity party searches
+                tg.create_task(_do_wikipedia_comparison())
+
             for party in state["selected_parties"]:
                 summary, sources = results.get(party.shortname, ("", []))
                 if summary:
@@ -655,17 +788,23 @@ class Agent:
                 "perplexity_party_summaries": party_summaries,
                 "perplexity_comparison_sources": comparison_sources,
                 "perplexity_comparison_summary": "",
+                "wikipedia_sources": wiki_sources,
+                "wikipedia_summary": wiki_summary,
             }
 
         async def perplexity_single_party_search(
             state: NonComparisonQuestionState, runtime: Runtime[AgentContext]
         ) -> dict[str, Any]:
             if not state["use_web_search"]:
-                # If web search is disabled, proceed directly to answer generation
-                answer_result = await generate_single_party_answer(state, runtime)
+                # Run Wikipedia even if Perplexity web search is disabled
+                wiki_sources, wiki_summary = await _run_wikipedia_search_inline(state, runtime)
+                updated_state = {**state, "wikipedia_sources": wiki_sources, "wikipedia_summary": wiki_summary}
+                answer_result = await generate_single_party_answer(updated_state, runtime)
                 return {
                     "messages": answer_result.get("messages", []),
                     "party_tag": answer_result.get("party_tag", [state["party"]]),
+                    "wikipedia_sources": wiki_sources,
+                    "wikipedia_summary": wiki_summary,
                 }
 
             client = runtime.context.get("perplexity_client")
@@ -674,11 +813,15 @@ class Agent:
                     "Perplexity client unavailable; skipping web search for party %s",
                     state["party"].shortname,
                 )
-                # Still proceed to answer generation without web sources
-                answer_result = await generate_single_party_answer(state, runtime)
+                # Run Wikipedia even without Perplexity
+                wiki_sources, wiki_summary = await _run_wikipedia_search_inline(state, runtime)
+                updated_state = {**state, "wikipedia_sources": wiki_sources, "wikipedia_summary": wiki_summary}
+                answer_result = await generate_single_party_answer(updated_state, runtime)
                 return {
                     "messages": answer_result.get("messages", []),
                     "party_tag": answer_result.get("party_tag", [state["party"]]),
+                    "wikipedia_sources": wiki_sources,
+                    "wikipedia_summary": wiki_summary,
                 }
 
             query_language = _language_name_from_state(state)
@@ -737,44 +880,66 @@ class Agent:
                 "Cite each bullet with the source URL."
             )
 
-            try:
-                raw_response = await client.create_completion(
-                    [
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    temperature=0.0,
-                )
-            except Exception:  # pragma: no cover
-                logger.exception(
-                    "Perplexity single-party search failed for %s",
+            # Run Perplexity and Wikipedia in parallel
+            perplexity_answer = ""
+            perplexity_sources: list[WebSource] = []
+            wiki_sources: list[WebSource] = []
+            wiki_summary = ""
+            perplexity_failed = False
+
+            async def _do_perplexity_single() -> None:
+                nonlocal perplexity_answer, perplexity_sources, perplexity_failed
+                try:
+                    raw_response = await client.create_completion(
+                        [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        temperature=0.0,
+                    )
+                except Exception:  # pragma: no cover
+                    logger.exception(
+                        "Perplexity single-party search failed for %s",
+                        state["party"].shortname,
+                    )
+                    perplexity_failed = True
+                    return
+                perplexity_answer, perplexity_sources = normalize_perplexity_sources(raw_response)
+                logger.info(
+                    "Perplexity party search returned %s sources for %s",
+                    len(perplexity_sources),
                     state["party"].shortname,
                 )
-                # Proceed to answer generation without web sources
+
+            async def _do_wikipedia_single() -> None:
+                nonlocal wiki_sources, wiki_summary
+                wiki_sources, wiki_summary = await _run_wikipedia_search_inline(state, runtime)
+
+            async with TaskGroup() as tg:
+                tg.create_task(_do_perplexity_single())
+                tg.create_task(_do_wikipedia_single())
+
+            if perplexity_failed and not wiki_sources:
+                # Both failed or Perplexity failed with no Wikipedia fallback
                 answer_result = await generate_single_party_answer(state, runtime)
                 return {
                     "messages": answer_result.get("messages", []),
                     "party_tag": answer_result.get("party_tag", [state["party"]]),
                 }
 
-            answer, sources = normalize_perplexity_sources(raw_response)
-            logger.info(
-                "Perplexity party search returned %s sources for %s",
-                len(sources),
-                state["party"].shortname,
-            )
-
             # Update the shared state with this party's sources
             updated_sources = dict(state["perplexity_party_sources"])
-            updated_sources[state["party"].shortname] = sources
+            updated_sources[state["party"].shortname] = perplexity_sources
             updated_summaries = dict(state["perplexity_party_summaries"])
-            updated_summaries[state["party"].shortname] = answer
+            updated_summaries[state["party"].shortname] = perplexity_answer
 
             # Create updated state for this party's answer generation
             updated_state = {
                 **state,
                 "perplexity_party_sources": updated_sources,
                 "perplexity_party_summaries": updated_summaries,
+                "wikipedia_sources": wiki_sources,
+                "wikipedia_summary": wiki_summary,
             }
 
             # Directly call generate_single_party_answer to avoid state merging issues
@@ -784,6 +949,8 @@ class Agent:
             return {
                 "perplexity_party_sources": updated_sources,
                 "perplexity_party_summaries": updated_summaries,
+                "wikipedia_sources": wiki_sources,
+                "wikipedia_summary": wiki_summary,
                 "messages": answer_result.get("messages", []),
                 "party_tag": answer_result.get("party_tag", [state["party"]]),
             }
@@ -833,6 +1000,9 @@ class Agent:
                     "perplexity_party_sources": state["perplexity_party_sources"],
                     "perplexity_party_summaries": state["perplexity_party_summaries"],
                     "party_tag": state["party_tag"],
+                    "use_wikipedia": state.get("use_wikipedia", False),
+                    "wikipedia_sources": state.get("wikipedia_sources", []),
+                    "wikipedia_summary": state.get("wikipedia_summary", ""),
                 }
 
             if not state["selected_parties"]:
@@ -921,16 +1091,26 @@ class Agent:
                     )
                     break
 
+            # Run Wikipedia if not already done (path that skips Perplexity)
+            wiki_sources = state.get("wikipedia_sources", [])
+            wiki_summary = state.get("wikipedia_summary", "")
+            if not wiki_sources and state.get("use_wikipedia", False):
+                wiki_sources, wiki_summary = await _run_wikipedia_search_inline(state, runtime)
+
             generic_sources = state.get("perplexity_generic_sources", [])
+            # Combine Perplexity + Wikipedia sources
+            combined_sources = [*generic_sources, *wiki_sources]
             web_summary = (
                 state.get("perplexity_generic_summary", "") if generic_sources else ""
             )
+            if wiki_summary:
+                web_summary = f"{web_summary}\n\n{wiki_summary}".strip() if web_summary else wiki_summary
             web_sources_block = (
-                format_web_sources_for_prompt(generic_sources)
-                if generic_sources
+                format_web_sources_for_prompt(combined_sources)
+                if combined_sources
                 else ""
             )
-            web_search_enabled = bool(generic_sources)
+            web_search_enabled = bool(combined_sources)
 
             model = GENERIC_ANSWER | runtime.context["chat_model"]
             prompt_input = {
@@ -1014,9 +1194,17 @@ class Agent:
                     )
                 )
 
+            # Run Wikipedia if not already done (path that skips Perplexity)
+            wiki_sources = state.get("wikipedia_sources", [])
+            wiki_summary_text = state.get("wikipedia_summary", "")
+            if not wiki_sources and state.get("use_wikipedia", False):
+                wiki_sources, wiki_summary_text = await _run_wikipedia_search_inline(state, runtime)
+
             perplexity_sources = state.get("perplexity_comparison_sources", [])
-            combined_web_sources = [*perplexity_sources, *vector_web_sources]
+            combined_web_sources = [*perplexity_sources, *vector_web_sources, *wiki_sources]
             web_summary = state.get("perplexity_comparison_summary", "")
+            if wiki_summary_text:
+                web_summary = f"{web_summary}\n\n{wiki_summary_text}".strip() if web_summary else wiki_summary_text
             if not web_summary and vector_web_sources:
                 first_snippet = vector_web_sources[0].get("snippet", "") or ""
                 if first_snippet:
@@ -1174,7 +1362,13 @@ class Agent:
                 fallback_url=state["party"].url or state["election"].url,
             )
 
-            combined_web_sources = [*party_web_sources, *vector_web_sources]
+            # Include Wikipedia sources
+            wiki_sources = state.get("wikipedia_sources", [])
+            wiki_summary_text = state.get("wikipedia_summary", "")
+
+            combined_web_sources = [*party_web_sources, *vector_web_sources, *wiki_sources]
+            if wiki_summary_text:
+                web_summary = f"{web_summary}\n\n{wiki_summary_text}".strip() if web_summary else wiki_summary_text
             if not web_summary and vector_web_sources:
                 first_snippet = vector_web_sources[0].get("snippet", "") or ""
                 if first_snippet:

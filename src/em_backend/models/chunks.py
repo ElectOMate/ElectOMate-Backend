@@ -73,7 +73,7 @@ class WebSourceModel(BaseModel):
 class PerplexitySourcesChunk(BaseChunk):
     type: Literal["web_response_sources"] = "web_response_sources"
 
-    scope: Literal["generic", "comparison", "party"]
+    scope: Literal["generic", "comparison", "party", "wikipedia"]
     sources: list[WebSourceModel]
     summary: str | None = None
     party: str | None = None
