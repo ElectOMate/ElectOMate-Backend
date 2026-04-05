@@ -159,6 +159,7 @@ class ProductionRequest(BaseModel):
     character_age: str = "40"
     search_sources: list[str] = Field(default=["web"])
     manifesto_dir: str = ""
+    screenshot_frequency: str = "moderate"
     background_music_path: str = ""
     music_volume: float = 0.12
     generate_captions: bool = True
@@ -179,6 +180,7 @@ class ProductionRequest(BaseModel):
             character_age=self.character_age,
             search_sources=self.search_sources,
             manifesto_dir=self.manifesto_dir,
+            screenshot_frequency=self.screenshot_frequency,
             background_music_path=self.background_music_path,
             music_volume=self.music_volume,
             generate_captions=self.generate_captions,

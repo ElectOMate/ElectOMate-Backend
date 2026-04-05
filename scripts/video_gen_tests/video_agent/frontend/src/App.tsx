@@ -62,6 +62,7 @@ export default function App() {
     character_age: '40',
     character_description: '',
     search_sources: ['web'],
+    screenshot_frequency: 'moderate',
     generate_captions: true,
     background_music_path: '',
     music_volume: 0.12,
@@ -233,6 +234,19 @@ export default function App() {
                 ))}
               </div>
             </div>
+            <div style={STYLES.col}>
+              <label style={STYLES.label}>Screenshot Frequency</label>
+              <select style={STYLES.select} value={form.screenshot_frequency} onChange={e => update('screenshot_frequency', e.target.value)}>
+                <option value="always">Always show</option>
+                <option value="frequent">Frequent</option>
+                <option value="moderate">Moderate</option>
+                <option value="rare">Rare</option>
+                <option value="never">Never</option>
+              </select>
+            </div>
+          </div>
+
+          <div style={STYLES.row}>
             <div style={STYLES.col}>
               <label style={STYLES.label}>Captions</label>
               <label style={{ fontSize: 13, display: 'flex', alignItems: 'center', gap: 4 }}>

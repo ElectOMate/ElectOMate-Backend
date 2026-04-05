@@ -68,6 +68,17 @@ async def _gemini_search(query: str, output_dir: str) -> dict[str, Any]:
 
     try:
         result = json.loads(text)
+
+        # Gemini sometimes returns nested JSON - check if answer is a JSON string
+        if "answer" in result and isinstance(result["answer"], str):
+            try:
+                inner_result = json.loads(result["answer"])
+                if isinstance(inner_result, dict) and "sources" in inner_result:
+                    # Merge inner sources with outer result
+                    result["sources"] = inner_result.get("sources", [])
+                    result["answer"] = inner_result.get("answer", result["answer"])
+            except json.JSONDecodeError:
+                pass  # answer is just a regular string, not nested JSON
     except json.JSONDecodeError:
         result = {"answer": text, "sources": []}
 

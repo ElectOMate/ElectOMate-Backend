@@ -54,6 +54,7 @@ class VideoAgentConfig:
     # Sources
     search_sources: list[str] = field(default_factory=lambda: ["web"])  # web, knowledge_base, wikipedia
     manifesto_dir: str = ""  # Path to local manifesto PDFs
+    screenshot_frequency: str = "moderate"  # always | frequent | moderate | rare | never
 
     # Music
     background_music_path: str = ""
@@ -311,6 +312,10 @@ class VideoProducerAgent:
             self.config.tone, self.config.language,
         )
         self.log.tool_result("generate_script", {"segments": len(script)}, time.time() - t0)
+
+        # Adjust needs_source based on screenshot_frequency
+        script = self._apply_screenshot_frequency(script)
+
         for seg in script:
             self.log.data(f"script_segment_{seg.get('segment_num', '?')}", {
                 "text": seg.get("text", ""),
@@ -320,18 +325,67 @@ class VideoProducerAgent:
             })
         return script
 
+    def _apply_screenshot_frequency(self, script: list[dict]) -> list[dict]:
+        """Adjust which segments show sources based on screenshot_frequency setting."""
+        freq = self.config.screenshot_frequency.lower()
+
+        # Count segments that originally requested sources
+        source_segments = [i for i, seg in enumerate(script) if seg.get("needs_source")]
+
+        if freq == "never":
+            # Disable all source overlays
+            for seg in script:
+                seg["needs_source"] = False
+            self.log.info(f"Screenshot frequency: never - disabled all source overlays")
+        elif freq == "always":
+            # Enable sources for all segments that have hints
+            for seg in script:
+                if seg.get("source_hint"):
+                    seg["needs_source"] = True
+            self.log.info(f"Screenshot frequency: always - enabled all source overlays")
+        elif freq in ["rare", "moderate", "frequent"]:
+            # Calculate target percentage
+            percentages = {"rare": 0.2, "moderate": 0.5, "frequent": 0.8}
+            target_pct = percentages.get(freq, 0.5)
+            target_count = max(1, int(len(script) * target_pct))
+
+            # Keep only target_count of the originally requested sources
+            import random
+            if len(source_segments) > target_count:
+                keep_indices = set(random.sample(source_segments, target_count))
+                for i, seg in enumerate(script):
+                    if i not in keep_indices:
+                        seg["needs_source"] = False
+
+            self.log.info(f"Screenshot frequency: {freq} - keeping {target_count}/{len(script)} source overlays")
+
+        return script
+
     def _collect_sources(self, script: list[dict], research_data: dict) -> list[dict]:
         sources = []
         source_idx = 1
 
         # Sources from research
         for src in research_data.get("sources", []):
-            url = src.get("url", "")
+            url = src.get("url", "").strip()
             screenshot_path = str(self.sources_dir / f"source_{source_idx:02d}.png")
-            self.log.tool_call("take_screenshot", {"url": url, "output": screenshot_path})
-            t0 = time.time()
-            research.take_screenshot(url, screenshot_path)
-            self.log.tool_result("take_screenshot", {"file": screenshot_path}, time.time() - t0)
+
+            # Only take screenshot if URL exists and is valid
+            if url and url.startswith(("http://", "https://")):
+                self.log.tool_call("take_screenshot", {"url": url, "output": screenshot_path})
+                t0 = time.time()
+                try:
+                    research.take_screenshot(url, screenshot_path)
+                    self.log.tool_result("take_screenshot", {"file": screenshot_path}, time.time() - t0)
+                except Exception as e:
+                    self.log.tool_error("take_screenshot", str(e))
+                    # Generate placeholder if screenshot fails
+                    research._generate_source_card(src.get("title", url), screenshot_path)
+            else:
+                # No URL or invalid URL - generate source card placeholder
+                self.log.info(f"No valid URL for source, generating placeholder card")
+                research._generate_source_card(src.get("title", f"Source {source_idx}"), screenshot_path)
+
             sources.append({
                 "index": source_idx,
                 "title": src.get("title", src.get("url", f"Source {source_idx}")),

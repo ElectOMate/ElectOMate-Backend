@@ -109,21 +109,87 @@ def add_text_overlay(
 
 
 def generate_srt(segments: list[dict], clip_duration: float = 8.0) -> str:
-    """Generate SRT subtitle content from script segments."""
+    """Generate SRT subtitle content from script segments with timing-aware text splits."""
     lines = []
+    subtitle_index = 1
+
     for i, seg in enumerate(segments):
-        start_s = i * clip_duration
-        end_s = start_s + clip_duration
+        text = seg.get("text", "").strip()
+        if not text:
+            continue
 
-        start_ts = _format_srt_time(start_s)
-        end_ts = _format_srt_time(end_s)
+        clip_start = i * clip_duration
+        clip_end = clip_start + clip_duration
 
-        lines.append(str(i + 1))
-        lines.append(f"{start_ts} --> {end_ts}")
-        lines.append(seg.get("text", ""))
-        lines.append("")
+        # Split text into phrases by punctuation or max length
+        phrases = _split_text_into_phrases(text, max_words=15)
+
+        if not phrases:
+            continue
+
+        # Distribute phrases evenly across clip duration
+        phrase_duration = clip_duration / len(phrases)
+
+        for j, phrase in enumerate(phrases):
+            phrase_start = clip_start + (j * phrase_duration)
+            phrase_end = min(phrase_start + phrase_duration, clip_end)
+
+            lines.append(str(subtitle_index))
+            lines.append(f"{_format_srt_time(phrase_start)} --> {_format_srt_time(phrase_end)}")
+            lines.append(phrase.strip())
+            lines.append("")
+
+            subtitle_index += 1
 
     return "\n".join(lines)
+
+
+def _split_text_into_phrases(text: str, max_words: int = 15) -> list[str]:
+    """Split text into subtitle-friendly phrases by punctuation and length."""
+    import re
+
+    # First split by sentence-ending punctuation
+    sentences = re.split(r'([.!?]+\s+)', text)
+
+    phrases = []
+    current_phrase = ""
+
+    for part in sentences:
+        if not part.strip():
+            continue
+
+        # If it's punctuation, add to current phrase
+        if re.match(r'^[.!?]+\s*$', part):
+            current_phrase += part
+            continue
+
+        # Check if adding this would exceed max words
+        test_phrase = (current_phrase + " " + part).strip()
+        word_count = len(test_phrase.split())
+
+        if word_count > max_words and current_phrase:
+            # Flush current phrase
+            phrases.append(current_phrase.strip())
+            current_phrase = part
+        else:
+            current_phrase = test_phrase
+
+    if current_phrase.strip():
+        phrases.append(current_phrase.strip())
+
+    # If phrases are still too long, split by commas or clauses
+    final_phrases = []
+    for phrase in phrases:
+        if len(phrase.split()) > max_words:
+            # Split by comma
+            parts = phrase.split(',')
+            for part in parts:
+                if part.strip():
+                    final_phrases.append(part.strip())
+        else:
+            final_phrases.append(phrase)
+
+    return final_phrases
 
 
 def _format_srt_time(seconds: float) -> str:
