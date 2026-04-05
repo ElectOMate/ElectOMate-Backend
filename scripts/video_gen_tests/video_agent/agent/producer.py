@@ -381,78 +381,154 @@ class VideoProducerAgent:
         if not selected:
             selected = angle_list[:self.config.num_perspectives]
 
-        for angle in selected:
+        from concurrent.futures import ThreadPoolExecutor
+
+        def _gen_image(angle: str) -> tuple[str, str]:
             prompt = _build_character_prompt(self.config, angle)
             output = str(self.frames_dir / f"angle_{angle}.png")
             self.log.tool_call("generate_image", {"angle": angle, "aspect_ratio": self.config.aspect_ratio, "prompt": prompt[:100] + "..."})
             t0 = time.time()
             video_gen.generate_image(prompt, output, self.config.aspect_ratio)
             self.log.tool_result("generate_image", {"file": output, "angle": angle}, time.time() - t0)
-            angle_images[angle] = output
+            return angle, output
+
+        self.log.info(f"Generating {len(selected)} angle images in parallel")
+        with ThreadPoolExecutor(max_workers=min(len(selected), 4)) as pool:
+            for angle, output in pool.map(lambda a: _gen_image(a), selected):
+                angle_images[angle] = output
 
         return angle_images
 
     def _generate_clips(self, script: list[dict], angle_images: dict[str, str]) -> list[str]:
-        clip_paths = []
-        prev_clip = None
-        available_angles = list(angle_images.keys())
+        """Generate video clips — parallel where possible, sequential for continuations."""
+        import asyncio
+        from concurrent.futures import ThreadPoolExecutor
 
+        available_angles = list(angle_images.keys())
+        total = len(script)
+
+        # Build the plan: which clips are independent (can run in parallel)
+        # and which are continuations (must wait for previous clip)
+        clip_plan = []
         for i, seg in enumerate(script):
             clip_num = i + 1
             angle = seg.get("camera_angle", "medium_front")
-
-            # Fall back to available angle
             if angle not in angle_images:
                 angle = available_angles[i % len(available_angles)]
 
-            self.progress("video", f"  Clip {clip_num}/{len(script)} — {angle}")
-
-            # Determine start frame
-            if prev_clip and angle == script[i - 1].get("camera_angle") and i % 3 == 0:
-                # Continuation: use last frame
-                frame_path = str(self.frames_dir / f"lastframe_{clip_num - 1:02d}.png")
-                post_process.extract_last_frame(prev_clip, frame_path)
-            else:
-                frame_path = angle_images[angle]
-
-            # Build video prompt
+            is_continuation = (
+                i > 0
+                and angle == script[i - 1].get("camera_angle")
+                and i % 3 == 0
+            )
             text = seg.get("text", "")
             video_prompt = (
                 f"The host speaks to camera and says: '{text}' "
                 f"Natural delivery, {self.config.tone} tone. "
                 f"Professional studio setting. Ambient room sound."
             )
+            clip_plan.append({
+                "clip_num": clip_num,
+                "angle": angle,
+                "is_continuation": is_continuation,
+                "text": text,
+                "prompt": video_prompt,
+                "output": str(self.clips_dir / f"clip_{clip_num:02d}.mp4"),
+            })
 
-            output = str(self.clips_dir / f"clip_{clip_num:02d}.mp4")
+        # Group into batches: each batch is a set of independent clips
+        # followed by one continuation clip (if any)
+        batches: list[list[dict]] = []
+        current_batch: list[dict] = []
+        for plan in clip_plan:
+            if plan["is_continuation"]:
+                # Flush current batch, then this one runs alone after it
+                if current_batch:
+                    batches.append(current_batch)
+                    current_batch = []
+                batches.append([plan])  # continuation runs solo
+            else:
+                current_batch.append(plan)
+        if current_batch:
+            batches.append(current_batch)
+
+        # Log the parallelization plan
+        parallel_count = sum(len(b) for b in batches if len(b) > 1)
+        sequential_count = sum(len(b) for b in batches if len(b) == 1)
+        self.log.info(
+            f"Clip generation plan: {len(batches)} batches, "
+            f"{parallel_count} parallel + {sequential_count} sequential"
+        )
+
+        # Result storage (ordered by clip_num)
+        results: dict[int, str] = {}  # clip_num -> output_path
+
+        def _gen_one_clip(plan: dict, frame_path: str) -> tuple[int, str | None]:
+            """Generate a single clip (runs in thread)."""
+            cn = plan["clip_num"]
+            self.log.tool_call("generate_video_clip", {
+                "clip": cn, "angle": plan["angle"], "frame": frame_path,
+                "prompt": plan["prompt"][:120] + "...",
+                "parallel": True,
+            })
+            t0 = time.time()
             try:
-                self.log.tool_call("generate_video_clip", {
-                    "clip": clip_num, "angle": angle, "frame": frame_path,
-                    "prompt": video_prompt[:120] + "...",
-                })
-                t0 = time.time()
                 video_gen.generate_video_clip(
-                    frame_path, video_prompt, output,
+                    frame_path, plan["prompt"], plan["output"],
                     self.config.aspect_ratio, self.config.resolution,
                 )
                 dur = time.time() - t0
-                size_mb = Path(output).stat().st_size / (1024 * 1024)
+                size_mb = Path(plan["output"]).stat().st_size / (1024 * 1024)
                 self.log.tool_result("generate_video_clip", {
-                    "file": output, "size_mb": round(size_mb, 1),
+                    "clip": cn, "file": plan["output"], "size_mb": round(size_mb, 1),
                 }, dur)
-                clip_paths.append(output)
-                prev_clip = output
-
                 self.metadata["clips"].append({
-                    "clip_num": clip_num,
-                    "angle": angle,
-                    "text": text,
-                    "file": output,
+                    "clip_num": cn, "angle": plan["angle"],
+                    "text": plan["text"], "file": plan["output"],
                     "generation_time_s": round(dur, 1),
                 })
+                return cn, plan["output"]
             except Exception as e:
-                self.log.tool_error("generate_video_clip", f"Clip {clip_num}: {e}")
+                self.log.tool_error("generate_video_clip", f"Clip {cn}: {e}")
+                return cn, None
 
-        return clip_paths
+        # Execute batches
+        for batch_idx, batch in enumerate(batches):
+            if len(batch) == 1 and batch[0]["is_continuation"]:
+                # Continuation: extract last frame from previous clip
+                plan = batch[0]
+                cn = plan["clip_num"]
+                prev_cn = cn - 1
+                prev_path = results.get(prev_cn)
+
+                self.progress("video", f"  Clip {cn}/{total} — {plan['angle']} (continuation, sequential)")
+                if prev_path and Path(prev_path).exists():
+                    frame_path = str(self.frames_dir / f"lastframe_{prev_cn:02d}.png")
+                    post_process.extract_last_frame(prev_path, frame_path)
+                else:
+                    frame_path = angle_images.get(plan["angle"], list(angle_images.values())[0])
+
+                clip_num, output = _gen_one_clip(plan, frame_path)
+                if output:
+                    results[clip_num] = output
+            else:
+                # Parallel batch
+                clip_nums_str = ", ".join(str(p["clip_num"]) for p in batch)
+                self.progress("video", f"  Clips [{clip_nums_str}] — parallel batch ({len(batch)} clips)")
+
+                with ThreadPoolExecutor(max_workers=min(len(batch), 4)) as pool:
+                    futures = []
+                    for plan in batch:
+                        frame_path = angle_images.get(plan["angle"], list(angle_images.values())[0])
+                        futures.append(pool.submit(_gen_one_clip, plan, frame_path))
+
+                    for future in futures:
+                        clip_num, output = future.result()
+                        if output:
+                            results[clip_num] = output
+
+        # Return in order
+        return [results[cn] for cn in sorted(results.keys())]
 
     def _add_source_overlays(
         self, clip_paths: list[str], script: list[dict], sources: list[dict]
