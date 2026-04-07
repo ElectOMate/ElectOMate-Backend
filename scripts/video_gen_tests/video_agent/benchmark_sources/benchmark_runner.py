@@ -136,15 +136,20 @@ class SourceBenchmark:
         return result
 
     async def _capture_screenshot(self, test_case: dict) -> str:
-        """Capture screenshot using research tools."""
+        """Capture screenshot using BrowserUse with intelligent content detection."""
         import sys
-        sys.path.insert(0, str(Path(__file__).parent.parent))
-        from agent.tools import research
+        sys.path.insert(0, str(Path(__file__).parent))
+        from browseruse_capture import capture_with_intelligent_fallback
 
         output_filename = f"{test_case['name'].lower().replace(' ', '_')}.png"
         output_path = str(self.screenshots_dir / output_filename)
 
-        research.take_screenshot(test_case["url"], output_path)
+        # Use BrowserUse for intelligent capture
+        capture_result = await capture_with_intelligent_fallback(test_case["url"], output_path)
+
+        # Store additional metadata about capture quality
+        test_case["_capture_result"] = capture_result
+
         return output_path
 
     async def _extract_data(self, test_case: dict) -> dict:
