@@ -103,6 +103,10 @@ async def ingest_document(
             claim_escaped = _escape(arg.claim)
             summary_escaped = _escape(arg.conclusion or arg.claim[:200])
 
+            source_quote_escaped = _escape(arg.source_quote[:280]) if arg.source_quote else ""
+            source_section_escaped = _escape(arg.source_section) if arg.source_section else ""
+            source_page_val = arg.source_page if arg.source_page else 0
+
             graph.write(f"""
                 MERGE (a:Argument {{text: '{claim_escaped}'}})
                 SET a.type = 'claim',
@@ -111,7 +115,11 @@ async def ingest_document(
                     a.confidence = {extraction.confidence},
                     a.sentiment = '{arg.sentiment}',
                     a.strength = {arg.strength},
-                    a.extraction_date = '{date.today()}'
+                    a.extraction_date = '{date.today()}',
+                    a.source_quote = '{source_quote_escaped}',
+                    a.source_page = {source_page_val},
+                    a.source_section = '{source_section_escaped}',
+                    a.generated = false
                 RETURN a
             """)
             stats["arguments_inserted"] += 1

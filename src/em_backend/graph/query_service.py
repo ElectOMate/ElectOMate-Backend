@@ -31,6 +31,10 @@ class ArgumentSummary(BaseModel):
     party: str | None = None
     politician: str | None = None
     topics: list[str] = Field(default_factory=list)
+    source_quote: str | None = None
+    source_page: int | None = None
+    source_section: str | None = None
+    generated: bool = False
 
 
 class TopicInfo(BaseModel):

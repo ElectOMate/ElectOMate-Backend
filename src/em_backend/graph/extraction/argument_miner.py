@@ -1,20 +1,21 @@
 """LLM-based argument extraction from political text.
 
-Uses OpenAI GPT-4o to extract structured arguments from Hungarian
+Uses Google Gemini 2.5 Flash to extract structured arguments from Hungarian
 political content (speeches, manifestos, interviews, articles).
 """
 
 from __future__ import annotations
 
 import json
+import os
 from datetime import date
 from typing import Any
 
 import structlog
-from openai import AsyncOpenAI
+from google import genai
+from google.genai import types
 from pydantic import BaseModel, Field
 
-from em_backend.core.config import settings
 from em_backend.graph.connectors.base import IngestedDocument
 
 logger = structlog.get_logger(__name__)
@@ -74,6 +75,22 @@ class ExtractedArgument(BaseModel):
     source_context: str = Field(
         default="",
         description="Brief context of where this argument appears",
+    )
+    source_quote: str | None = Field(
+        default="",
+        description="Exact verbatim quote from the source (max 280 chars)",
+    )
+    source_page: int | None = Field(
+        default=None,
+        description="Page number in source document (1-indexed)",
+    )
+    source_timestamp: str | None = Field(
+        default=None,
+        description="Timestamp in source media (MM:SS format)",
+    )
+    source_section: str | None = Field(
+        default="",
+        description="Section heading where this argument appears",
     )
 
 
@@ -147,9 +164,37 @@ For each argument, provide a JSON object with these fields:
 - strength: 1-5 rating
 - rebuts: Description of opposing argument if this is a rebuttal (or null)
 - source_context: Brief description of where in the text this appears
+- source_quote: Copy the EXACT verbatim sentence or phrase from the text that best represents this claim (max 280 chars, character-for-character copy)
+- source_section: The heading or section title where this argument appears (or null)
 
-Return a JSON array of argument objects. Return at least 1 argument if any political content exists.
-If the text contains no political arguments, return an empty array.
+Extract as many distinct arguments as possible. Focus on concrete policy positions.
+Return a JSON object: {{"arguments": [...]}}.
+If the text contains no political arguments, return {{"arguments": []}}.
+
+TEXT:
+{text}"""
+
+PAGE_EXTRACTION_PROMPT = """Analyze this page from a Hungarian political manifesto and extract ALL distinct political arguments.
+
+Party: {party}
+Page: {page_number}
+
+For each argument, provide a JSON object with these fields:
+- claim: The main assertion (in Hungarian, max 280 chars)
+- premises: List of supporting reasons (in Hungarian)
+- evidence: List of specific data/quotes cited (in Hungarian)
+- conclusion: What the speaker wants the audience to believe/do
+- argument_type: "policy" | "value" | "fact" | "causal"
+- topic_tags: List of topic categories from the system prompt
+- speaker: Speaker name if identifiable (or null)
+- party: "{party}"
+- sentiment: "for" | "against" | "neutral"
+- strength: 1-5 rating
+- source_quote: Copy the EXACT verbatim sentence from the text that best represents this claim (max 280 chars)
+- source_section: The heading or section title (or null)
+
+Extract between {min_args} and {max_args} arguments. Focus on concrete, distinct claims.
+Return a JSON object: {{"arguments": [...]}}.
 
 TEXT:
 {text}"""
@@ -160,13 +205,33 @@ TEXT:
 # ============================================================================
 
 
+def _get_gemini_client() -> genai.Client:
+    """Get a Gemini client using available API key."""
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY", "")
+    return genai.Client(api_key=api_key)
+
+
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+
+
+def _parse_llm_arguments(content: str) -> list[dict]:
+    """Parse LLM response into argument dicts, handling various formats."""
+    parsed = json.loads(content)
+    if isinstance(parsed, list):
+        return parsed
+    elif isinstance(parsed, dict) and "arguments" in parsed:
+        return parsed["arguments"]
+    else:
+        return [parsed] if parsed else []
+
+
 async def extract_arguments(
     text: str,
     source_title: str = "",
     source_type: str = "unknown",
     max_tokens: int = 4096,
 ) -> ExtractionResult:
-    """Extract political arguments from a text using GPT-4o.
+    """Extract political arguments from a text using Gemini.
 
     Args:
         text: The text to analyze.
@@ -177,7 +242,7 @@ async def extract_arguments(
     Returns:
         ExtractionResult with extracted arguments.
     """
-    client = AsyncOpenAI(api_key=settings.openai_api_key)
+    client = _get_gemini_client()
 
     # Truncate very long texts to fit context window
     max_input_chars = 30_000
@@ -191,27 +256,19 @@ async def extract_arguments(
         )
 
     try:
-        response = await client.chat.completions.create(
-            model=settings.openai_model_name,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": EXTRACTION_PROMPT.format(text=text)},
-            ],
-            response_format={"type": "json_object"},
-            max_tokens=max_tokens,
-            temperature=0.1,  # Low temperature for consistent extraction
+        prompt = f"{SYSTEM_PROMPT}\n\n{EXTRACTION_PROMPT.format(text=text)}"
+        response = client.models.generate_content(
+            model=GEMINI_MODEL,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=0.1,
+                max_output_tokens=max_tokens,
+            ),
         )
 
-        content = response.choices[0].message.content or "{}"
-        parsed = json.loads(content)
-
-        # Handle both {"arguments": [...]} and direct array formats
-        if isinstance(parsed, list):
-            arg_dicts = parsed
-        elif isinstance(parsed, dict) and "arguments" in parsed:
-            arg_dicts = parsed["arguments"]
-        else:
-            arg_dicts = [parsed] if parsed else []
+        content = response.text or "{}"
+        arg_dicts = _parse_llm_arguments(content)
 
         arguments = []
         for arg_dict in arg_dicts:
@@ -221,7 +278,6 @@ async def extract_arguments(
                 logger.warning(
                     "Failed to parse argument",
                     error=str(e),
-                    arg_dict=arg_dict,
                 )
 
         warnings = []
@@ -230,7 +286,6 @@ async def extract_arguments(
         if not arguments:
             warnings.append("No arguments extracted")
 
-        # Estimate confidence based on extraction quality signals
         confidence = _estimate_confidence(arguments, text)
 
         return ExtractionResult(
@@ -262,6 +317,100 @@ async def extract_arguments(
             confidence=0.0,
             warnings=[f"Extraction error: {e}"],
         )
+
+
+def _is_extractable_page(text: str) -> bool:
+    """Check if a page has enough meaningful text for argument extraction."""
+    stripped = text.strip()
+    if len(stripped) < 200:
+        return False
+    alpha_ratio = sum(c.isalpha() for c in stripped) / max(len(stripped), 1)
+    return alpha_ratio > 0.4
+
+
+async def extract_arguments_by_page(
+    doc: IngestedDocument,
+    min_args_per_page: int = 2,
+    max_args_per_page: int = 8,
+) -> ExtractionResult:
+    """Extract arguments page-by-page for precise source attribution.
+
+    Each TextSegment in the document becomes a separate extraction call,
+    with page_number/timestamp preserved in the returned arguments.
+    """
+    client = _get_gemini_client()
+    party = doc.metadata.get("party_shortname", "")
+
+    all_arguments: list[ExtractedArgument] = []
+    all_warnings: list[str] = []
+    pages_processed = 0
+    pages_skipped = 0
+
+    for seg in doc.segments:
+        if not _is_extractable_page(seg.text):
+            pages_skipped += 1
+            logger.debug("page_skipped", page=seg.page_number, chars=len(seg.text))
+            continue
+
+        page_num = seg.page_number or 0
+        logger.info("page_extraction_start", party=party, page=page_num, chars=len(seg.text))
+
+        try:
+            prompt = f"{SYSTEM_PROMPT}\n\n{PAGE_EXTRACTION_PROMPT.format(party=party, page_number=page_num, min_args=min_args_per_page, max_args=max_args_per_page, text=seg.text)}"
+
+            response = client.models.generate_content(
+                model=GEMINI_MODEL,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    temperature=0.1,
+                    max_output_tokens=4096,
+                ),
+            )
+
+            content = response.text or "{}"
+            arg_dicts = _parse_llm_arguments(content)
+
+            page_args = []
+            for arg_dict in arg_dicts:
+                try:
+                    arg = ExtractedArgument(**arg_dict)
+                    arg.source_page = page_num
+                    arg.source_timestamp = seg.timestamp
+                    if not arg.party:
+                        arg.party = party
+                    page_args.append(arg)
+                except Exception as e:
+                    logger.warning("failed_to_parse_page_argument", error=str(e), page=page_num)
+
+            all_arguments.extend(page_args)
+            pages_processed += 1
+            logger.info("page_extraction_done", party=party, page=page_num, arguments=len(page_args))
+
+        except Exception as e:
+            all_warnings.append(f"Page {page_num}: {e}")
+            logger.error("page_extraction_failed", page=page_num, error=str(e))
+
+    # Deduplicate across pages
+    deduped = _deduplicate_arguments(all_arguments)
+
+    logger.info("document_extraction_summary",
+        party=party,
+        title=doc.title,
+        total_pages=len(doc.segments),
+        pages_processed=pages_processed,
+        pages_skipped=pages_skipped,
+        total_arguments=len(deduped),
+        pre_dedup_count=len(all_arguments))
+
+    return ExtractionResult(
+        arguments=deduped,
+        source_title=doc.title,
+        source_type=doc.source_type,
+        extraction_date=date.today(),
+        confidence=_estimate_confidence(deduped, doc.raw_text or ""),
+        warnings=all_warnings,
+    )
 
 
 async def extract_arguments_from_document(

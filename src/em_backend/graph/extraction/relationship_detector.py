@@ -7,12 +7,13 @@ SUPPORTS, REBUTS, CONTRADICTS, or UNRELATED.
 from __future__ import annotations
 
 import json
+import os
 from enum import StrEnum
 
 import structlog
-from openai import AsyncOpenAI
+from google import genai
+from google.genai import types
 
-from em_backend.core.config import settings
 from em_backend.graph.extraction.argument_miner import ExtractedArgument
 
 logger = structlog.get_logger(__name__)
@@ -84,7 +85,9 @@ async def detect_relationship(
             explanation="No common topic tags",
         )
 
-    client = AsyncOpenAI(api_key=settings.openai_api_key)
+    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY", "")
+    client = genai.Client(api_key=api_key)
+    model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 
     prompt = RELATION_PROMPT.format(
         claim_a=arg_a.claim,
@@ -96,15 +99,17 @@ async def detect_relationship(
     )
 
     try:
-        response = await client.chat.completions.create(
-            model=settings.openai_model_name,
-            messages=[{"role": "user", "content": prompt}],
-            response_format={"type": "json_object"},
-            max_tokens=200,
-            temperature=0.0,
+        response = client.models.generate_content(
+            model=model,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+                temperature=0.0,
+                max_output_tokens=200,
+            ),
         )
 
-        content = response.choices[0].message.content or "{}"
+        content = response.text or "{}"
         parsed = json.loads(content)
 
         relation_str = parsed.get("relation", "UNRELATED")

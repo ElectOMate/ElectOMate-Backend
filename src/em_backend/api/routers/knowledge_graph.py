@@ -205,3 +205,140 @@ async def get_graph_stats() -> GraphStats:
     except Exception as e:
         logger.error("Failed to get stats", error=str(e))
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# New endpoints: Search, Submit, Continuations
+# ============================================================================
+
+
+class SubmitArgumentRequest(BaseModel):
+    text: str = Field(..., max_length=280, description="Argument text (max 280 chars)")
+    party: str | None = Field(default=None, description="Party shortname")
+    topic: str | None = Field(default=None, description="Topic name (Hungarian)")
+
+
+class SubmitArgumentResponse(BaseModel):
+    action: str  # "inserted" | "skipped" | "linked"
+    argument_text: str
+    continuations_generated: int = 0
+    similar_existing: str | None = None
+    similarity_score: float = 0.0
+
+
+@router.get("/search")
+async def search_arguments(
+    query: str = Query(..., min_length=3, description="Search query text"),
+    limit: int = Query(default=10, ge=1, le=50),
+    min_similarity: float = Query(default=0.3, ge=0.0, le=1.0),
+    party: str | None = Query(default=None, description="Filter by party"),
+) -> list[dict[str, Any]]:
+    """Semantic search across all arguments using BGE-M3 embeddings."""
+    try:
+        from em_backend.graph.embeddings import find_similar_to_text
+
+        results = find_similar_to_text(
+            query, limit=limit, min_similarity=min_similarity,
+            party_filter=party,
+        )
+        logger.info("search_completed", query=query[:80], results=len(results))
+        return results
+    except Exception as e:
+        logger.error("Search failed", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/submit", response_model=SubmitArgumentResponse)
+async def submit_argument(request: SubmitArgumentRequest) -> SubmitArgumentResponse:
+    """Submit a new argument with dedup check + auto-continuation generation."""
+    from em_backend.graph.deduplication import check_duplicate
+    from em_backend.graph.continuation import generate_and_insert_continuations
+    from em_backend.graph.embeddings import embed_text, store_embedding
+
+    try:
+        # Step 1: Dedup check
+        dedup = await check_duplicate(request.text, party=request.party)
+        logger.info("submit_dedup", action=dedup.action, similarity=dedup.similarity_score)
+
+        if dedup.action == "skip":
+            return SubmitArgumentResponse(
+                action="skipped",
+                argument_text=request.text,
+                similar_existing=dedup.existing_text,
+                similarity_score=dedup.similarity_score,
+            )
+
+        # Step 2: Insert argument
+        graph = get_graph_db()
+        _escape = lambda s: s.replace("'", "\\'") if s else ""
+        claim_esc = _escape(request.text)
+
+        graph.write(f"""
+            CREATE (a:Argument {{
+                text: '{claim_esc}',
+                generated: false,
+                argument_type: 'user_submitted'
+            }}) RETURN a
+        """)
+
+        # Link to party
+        if request.party:
+            try:
+                graph.write(f"""
+                    MATCH (a:Argument {{text: '{claim_esc}'}})
+                    MATCH (p:Party {{shortname: '{request.party}'}})
+                    MERGE (a)-[:MADE_BY]->(p)
+                """)
+            except Exception:
+                pass
+
+        # Link to topic
+        if request.topic:
+            try:
+                graph.write(f"""
+                    MATCH (a:Argument {{text: '{claim_esc}'}})
+                    MATCH (t:Topic {{name: '{_escape(request.topic)}'}})
+                    MERGE (a)-[:ABOUT]->(t)
+                """)
+            except Exception:
+                pass
+
+        # Embed
+        try:
+            embedding = embed_text(request.text)
+            store_embedding(
+                argument_id=f"user::{request.text[:80]}",
+                text=request.text,
+                embedding=embedding,
+                party=request.party,
+            )
+        except Exception as e:
+            logger.warning("submit_embed_failed", error=str(e))
+
+        # Step 3: Generate continuations
+        cont_count = 0
+        try:
+            result = await generate_and_insert_continuations(
+                request.text,
+                parent_party=request.party,
+                parent_topic=request.topic,
+                graph=graph,
+            )
+            cont_count = result.inserted_count
+        except Exception as e:
+            logger.warning("submit_continuation_failed", error=str(e))
+
+        action = "linked" if dedup.action == "insert_linked" else "inserted"
+        logger.info("submit_complete", action=action, continuations=cont_count)
+
+        return SubmitArgumentResponse(
+            action=action,
+            argument_text=request.text,
+            continuations_generated=cont_count,
+            similar_existing=dedup.existing_text,
+            similarity_score=dedup.similarity_score,
+        )
+
+    except Exception as e:
+        logger.error("Submit failed", error=str(e))
+        raise HTTPException(status_code=500, detail=str(e))
