@@ -126,7 +126,14 @@ Argument B: {existing_text}"""
             response_mime_type="application/json",
             temperature=0.0,
             max_output_tokens=200,
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
         ),
     )
 
-    return json.loads(response.text or '{"judgment": "different"}')
+    import re
+    text = response.text or '{"judgment": "different"}'
+    if text.strip().startswith("```"):
+        match = re.search(r'\{[^}]+\}', text)
+        if match:
+            text = match.group()
+    return json.loads(text)

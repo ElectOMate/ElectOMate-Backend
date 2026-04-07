@@ -71,11 +71,18 @@ Parent argument: {parent_claim}
             response_mime_type="application/json",
             temperature=0.4,
             max_output_tokens=2000,
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
         ),
     )
 
+    import re
     try:
-        data = json.loads(response.text or '{"continuations": []}')
+        text = response.text or '{"continuations": []}'
+        if text.strip().startswith("```"):
+            match = re.search(r'\{.*\}', text, re.DOTALL)
+            if match:
+                text = match.group()
+        data = json.loads(text)
     except json.JSONDecodeError:
         logger.warning("continuation_json_parse_error", text=response.text[:200] if response.text else "")
         data = {"continuations": []}

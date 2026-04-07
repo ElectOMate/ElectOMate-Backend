@@ -216,7 +216,16 @@ GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 
 def _parse_llm_arguments(content: str) -> list[dict]:
     """Parse LLM response into argument dicts, handling various formats."""
-    parsed = json.loads(content)
+    import re
+
+    # Strip markdown code blocks if present
+    text = content.strip()
+    if text.startswith("```"):
+        match = re.search(r"```(?:json)?\s*\n?(.*?)```", text, re.DOTALL)
+        if match:
+            text = match.group(1).strip()
+
+    parsed = json.loads(text)
     if isinstance(parsed, list):
         return parsed
     elif isinstance(parsed, dict) and "arguments" in parsed:
@@ -264,6 +273,7 @@ async def extract_arguments(
                 response_mime_type="application/json",
                 temperature=0.1,
                 max_output_tokens=max_tokens,
+                thinking_config=types.ThinkingConfig(thinking_budget=0),
             ),
         )
 
