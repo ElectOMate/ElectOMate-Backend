@@ -595,10 +595,35 @@ class Agent:
             if not state.get("use_wikipedia", False):
                 return [], ""
 
-            latest_user = state["messages"][-1]
-            query = _format_message_content(getattr(latest_user, "content", ""))
-            if not query:
+            # Build a Wikipedia-friendly search query.
+            # Use the rephrased question if available (topic-focused),
+            # but strip conversational framing that Wikipedia can't handle.
+            raw_query = state.get("rephrased_question", "")
+            if not raw_query:
+                latest_user = state["messages"][-1]
+                raw_query = _format_message_content(getattr(latest_user, "content", ""))
+            if not raw_query:
                 return [], ""
+
+            # Strip question words and conversational prefixes that confuse Wikipedia search.
+            # "Mi a karbonkibocsátásra vonatkozó politikád?" → "karbonkibocsátás politika"
+            import re
+            query = raw_query
+            # Remove Hungarian/English question patterns
+            query = re.sub(
+                r"^(mi a |mit mondasz |mi a véleményed |mit gondolsz |what is your |what do you think about |"
+                r"how do you |tell me about |what are your |milyen a |mi az? |hogyan )",
+                "", query, flags=re.IGNORECASE,
+            )
+            # Remove trailing question marks and possessive suffixes
+            query = query.rstrip("?").strip()
+            # Add election/country context for better results
+            party_name = state.get("party")
+            if party_name and hasattr(party_name, "fullname"):
+                query = f"{query} {party_name.fullname}"
+            elif "election" in state:
+                election = state["election"]
+                query = f"{query} {getattr(election, 'name', '')} {getattr(election, 'year', '')}"
 
             wiki_lang = _wiki_language_code_from_state(state)
             client = WikipediaClient(language=wiki_lang)
