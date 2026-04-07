@@ -11,9 +11,10 @@ FRONTEND_DATA_DIR = (
 STORIES_FILE = FRONTEND_DATA_DIR / "stories.json"
 OUTLETS_FILE = FRONTEND_DATA_DIR / "outlets.json"
 
-# Claude
-CLAUDE_MODEL = "claude-haiku-4-5-20250514"
+# Claude via AWS Bedrock
+CLAUDE_MODEL = "us.anthropic.claude-haiku-4-5-20251001-v1:0"
 CLAUDE_MAX_TOKENS = 4096
+AWS_REGION = "us-west-2"
 
 # Clustering
 MIN_CLUSTER_SIZE = 2

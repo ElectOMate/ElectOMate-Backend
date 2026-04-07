@@ -3,11 +3,10 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 
-from anthropic import Anthropic
+from anthropic import AnthropicBedrock
 
-from .config import CLAUDE_MAX_TOKENS, CLAUDE_MODEL, ELECTION_TOPICS, OUTLETS_FILE, TOPIC_KEYWORDS
+from .config import AWS_REGION, CLAUDE_MAX_TOKENS, CLAUDE_MODEL, ELECTION_TOPICS, OUTLETS_FILE, TOPIC_KEYWORDS
 from .models import (
     BlindspotInfo,
     ClaudeArticleBatch,
@@ -37,9 +36,9 @@ def _load_outlets() -> dict[str, dict]:
     return _outlets_cache
 
 
-def _get_client() -> Anthropic:
-    """Create Anthropic client."""
-    return Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+def _get_client() -> AnthropicBedrock:
+    """Create Anthropic Bedrock client (uses ~/.aws/credentials)."""
+    return AnthropicBedrock(aws_region=AWS_REGION)
 
 
 def summarize_story(story: StoryCluster) -> StoryCluster:
