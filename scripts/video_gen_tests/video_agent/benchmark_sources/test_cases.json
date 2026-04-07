@@ -1,0 +1,82 @@
+[
+  {
+    "name": "BBC News Article",
+    "type": "news",
+    "url": "https://www.bbc.com/news",
+    "expected_text": ["BBC", "News", "World"],
+    "expected_elements": ["headlines", "images", "navigation"],
+    "description": "Test news website screenshot and text extraction"
+  },
+  {
+    "name": "Reuters Breaking News",
+    "type": "news",
+    "url": "https://www.reuters.com",
+    "expected_text": ["Reuters", "Business", "Markets"],
+    "expected_elements": ["articles", "headlines"],
+    "description": "Test news aggregator with dynamic content"
+  },
+  {
+    "name": "CNN Homepage",
+    "type": "news",
+    "url": "https://www.cnn.com",
+    "expected_text": ["CNN", "Politics", "World"],
+    "expected_elements": ["video", "headlines", "sections"],
+    "description": "Test media-rich news website"
+  },
+  {
+    "name": "European Parliament Official",
+    "type": "government",
+    "url": "https://www.europarl.europa.eu/portal/en",
+    "expected_text": ["European Parliament", "Democracy", "Union"],
+    "expected_elements": ["navigation", "official content"],
+    "description": "Test government institutional website"
+  },
+  {
+    "name": "Europa.eu Portal",
+    "type": "government",
+    "url": "https://europa.eu",
+    "expected_text": ["European Union", "Policies", "Services"],
+    "expected_elements": ["official seal", "language selector"],
+    "description": "Test EU official portal"
+  },
+  {
+    "name": "Freedom House Report",
+    "type": "government",
+    "url": "https://freedomhouse.org/country/hungary/freedom-world/2024",
+    "expected_text": ["Freedom House", "Hungary", "Democracy"],
+    "expected_elements": ["report data", "scores"],
+    "description": "Test democracy assessment organization"
+  },
+  {
+    "name": "Wikipedia Democracy Article",
+    "type": "wikipedia",
+    "url": "https://en.wikipedia.org/wiki/Democracy",
+    "expected_text": ["Democracy", "government", "citizens", "voting"],
+    "expected_elements": ["infobox", "references", "sections"],
+    "description": "Test Wikipedia encyclopedia article"
+  },
+  {
+    "name": "Wikipedia Hungary Politics",
+    "type": "wikipedia",
+    "url": "https://en.wikipedia.org/wiki/Politics_of_Hungary",
+    "expected_text": ["Hungary", "Parliament", "Government", "Constitution"],
+    "expected_elements": ["infobox", "table of contents"],
+    "description": "Test Wikipedia country-specific politics article"
+  },
+  {
+    "name": "ArXiv Research Paper",
+    "type": "academic",
+    "url": "https://arxiv.org/abs/2301.00001",
+    "expected_text": ["Abstract", "Authors", "PDF"],
+    "expected_elements": ["paper metadata", "download link"],
+    "description": "Test academic preprint server"
+  },
+  {
+    "name": "V-Dem Democracy Report",
+    "type": "academic",
+    "url": "https://v-dem.net/",
+    "expected_text": ["V-Dem", "Democracy", "Research"],
+    "expected_elements": ["reports", "data"],
+    "description": "Test academic research institute website"
+  }
+]
