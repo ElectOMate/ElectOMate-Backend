@@ -1,3 +1,4 @@
+import asyncio
 from asyncio import TaskGroup
 from collections.abc import AsyncGenerator
 from datetime import date
@@ -583,21 +584,91 @@ class Agent:
                 "wikipedia_summary": wiki_summary,
             }
 
+        # Hungarian/common stopwords for Wikipedia entity extraction
+        _WIKI_STOPWORDS: set[str] = {
+            "a", "az", "és", "is", "nem", "hogy", "meg", "van", "volt", "egy",
+            "the", "and", "for", "are", "but", "not", "you", "all", "can",
+            "mit", "ami", "aki", "ezt", "azt", "más", "csak", "mint", "még",
+            "von", "der", "die", "das", "und", "den", "des",
+        }
+
+        def _build_follow_up_queries(
+            original_query: str,
+            results: list,  # list of WikipediaResult
+            party_context: str,
+            max_queries: int = 2,
+        ) -> list[str]:
+            """Extract entities from initial Wikipedia results and build targeted follow-up queries."""
+            entity_words: set[str] = set()
+            for r in results:
+                for word in r.title.split():
+                    cleaned = word.strip("(),.:;\"'–—-")
+                    if len(cleaned) >= 3 and cleaned.lower() not in _WIKI_STOPWORDS:
+                        entity_words.add(cleaned)
+
+            # Remove words already in the original query
+            original_words = {w.lower() for w in original_query.split()}
+            new_entities = [w for w in entity_words if w.lower() not in original_words]
+
+            queries: list[str] = []
+            if new_entities:
+                queries.append(f"{' '.join(new_entities[:3])} {party_context}".strip())
+            if len(new_entities) > 3:
+                queries.append(f"{' '.join(new_entities[3:6])} {party_context}".strip())
+            return queries[:max_queries]
+
+        async def _rerank_wikipedia_results(
+            results: list,  # list of WikipediaResult
+            messages: Any,
+            chat_model: Any,
+            max_results: int = 5,
+        ) -> list:
+            """Rerank Wikipedia results using LLM. Falls back to original order."""
+            from em_backend.agent.prompts.rerank_wikipedia import RERANK_WIKIPEDIA
+            from em_backend.agent.prompts.rerank_documents import RerankDocumentsStructuredOutput
+
+            model = RERANK_WIKIPEDIA | chat_model.with_structured_output(
+                RerankDocumentsStructuredOutput
+            )
+            sources_text = "\n".join(
+                f"<source>\nIndex: {i}\nTitle: {r.title}\nExtract: {r.extract or r.snippet}\n</source>"
+                for i, r in enumerate(results)
+            )
+            rerank_input = {"sources": sources_text, "messages": messages}
+
+            for attempt in range(2):
+                try:
+                    response = await model.ainvoke(rerank_input)
+                    valid = [
+                        idx for idx in response.reranked_doc_indices
+                        if isinstance(idx, int) and 0 <= idx < len(results)
+                    ]
+                    if valid:
+                        logger.info(
+                            "Wikipedia rerank succeeded: %d→%d results, order=%s",
+                            len(results), min(len(valid), max_results), valid[:max_results],
+                        )
+                        return [results[i] for i in valid][:max_results]
+                except Exception as exc:
+                    logger.warning("Wikipedia rerank attempt %d failed: %s", attempt + 1, exc)
+
+            logger.info("Wikipedia rerank failed, using original order (top %d)", max_results)
+            return results[:max_results]
+
         async def _run_wikipedia_search_inline(
             state: AgentState,
             runtime: Runtime[AgentContext],
         ) -> tuple[list[WebSource], str]:
-            """Run Wikipedia search and stream results. Returns (sources, summary).
+            """Iterative Wikipedia search with note-taking and reranking.
 
-            Safe to call from any node — returns empty results on failure or
-            when ``use_wikipedia`` is False.
+            Pipeline: broad search → extract entities → follow-up queries → deduplicate → rerank → return top 5.
+            Safe to call from any node — returns empty results on failure or when ``use_wikipedia`` is False.
             """
             if not state.get("use_wikipedia", False):
                 return [], ""
 
-            # Build a Wikipedia-friendly search query.
-            # Use the rephrased question if available (topic-focused),
-            # but strip conversational framing that Wikipedia can't handle.
+            # Build a Wikipedia-friendly search query
+            import re
             raw_query = state.get("rephrased_question", "")
             if not raw_query:
                 latest_user = state["messages"][-1]
@@ -605,31 +676,80 @@ class Agent:
             if not raw_query:
                 return [], ""
 
-            # Strip question words and conversational prefixes that confuse Wikipedia search.
-            # "Mi a karbonkibocsátásra vonatkozó politikád?" → "karbonkibocsátás politika"
-            import re
             query = raw_query
-            # Remove Hungarian/English question patterns
             query = re.sub(
                 r"^(mi a |mit mondasz |mi a véleményed |mit gondolsz |what is your |what do you think about |"
-                r"how do you |tell me about |what are your |milyen a |mi az? |hogyan )",
+                r"how do you |tell me about |what are your |milyen a |mi az |hogyan )",
                 "", query, flags=re.IGNORECASE,
             )
-            # Remove trailing question marks and possessive suffixes
             query = query.rstrip("?").strip()
-            # Add election/country context for better results
-            party_name = state.get("party")
-            if party_name and hasattr(party_name, "fullname"):
-                query = f"{query} {party_name.fullname}"
+
+            # Build party/election context string
+            party_context = ""
+            party_obj = state.get("party")
+            if party_obj and hasattr(party_obj, "fullname"):
+                party_context = party_obj.fullname
+                query = f"{query} {party_context}"
             elif "election" in state:
                 election = state["election"]
-                query = f"{query} {getattr(election, 'name', '')} {getattr(election, 'year', '')}"
+                party_context = f"{getattr(election, 'name', '')} {getattr(election, 'year', '')}"
+                query = f"{query} {party_context}"
 
             wiki_lang = _wiki_language_code_from_state(state)
             client = WikipediaClient(language=wiki_lang)
 
             try:
-                response = await client.search(query, language=wiki_lang)
+                # === ITERATION 1: Broad search ===
+                response = await client.search(query, language=wiki_lang, limit=8)
+                all_results = list(response.results)
+                seen_titles: set[str] = {r.title for r in all_results}
+
+                logger.info(
+                    "Wikipedia iter-1: %d results for query=%r lang=%s",
+                    len(all_results), query, wiki_lang,
+                )
+
+                # === NOTE-TAKING & QUERY EXPANSION ===
+                if all_results:
+                    follow_up_queries = _build_follow_up_queries(
+                        original_query=query,
+                        results=all_results,
+                        party_context=party_context,
+                        max_queries=2,
+                    )
+
+                    # === ITERATION 2: Targeted follow-up searches (concurrent, 3s timeout) ===
+                    if follow_up_queries:
+                        logger.info("Wikipedia iter-2: follow-up queries=%s", follow_up_queries)
+                        try:
+                            follow_up_responses = await asyncio.wait_for(
+                                client.search_multiple(follow_up_queries, language=wiki_lang, limit=5),
+                                timeout=3.0,
+                            )
+                            for resp in follow_up_responses:
+                                for result in resp.results:
+                                    if result.title not in seen_titles:
+                                        seen_titles.add(result.title)
+                                        all_results.append(result)
+                            logger.info(
+                                "Wikipedia iter-2: %d new results (total %d)",
+                                len(all_results) - len(response.results), len(all_results),
+                            )
+                        except asyncio.TimeoutError:
+                            logger.warning("Wikipedia iter-2 timed out after 3s, using iter-1 results only")
+                        except Exception:
+                            logger.exception("Wikipedia iter-2 failed, using iter-1 results only")
+
+                # === RERANK if we have enough candidates ===
+                if len(all_results) > 5:
+                    chat_model = runtime.context.get("chat_model")
+                    if chat_model:
+                        all_results = await _rerank_wikipedia_results(
+                            all_results, state["messages"], chat_model, max_results=5,
+                        )
+                    else:
+                        all_results = all_results[:5]
+
             except Exception:
                 logger.exception("Wikipedia search failed for query=%r lang=%s", query, wiki_lang)
                 return [], ""
@@ -639,12 +759,13 @@ class Agent:
                 except Exception:
                     pass
 
-            if not response.results:
+            if not all_results:
                 return [], ""
 
+            # === FORMAT RESULTS ===
             sources: list[WebSource] = []
             summary_parts: list[str] = []
-            for result in response.results:
+            for result in all_results:
                 snippet_text = result.extract or result.snippet
                 sources.append({
                     "title": result.title,
@@ -657,10 +778,8 @@ class Agent:
             summary = "\n".join(summary_parts)
 
             logger.info(
-                "Wikipedia search returned %d sources for query=%r lang=%s",
-                len(sources),
-                query,
-                wiki_lang,
+                "Wikipedia final: %d sources for query=%r lang=%s",
+                len(sources), query, wiki_lang,
             )
 
             if sources:

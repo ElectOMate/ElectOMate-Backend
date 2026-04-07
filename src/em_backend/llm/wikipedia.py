@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from dataclasses import dataclass, field
 from typing import Any
@@ -13,8 +14,8 @@ import httpx
 logger = logging.getLogger(__name__)
 
 _USER_AGENT = "ElectOMate/1.0 (https://opendemocracy.ai)"
-_MAX_EXTRACT_CHARS = 500
-_MAX_RESULTS = 5
+_MAX_EXTRACT_CHARS = 800
+_MAX_RESULTS = 8
 
 
 @dataclass(slots=True)
@@ -154,3 +155,16 @@ class WikipediaClient:
             lang,
         )
         return WikipediaResponse(query=query, results=results, language=lang)
+
+    async def search_multiple(
+        self,
+        queries: list[str],
+        *,
+        language: str | None = None,
+        limit: int = _MAX_RESULTS,
+    ) -> list[WikipediaResponse]:
+        """Run multiple Wikipedia searches concurrently."""
+        if not queries:
+            return []
+        tasks = [self.search(q, language=language, limit=limit) for q in queries]
+        return list(await asyncio.gather(*tasks))
