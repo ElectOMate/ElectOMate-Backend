@@ -215,17 +215,45 @@ GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 
 
 def _parse_llm_arguments(content: str) -> list[dict]:
-    """Parse LLM response into argument dicts, handling various formats."""
+    """Parse LLM response into argument dicts, handling various formats.
+
+    Handles: raw JSON, markdown-wrapped JSON, truncated JSON, arrays vs objects.
+    """
     import re
 
-    # Strip markdown code blocks if present
     text = content.strip()
+
+    # Strip markdown code blocks
     if text.startswith("```"):
         match = re.search(r"```(?:json)?\s*\n?(.*?)```", text, re.DOTALL)
         if match:
             text = match.group(1).strip()
 
-    parsed = json.loads(text)
+    # Try direct parse first
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        # Try to find the largest valid JSON object/array in the text
+        for pattern in [r'\{"arguments"\s*:\s*\[.*\]\s*\}', r'\[.*\]']:
+            match = re.search(pattern, text, re.DOTALL)
+            if match:
+                try:
+                    parsed = json.loads(match.group())
+                    break
+                except json.JSONDecodeError:
+                    continue
+        else:
+            # Last resort: try to fix truncated JSON by closing brackets
+            for suffix in ["]}", "]}}", "]", "}"]:
+                try:
+                    parsed = json.loads(text + suffix)
+                    logger.debug("fixed_truncated_json", suffix=suffix)
+                    break
+                except json.JSONDecodeError:
+                    continue
+            else:
+                raise json.JSONDecodeError("Cannot parse", text[:100], 0)
+
     if isinstance(parsed, list):
         return parsed
     elif isinstance(parsed, dict) and "arguments" in parsed:
@@ -365,41 +393,62 @@ async def extract_arguments_by_page(
         page_num = seg.page_number or 0
         logger.info("page_extraction_start", party=party, page=page_num, chars=len(seg.text))
 
-        try:
-            prompt = f"{SYSTEM_PROMPT}\n\n{PAGE_EXTRACTION_PROMPT.format(party=party, page_number=page_num, min_args=min_args_per_page, max_args=max_args_per_page, text=seg.text)}"
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                prompt = f"{SYSTEM_PROMPT}\n\n{PAGE_EXTRACTION_PROMPT.format(party=party, page_number=page_num, min_args=min_args_per_page, max_args=max_args_per_page, text=seg.text)}"
 
-            response = client.models.generate_content(
-                model=GEMINI_MODEL,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    temperature=0.1,
-                    max_output_tokens=4096,
-                ),
-            )
+                response = client.models.generate_content(
+                    model=GEMINI_MODEL,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        temperature=0.1,
+                        max_output_tokens=4096,
+                        thinking_config=types.ThinkingConfig(thinking_budget=0),
+                    ),
+                )
 
-            content = response.text or "{}"
-            arg_dicts = _parse_llm_arguments(content)
+                content = response.text or "{}"
+                arg_dicts = _parse_llm_arguments(content)
 
-            page_args = []
-            for arg_dict in arg_dicts:
-                try:
-                    arg = ExtractedArgument(**arg_dict)
-                    arg.source_page = page_num
-                    arg.source_timestamp = seg.timestamp
-                    if not arg.party:
-                        arg.party = party
-                    page_args.append(arg)
-                except Exception as e:
-                    logger.warning("failed_to_parse_page_argument", error=str(e), page=page_num)
+                page_args = []
+                for arg_dict in arg_dicts:
+                    try:
+                        arg = ExtractedArgument(**arg_dict)
+                        arg.source_page = page_num
+                        arg.source_timestamp = seg.timestamp
+                        if not arg.party:
+                            arg.party = party
+                        page_args.append(arg)
+                    except Exception as e:
+                        logger.warning("failed_to_parse_page_argument", error=str(e), page=page_num)
 
-            all_arguments.extend(page_args)
-            pages_processed += 1
-            logger.info("page_extraction_done", party=party, page=page_num, arguments=len(page_args))
+                all_arguments.extend(page_args)
+                pages_processed += 1
+                logger.info("page_extraction_done", party=party, page=page_num, arguments=len(page_args), attempt=attempt + 1)
+                break  # success
 
-        except Exception as e:
-            all_warnings.append(f"Page {page_num}: {e}")
-            logger.error("page_extraction_failed", page=page_num, error=str(e))
+            except json.JSONDecodeError as e:
+                if attempt < max_retries - 1:
+                    import asyncio as _aio
+                    wait = 2 ** attempt
+                    logger.warning("page_json_retry", page=page_num, attempt=attempt + 1, wait=wait, error=str(e)[:60])
+                    await _aio.sleep(wait)
+                else:
+                    all_warnings.append(f"Page {page_num}: JSON failed after {max_retries} retries")
+                    logger.error("page_extraction_json_failed", page=page_num, attempts=max_retries)
+
+            except Exception as e:
+                if attempt < max_retries - 1 and ("429" in str(e) or "RESOURCE_EXHAUSTED" in str(e)):
+                    import asyncio as _aio
+                    wait = 5 * (attempt + 1)
+                    logger.warning("page_rate_limit_retry", page=page_num, attempt=attempt + 1, wait=wait)
+                    await _aio.sleep(wait)
+                else:
+                    all_warnings.append(f"Page {page_num}: {e}")
+                    logger.error("page_extraction_failed", page=page_num, error=str(e))
+                    break
 
     # Deduplicate across pages
     deduped = _deduplicate_arguments(all_arguments)
