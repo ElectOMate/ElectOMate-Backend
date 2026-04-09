@@ -242,3 +242,4 @@ scripts/sync-db-to-azure.sh
 
 # MCP config (contains local paths and secrets)
 .mcp.json
+.DS_Store

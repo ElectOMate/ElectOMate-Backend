@@ -237,25 +237,30 @@ def convert_documents_to_web_sources(
     if not documents:
         return []
 
-    base_url = (fallback_url or "https://opendemocracy.ai/documents").rstrip("#")
     sources: list[WebSource] = []
     for idx, doc in enumerate(documents, start=1):
         title = doc.get("title") or f"Document {idx}"
         if party:
             title = f"{party}: {title}"
         snippet = shorten(doc.get("text", ""), width=220, placeholder="…")
-        anchor = f"doc-{party or 'generic'}-{idx}"
-        if fallback_url:
-            url = f"{base_url}#{anchor}"
-        else:
-            url = f"https://opendemocracy.ai/documents/{party or 'generic'}/{idx}"
+        # Use "manifesto" as URL so the frontend opens the PDF viewer
+        # instead of linking to the party website
         entry: WebSource = {
             "title": title,
-            "url": url,
+            "url": "manifesto",
             "snippet": snippet,
         }
         if party:
             entry["party"] = party
+        # Pass through chunk metadata for PDF citation highlighting
+        if doc.get("page_number") is not None:
+            entry["page_number"] = doc["page_number"]
+        if doc.get("chunk_id"):
+            entry["chunk_id"] = doc["chunk_id"]
+        if doc.get("score") is not None:
+            entry["score"] = doc["score"]
+        if doc.get("bbox_data"):
+            entry["bbox_data"] = doc["bbox_data"]
         sources.append(entry)
     return sources
 

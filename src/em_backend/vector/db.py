@@ -53,7 +53,7 @@ class VectorDatabase:
     @asynccontextmanager
     async def create(cls) -> AsyncGenerator[Self]:
         _timeout_config = AdditionalConfig(
-            timeout=Timeout(query=60, insert=120, init=30),
+            timeout=Timeout(query=120, insert=300, init=60),
         )
         client = weaviate.connect_to_weaviate_cloud(
             cluster_url=settings.wv_url,
@@ -164,39 +164,68 @@ class VectorDatabase:
         document: Document,
         chunks: Generator[dict[str, Any], None, None],
     ) -> IndexingSuccess:
+        import time
+
         country_docs = self.sync_client.collections.use(election.wv_collection)
         errors: list[dict[str, Any]] = []
         processed = 0
-        # Use dynamic batch for automatic error handling
-        with country_docs.batch.dynamic() as batch:
-            for chunk in chunks:
-                raw_bbox = chunk.get("bbox_data")
-                if isinstance(raw_bbox, list):
-                    bbox_str = json.dumps(raw_bbox)
-                elif isinstance(raw_bbox, str):
-                    bbox_str = raw_bbox
-                else:
-                    bbox_str = "[]"
-                batch.add_object(
-                    {
-                        "text": chunk["text"],
-                        "title": document.title,
-                        "party": party.id,
-                        "document": document.id,
-                        "chunk_id": chunk["chunk_id"],
-                        "page_number": chunk["page_number"],
-                        "chunk_index": chunk["chunk_index"],
-                        "token_count": chunk.get("token_count"),
-                        "char_count": chunk.get("char_count"),
-                        "word_count": chunk.get("word_count"),
-                        "bbox_data": bbox_str,
-                    }
-                )
-                processed += 1
-                if batch.number_errors:
-                    errors.extend(country_docs.batch.failed_objects)
-                if batch.number_errors > 50:
+
+        # Collect all chunk objects first
+        objects_to_insert: list[dict[str, Any]] = []
+        for chunk in chunks:
+            raw_bbox = chunk.get("bbox_data")
+            if isinstance(raw_bbox, list):
+                bbox_str = json.dumps(raw_bbox)
+            elif isinstance(raw_bbox, str):
+                bbox_str = raw_bbox
+            else:
+                bbox_str = "[]"
+            objects_to_insert.append(
+                {
+                    "text": chunk["text"],
+                    "title": document.title,
+                    "party": party.id,
+                    "document": document.id,
+                    "chunk_id": chunk["chunk_id"],
+                    "page_number": chunk["page_number"],
+                    "chunk_index": chunk["chunk_index"],
+                    "token_count": chunk.get("token_count"),
+                    "char_count": chunk.get("char_count"),
+                    "word_count": chunk.get("word_count"),
+                    "bbox_data": bbox_str,
+                }
+            )
+
+        # Insert in small fixed-size batches with retry to survive gRPC timeouts
+        BATCH_SIZE = 10
+        MAX_RETRIES = 3
+        for batch_start in range(0, len(objects_to_insert), BATCH_SIZE):
+            batch_objs = objects_to_insert[batch_start : batch_start + BATCH_SIZE]
+            for attempt in range(1, MAX_RETRIES + 1):
+                batch_errors: list[dict[str, Any]] = []
+                with country_docs.batch.fixed_size(batch_size=BATCH_SIZE) as batch:
+                    for obj in batch_objs:
+                        batch.add_object(obj)
+                    if batch.number_errors:
+                        batch_errors.extend(country_docs.batch.failed_objects)
+                if not batch_errors:
+                    processed += len(batch_objs)
                     break
+                if attempt < MAX_RETRIES:
+                    self.logger.warning(
+                        f"Batch {batch_start // BATCH_SIZE + 1} failed "
+                        f"(attempt {attempt}/{MAX_RETRIES}), "
+                        f"{len(batch_errors)} errors — retrying in {attempt * 5}s",
+                    )
+                    time.sleep(attempt * 5)
+                else:
+                    self.logger.error(
+                        f"Batch {batch_start // BATCH_SIZE + 1} failed after "
+                        f"{MAX_RETRIES} attempts — {len(batch_errors)} errors",
+                    )
+                    errors.extend(batch_errors)
+                    processed += len(batch_objs) - len(batch_errors)
+
         if errors:
             self.logger.warning(
                 "Chunk upload completed with errors",
@@ -259,9 +288,27 @@ class VectorDatabase:
         return documents
 
     async def delete_chunks(self, election: Election, document: Document) -> None:
+        import asyncio
+
         election_docs = self.async_client.collections.use(election.wv_collection)
-        await self._execute_with_reconnect(
-            lambda: election_docs.data.delete_many(
-                where=Filter.by_property("document").equal(document.id)
-            )
-        )
+        max_retries = 3
+        for attempt in range(1, max_retries + 1):
+            try:
+                await self._execute_with_reconnect(
+                    lambda: election_docs.data.delete_many(
+                        where=Filter.by_property("document").equal(document.id)
+                    )
+                )
+                return
+            except Exception as e:
+                if attempt < max_retries:
+                    self.logger.warning(
+                        f"delete_chunks attempt {attempt}/{max_retries} failed: {e} "
+                        f"— retrying in {attempt * 5}s"
+                    )
+                    await asyncio.sleep(attempt * 5)
+                else:
+                    self.logger.error(
+                        f"delete_chunks failed after {max_retries} attempts: {e}"
+                    )
+                    raise

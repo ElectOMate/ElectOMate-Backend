@@ -385,18 +385,32 @@ async def create_document(
             "party": party,
         },
     )
-    # Document parsing is in the background
-    background_tasks.add_task(
-        process_document,
-        document.id,
-        BytesIO(await file.read()),
-        sessionmaker,
-        weaviate_database,
-        document_parser,
-        autocreate_callback_url,
-        country_code,
-        party_name,
-    )
+    # Document parsing is in the background.
+    # Wrap in a tracked asyncio.Task so graceful shutdown can wait for it.
+    from em_backend.main import active_document_tasks
+
+    file_bytes = await file.read()
+
+    async def _tracked_process() -> None:
+        task = asyncio.current_task()
+        if task:
+            active_document_tasks.add(task)
+        try:
+            await process_document(
+                document.id,
+                BytesIO(file_bytes),
+                sessionmaker,
+                weaviate_database,
+                document_parser,
+                autocreate_callback_url,
+                country_code,
+                party_name,
+            )
+        finally:
+            if task:
+                active_document_tasks.discard(task)
+
+    background_tasks.add_task(_tracked_process)
 
     response = DocumentResponse.model_validate(document)
     await session.commit()

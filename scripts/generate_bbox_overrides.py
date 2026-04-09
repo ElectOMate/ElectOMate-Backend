@@ -33,6 +33,7 @@ WV_COLLECTION = "D2026_orszggylsivlaszts_f1299647"
 
 # Frontend PDFs (relative to repo root)
 FRONTEND_PDF_DIR = Path(__file__).resolve().parents[2] / "ElectOMate-Frontend" / "public" / "country-storage" / "HU" / "manifestos"
+BACKEND_PDF_DIR = Path(__file__).resolve().parent.parent / "assets" / "manifestos"
 
 # The chunks in Weaviate store the original PDF filename in the "title" field.
 # We use that to find the right PDF — the bboxes must match the PDF that was indexed.

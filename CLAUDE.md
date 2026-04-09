@@ -26,9 +26,9 @@
 | **Backend** | Python 3.11+ / FastAPI | Async-first, Pydantic models |
 | **Frontend** | TypeScript / React | Vite-based, functional components |
 | **CSS** | Tailwind + custom CSS | `index.css` + component-level CSS files |
-| **Database** | PostgreSQL via Supabase | Alembic for migrations |
-| **Deployment** | Render.com | Via Render MCP |
-| **Auth** | Supabase Auth | JWT tokens |
+| **Database** | PostgreSQL | Alembic for migrations |
+| **Deployment** | Azure (not Render) | Deployed URL: backend.electomate.com |
+| **Auth** | JWT tokens | No Supabase |
 
 ### Backend Conventions
 - FastAPI with async endpoints
@@ -86,9 +86,9 @@
 
 | MCP/Tool | Purpose | Use When |
 |----------|---------|----------|
-| **Supabase** | Database operations, auth | DB queries, schema changes |
+| **PostgreSQL** | Database operations | DB queries, schema changes (no Supabase) |
 | **DeepWiki** | Documentation lookup | Researching libraries/frameworks |
-| **Render** | Deployment management | Deploy, check services |
+| **Azure** | Deployment management | Deploy, check services (backend.electomate.com) |
 | **Perplexity** | Web search & research | Finding solutions, current docs |
 | **GitHub** | Repo operations, PRs, issues | PR creation, issue tracking |
 | **Puppeteer** | Browser automation & screenshots | UI testing, visual verification |

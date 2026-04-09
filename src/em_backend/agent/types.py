@@ -122,3 +122,8 @@ class WebSource(TypedDict, total=False):
     url: str
     snippet: str
     published_at: str
+    party: str
+    page_number: int | None
+    chunk_id: str
+    score: float | None
+    bbox_data: list[dict] | str | None
