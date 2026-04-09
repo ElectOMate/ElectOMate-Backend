@@ -19,7 +19,9 @@ AWS_REGION = "us-west-2"
 # Clustering
 MIN_CLUSTER_SIZE = 2
 EMBEDDING_MODEL = "paraphrase-multilingual-MiniLM-L12-v2"
-BACKFILL_SIMILARITY_THRESHOLD = 0.72
+BACKFILL_SIMILARITY_THRESHOLD = 0.65
+RESEARCH_SIMILARITY_THRESHOLD = 0.55  # Looser threshold for deep research pass
+MIN_SOURCES_PER_STORY = 3  # Stories below this are dropped from output
 
 # Fetching
 MAX_ARTICLES_PER_FEED = 20

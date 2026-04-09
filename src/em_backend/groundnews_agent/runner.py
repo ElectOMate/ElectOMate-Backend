@@ -9,8 +9,9 @@ from .clusterer import (
     backfill,
     cluster_articles,
     load_existing_stories,
+    research_thin_stories,
 )
-from .config import STORIES_FILE
+from .config import MIN_SOURCES_PER_STORY, STORIES_FILE
 from .fetcher import fetch_and_enrich
 from .models import StoriesOutput
 from .summarizer import enrich_story
@@ -28,7 +29,7 @@ def run_pipeline(skip_enrich: bool = False, max_stories: int | None = None) -> S
     log.info("=== Ground News Agent Pipeline Start ===")
 
     # 1. Fetch articles from RSS feeds
-    log.info("[1/5] Fetching articles from RSS feeds...")
+    log.info("[1/7] Fetching articles from RSS feeds...")
     articles = fetch_and_enrich()
     log.info("Fetched %d articles total", len(articles))
 
@@ -41,12 +42,12 @@ def run_pipeline(skip_enrich: bool = False, max_stories: int | None = None) -> S
         )
 
     # 2. Cluster into stories
-    log.info("[2/5] Clustering articles into stories...")
+    log.info("[2/7] Clustering articles into stories...")
     clusters = cluster_articles(articles)
     log.info("Found %d clusters", len(clusters))
 
     # 3. Backfill into existing stories
-    log.info("[3/5] Backfilling into existing stories...")
+    log.info("[3/7] Backfilling into existing stories...")
     existing = load_existing_stories()
     stories = backfill(clusters, existing)
 
@@ -54,9 +55,23 @@ def run_pipeline(skip_enrich: bool = False, max_stories: int | None = None) -> S
     if max_stories:
         stories = stories[:max_stories]
 
-    # 4. Enrich with AI (summaries, translations, bias analysis)
+    # 4. Deep research: find more sources for thin stories
+    log.info("[4/7] Deep research — finding additional sources for thin stories...")
+    stories = research_thin_stories(stories, articles)
+
+    # 5. Enforce minimum source count
+    before = len(stories)
+    stories = [
+        s for s in stories
+        if len({a.outlet_id for a in s.articles}) >= MIN_SOURCES_PER_STORY
+    ]
+    dropped = before - len(stories)
+    log.info("[5/7] Dropped %d stories with < %d unique sources (%d remain)",
+             dropped, MIN_SOURCES_PER_STORY, len(stories))
+
+    # 6. Enrich with AI (summaries, translations, bias analysis)
     if not skip_enrich:
-        log.info("[4/5] Enriching %d stories with Claude AI...", len(stories))
+        log.info("[6/7] Enriching %d stories with Claude AI...", len(stories))
         enriched = []
         for i, story in enumerate(stories):
             # Only enrich stories that haven't been enriched yet
@@ -67,9 +82,9 @@ def run_pipeline(skip_enrich: bool = False, max_stories: int | None = None) -> S
             enriched.append(story)
         stories = enriched
     else:
-        log.info("[4/5] Skipping AI enrichment (--skip-enrich)")
+        log.info("[6/7] Skipping AI enrichment (--skip-enrich)")
 
-    # 5. Sort by importance and write output
+    # 7. Sort by importance and write output
     stories.sort(key=lambda s: (s.importance_score, s.last_updated), reverse=True)
 
     output = StoriesOutput(
@@ -78,7 +93,7 @@ def run_pipeline(skip_enrich: bool = False, max_stories: int | None = None) -> S
         stories=stories,
     )
 
-    log.info("[5/5] Writing %d stories to %s", len(stories), STORIES_FILE)
+    log.info("[7/7] Writing %d stories to %s", len(stories), STORIES_FILE)
     STORIES_FILE.write_text(
         json.dumps(output.model_dump(), ensure_ascii=False, indent=2),
         encoding="utf-8",

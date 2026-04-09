@@ -13,6 +13,8 @@ from .config import (
     BACKFILL_SIMILARITY_THRESHOLD,
     EMBEDDING_MODEL,
     MIN_CLUSTER_SIZE,
+    MIN_SOURCES_PER_STORY,
+    RESEARCH_SIMILARITY_THRESHOLD,
     STORIES_FILE,
 )
 from .models import FetchedArticle, StoryArticle, StoryCluster, StoriesOutput
@@ -61,7 +63,7 @@ def cluster_articles(
     clusterer = hdbscan.HDBSCAN(
         min_cluster_size=MIN_CLUSTER_SIZE,
         metric="euclidean",  # embeddings are normalized, so euclidean ≈ cosine
-        cluster_selection_epsilon=0.3,
+        cluster_selection_epsilon=0.4,
     )
     labels = clusterer.fit_predict(embeddings)
 
@@ -215,4 +217,79 @@ def clusters_to_raw_stories(
         )
         stories.append(story)
 
+    return stories
+
+
+def research_thin_stories(
+    stories: list[StoryCluster],
+    all_articles: list[FetchedArticle],
+) -> list[StoryCluster]:
+    """Deep research pass: find additional sources for stories with < MIN_SOURCES_PER_STORY.
+
+    For each thin story, scan ALL fetched articles using semantic similarity
+    with a loose threshold to find related coverage that HDBSCAN missed.
+    Prioritises outlet diversity — won't add a second article from the same outlet.
+    """
+    if not stories or not all_articles:
+        return stories
+
+    # Build a URL set of all articles already assigned to any story
+    assigned_urls: set[str] = set()
+    for s in stories:
+        for a in s.articles:
+            assigned_urls.add(a.url)
+
+    # Pre-compute embeddings for all fetched articles (cached for reuse)
+    article_texts = [f"{a.title} {a.summary[:200]}" for a in all_articles]
+    article_embeds = embed_texts(article_texts)
+
+    thin_count = sum(1 for s in stories if len({a.outlet_id for a in s.articles}) < MIN_SOURCES_PER_STORY)
+    log.info("Deep research: %d stories have < %d sources, scanning %d articles...",
+             thin_count, MIN_SOURCES_PER_STORY, len(all_articles))
+
+    enriched = 0
+    for story in stories:
+        current_outlets = {a.outlet_id for a in story.articles}
+        if len(current_outlets) >= MIN_SOURCES_PER_STORY:
+            continue
+
+        # Embed the story for matching
+        story_text = f"{story.title_en} {story.title_hu} {story.ai_summary_en or ''}"
+        story_embed = embed_texts([story_text])[0]
+
+        existing_urls = {a.url for a in story.articles}
+
+        # Score all fetched articles against this story
+        candidates: list[tuple[FetchedArticle, float]] = []
+        for j, article in enumerate(all_articles):
+            if article.url in existing_urls:
+                continue
+            # Skip if this outlet is already in the story
+            if article.outlet_id in current_outlets:
+                continue
+            sim = float(np.dot(story_embed, article_embeds[j]))  # normalized → dot = cosine
+            if sim >= RESEARCH_SIMILARITY_THRESHOLD:
+                candidates.append((article, sim))
+
+        # Sort by similarity descending, add until we hit MIN_SOURCES
+        candidates.sort(key=lambda x: x[1], reverse=True)
+
+        added = 0
+        for article, sim in candidates:
+            if len(current_outlets) >= MIN_SOURCES_PER_STORY:
+                break
+            if article.outlet_id in current_outlets:
+                continue
+            story.articles.append(_fetched_to_story_article(article))
+            current_outlets.add(article.outlet_id)
+            added += 1
+
+        if added > 0:
+            story.source_count = len(story.articles)
+            story.last_updated = datetime.now(timezone.utc).isoformat()
+            enriched += 1
+            log.debug("  +%d sources for story: %s (now %d outlets)",
+                      added, story.title_en[:50], len(current_outlets))
+
+    log.info("Deep research complete: enriched %d stories", enriched)
     return stories
